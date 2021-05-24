@@ -179,56 +179,6 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
         return _delegate(msg.sender, delegatee);
     }
 
-    /**
-     * @notice Delegates votes from signatory to `delegatee`
-     * @param delegatee The address to delegate votes to
-     * @param nonce The contract state required to match the signature
-     * @param expiry The time at which to expire the signature
-     * @param v The recovery byte of the signature
-     * @param r Half of the ECDSA signature pair
-     * @param s Half of the ECDSA signature pair
-     */
-    function delegateBySig(
-        address delegatee,
-        uint256 nonce,
-        uint256 expiry,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) external {
-        bytes32 domainSeparator =
-            keccak256(
-                abi.encode(
-                    DOMAIN_TYPEHASH,
-                    keccak256(bytes(name())),
-                    _getChainId(),
-                    address(this)
-                )
-            );
-        bytes32 structHash =
-            keccak256(
-                abi.encode(DELEGATION_TYPEHASH, delegatee, nonce, expiry)
-            );
-        bytes32 digest =
-            keccak256(
-                abi.encodePacked("\x19\x01", domainSeparator, structHash)
-            );
-        address signatory = ecrecover(digest, v, r, s);
-        require(
-            signatory != address(0),
-            "Quartz::delegateBySig: invalid signature"
-        );
-        require(
-            nonce == nonces[signatory]++,
-            "Quartz::delegateBySig: invalid nonce"
-        );
-        require(
-            _getBlockTimestamp() <= expiry,
-            "Quartz::delegateBySig: signature expired"
-        );
-        return _delegate(signatory, delegatee);
-    }
-
     function moveVotesToGovernor(address user, uint256 amount) external {
         require(
             msg.sender == address(governor),
@@ -393,14 +343,6 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
     {
         require(n < 2**32, errorMessage);
         return uint32(n);
-    }
-
-    function _getChainId() internal pure returns (uint256) {
-        uint256 chainId;
-        assembly {
-            chainId := chainid()
-        }
-        return chainId;
     }
 
     function _getBlockTimestamp() private view returns (uint64) {

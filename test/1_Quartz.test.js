@@ -115,6 +115,13 @@ describe('Quartz', () => {
       expect(await quartz.delegates(beneficiary.address)).equal(
         constants.ZERO_ADDRESS,
       );
+      expect(
+        await quartz.getPriorVotes(
+          beneficiary.address,
+          BigNumber.from(await getCurrentBlock()).sub(BigNumber.from('1')),
+        ),
+      ).equal('0');
+
       expect(await quartz.numCheckpoints(beneficiary.address)).equal(0);
       const tx = await quartz
         .connect(sender)
@@ -769,6 +776,49 @@ describe('Quartz', () => {
       );
       expect(await quartz.getCurrentVotes(beneficiary.address)).equal(0);
       expect(await quartz.getCurrentVotes(delegatee.address)).equal(0);
+    });
+  });
+
+  describe('getPriorVotes', () => {
+    const amount = BigNumber.from('1000').mul(decimalsUnit);
+    const period = BigNumber.from('3600');
+    let sender;
+    let beneficiary;
+
+    beforeEach(async () => {
+      sender = accounts[1];
+      beneficiary = accounts[2];
+      await quartz.connect(owner).transfer(sender.address, totalSupply);
+    });
+
+    it('getPriorVotes after stake', async () => {
+      let amount2 = BigNumber.from('100').mul(decimalsUnit);
+      let period2 = BigNumber.from('360');
+      let waitTime = BigNumber.from('100');
+      let amount3 = BigNumber.from('110').mul(decimalsUnit);
+      let period3 = BigNumber.from('380');
+      await quartz.connect(sender).stake(amount, beneficiary.address, period);
+      const currentBlock0 = await getCurrentBlock();
+
+      await time.increase(waitTime.toString());
+      await quartz.connect(sender).stake(amount2, beneficiary.address, period2);
+      const currentBlock1 = await getCurrentBlock();
+      await time.increase(waitTime.toString());
+      await quartz.connect(sender).stake(amount3, beneficiary.address, period3);
+      const currentBlock2 = await getCurrentBlock();
+
+      await time.advanceBlock();
+      await time.advanceBlock();
+      await time.advanceBlock();
+      expect(
+        await quartz.getPriorVotes(beneficiary.address, currentBlock1),
+      ).equal(amount.add(amount2));
+      expect(
+        await quartz.getPriorVotes(beneficiary.address, currentBlock1.add('1')),
+      ).equal(amount.add(amount2));
+      expect(
+        await quartz.getPriorVotes(beneficiary.address, currentBlock1.sub('1')),
+      ).equal(amount);
     });
   });
 });

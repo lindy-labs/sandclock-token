@@ -29,6 +29,8 @@
   "dependencies": {
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@openzeppelin/contracts": "^3.4.1",
-    "dotenv": "^9.0.2"
+    "dotenv": "^9.0.2",
+    "ethereumjs-abi": "^0.6.8",
+    "ethereumjs-util": "^7.0.10"
   }
 }

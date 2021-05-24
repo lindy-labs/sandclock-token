@@ -1,0 +1,34 @@
+{
+  "name": "sandclock-token",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "coverage": "hardhat coverage",
+    "test": "hardhat test",
+    "compile": "hardhat compile"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-web3": "^2.0.0",
+    "@openzeppelin/hardhat-upgrades": "^1.6.0",
+    "@openzeppelin/test-helpers": "^0.5.10",
+    "chai": "^4.3.4",
+    "eslint": "^7.21.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "ethereum-waffle": "^3.3.0",
+    "ethers": "^5.0.32",
+    "hardhat": "^2.1.1",
+    "prettier": "^2.2.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.6",
+    "solhint": "^3.3.3",
+    "solidity-coverage": "^0.7.16",
+    "web3": "^1.3.5"
+  },
+  "dependencies": {
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@openzeppelin/contracts": "^3.4.1",
+    "dotenv": "^9.0.2"
+  }
+}

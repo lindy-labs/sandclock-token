@@ -31,8 +31,8 @@ contract QuartzGovernor is AccessControl {
         "QG_PROPOSAL_NOT_ACTIVE";
     string private constant ERROR_CANNOT_EXECUTE_ABSTAIN_PROPOSAL =
         "QG_CANNOT_EXECUTE_ABSTAIN_PROPOSAL";
-    string private constant ERROR_INSUFFICIENT_CONVICION =
-        "QG_INSUFFICIENT_CONVICION";
+    string private constant ERROR_INSUFFICIENT_CONVICTION =
+        "QG_INSUFFICIENT_CONVICTION";
     string private constant ERROR_SENDER_CANNOT_CANCEL =
         "QG_SENDER_CANNOT_CANCEL";
     string private constant ERROR_CANNOT_CANCEL_ABSTAIN_PROPOSAL =
@@ -53,8 +53,8 @@ contract QuartzGovernor is AccessControl {
         "QG_WITHDRAW_MORE_THAN_VOTED";
     string private constant ERROR_ONLY_QUARTZ = "QG_ONLY_QUARTZ";
     string private constant ERROR_AUTH_FAILED = "QG_AUTH_FAILED";
-    string private constant ERROR_NO_ENOUGH_INACTIVE_VOTES =
-        "QG_NO_ENOUGH_INACTIVE_VOTES";
+    string private constant ERROR_NOT_ENOUGH_INACTIVE_VOTES =
+        "QG_NOT_ENOUGH_INACTIVE_VOTES";
     string private constant ERROR_NO_ENOUGH_VOTES = "QG_NO_ENOUGH_VOTES";
     string private constant ERROR_MIN_VOTES_TO_PASS_CAN_NOT_BE_ZERO =
         "QG_MIN_VOTES_TO_PASS_CAN_NOT_BE_ZERO";
@@ -450,7 +450,7 @@ contract QuartzGovernor is AccessControl {
                     negativeVotes.convictionLast
                 ) >=
                 calculateThreshold(minVotesToPass),
-            ERROR_INSUFFICIENT_CONVICION
+            ERROR_INSUFFICIENT_CONVICTION
         );
 
         proposal.proposalStatus = ProposalStatus.Executed;
@@ -793,7 +793,7 @@ contract QuartzGovernor is AccessControl {
     ) external onlyQuartz {
         uint256 inactiveWithdrawn = _withdrawInactiveVotes(_amount, _from);
         if (inactiveWithdrawn < _amount) {
-            require(force, ERROR_NO_ENOUGH_INACTIVE_VOTES);
+            require(force, ERROR_NOT_ENOUGH_INACTIVE_VOTES);
             uint256 activeWithdrawn =
                 _withdrawActiveVotes(_amount.sub(inactiveWithdrawn), _from);
             require(

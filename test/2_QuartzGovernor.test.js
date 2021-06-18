@@ -287,7 +287,7 @@ describe('QuartzGovernor', () => {
       await time.advanceBlock();
       await expect(
         governor.connect(accounts[1]).executeProposal('2'),
-      ).to.be.revertedWith('QG_INSUFFICIENT_CONVICION');
+      ).to.be.revertedWith('QG_INSUFFICIENT_CONVICTION');
     });
 
     it('Revert to execute if positive conviction is less than negative (2)', async () => {
@@ -307,7 +307,7 @@ describe('QuartzGovernor', () => {
       await time.advanceBlock();
       await expect(
         governor.connect(accounts[1]).executeProposal('2'),
-      ).to.be.revertedWith('QG_INSUFFICIENT_CONVICION');
+      ).to.be.revertedWith('QG_INSUFFICIENT_CONVICTION');
     });
 
     it('Should execute proposal', async () => {
@@ -418,7 +418,7 @@ describe('QuartzGovernor', () => {
         governor
           .connect(beneficiary)
           .castVotes('3', amount.sub(votesToCast).add('1'), true),
-      ).to.be.revertedWith('QG_NO_ENOUGH_INACTIVE_VOTES');
+      ).to.be.revertedWith('QG_NOT_ENOUGH_INACTIVE_VOTES');
     });
 
     it('Should vote to positive', async () => {

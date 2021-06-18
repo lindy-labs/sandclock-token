@@ -376,24 +376,26 @@ contract QuartzGovernor is AccessControl {
             uint256 proposalId = voterCastedProposalsCopy[i];
             Proposal storage proposal = proposals[proposalId];
 
-            // In active proposals, we only subtract the needed amount to reach the target
-            uint256 toWithdraw =
-                Math.min(
-                    _targetAmount.sub(withdrawnAmount),
-                    userVotes[proposal.positiveVotes.id][_from].add(
-                        userVotes[proposal.negativeVotes.id][_from]
-                    )
-                );
-            if (toWithdraw > 0) {
-                _withdrawVotesFromProposal(
-                    proposalId,
-                    toWithdraw,
-                    _from,
-                    userVotes[proposal.positiveVotes.id][_from] > 0
-                        ? true
-                        : false
-                );
-                withdrawnAmount = withdrawnAmount.add(toWithdraw);
+            if (proposal.proposalStatus == ProposalStatus.Active) {
+                // In active proposals, we only subtract the needed amount to reach the target
+                uint256 toWithdraw =
+                    Math.min(
+                        _targetAmount.sub(withdrawnAmount),
+                        userVotes[proposal.positiveVotes.id][_from].add(
+                            userVotes[proposal.negativeVotes.id][_from]
+                        )
+                    );
+                if (toWithdraw > 0) {
+                    _withdrawVotesFromProposal(
+                        proposalId,
+                        toWithdraw,
+                        _from,
+                        userVotes[proposal.positiveVotes.id][_from] > 0
+                            ? true
+                            : false
+                    );
+                    withdrawnAmount = withdrawnAmount.add(toWithdraw);
+                }
             }
             i += 1;
         }

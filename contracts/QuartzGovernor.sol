@@ -367,9 +367,6 @@ contract QuartzGovernor is AccessControl {
         uint256 i;
         uint256[] memory voterCastedProposalsCopy = voterCastedProposals[_from];
 
-        // We reset this variable as _withdrawVotesFromProposal can update voterCastedProposals
-        voterCastedProposalsCopy = voterCastedProposals[_from];
-
         while (
             i < voterCastedProposalsCopy.length &&
             withdrawnAmount < _targetAmount

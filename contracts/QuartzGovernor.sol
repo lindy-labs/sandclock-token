@@ -55,6 +55,7 @@ contract QuartzGovernor is AccessControl {
     string private constant ERROR_AUTH_FAILED = "QG_AUTH_FAILED";
     string private constant ERROR_NO_ENOUGH_INACTIVE_VOTES =
         "QG_NO_ENOUGH_INACTIVE_VOTES";
+    string private constant ERROR_NO_ENOUGH_VOTES = "QG_NO_ENOUGH_VOTES";
     string private constant ERROR_MIN_VOTES_TO_PASS_CAN_NOT_BE_ZERO =
         "QG_MIN_VOTES_TO_PASS_CAN_NOT_BE_ZERO";
 
@@ -361,9 +362,9 @@ contract QuartzGovernor is AccessControl {
      */
     function _withdrawActiveVotes(uint256 _targetAmount, address _from)
         internal
+        returns (uint256 withdrawnAmount)
     {
-        uint256 i = 0;
-        uint256 withdrawnAmount = 0;
+        uint256 i;
         uint256[] memory voterCastedProposalsCopy = voterCastedProposals[_from];
 
         // We reset this variable as _withdrawVotesFromProposal can update voterCastedProposals
@@ -795,7 +796,12 @@ contract QuartzGovernor is AccessControl {
         uint256 inactiveWithdrawn = _withdrawInactiveVotes(_amount, _from);
         if (inactiveWithdrawn < _amount) {
             require(force, ERROR_NO_ENOUGH_INACTIVE_VOTES);
-            _withdrawActiveVotes(_amount.sub(inactiveWithdrawn), _from);
+            uint256 activeWithdrawn =
+                _withdrawActiveVotes(_amount.sub(inactiveWithdrawn), _from);
+            require(
+                inactiveWithdrawn.add(activeWithdrawn) >= _amount,
+                ERROR_NO_ENOUGH_VOTES
+            );
         }
     }
 

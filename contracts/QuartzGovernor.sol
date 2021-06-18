@@ -138,7 +138,8 @@ contract QuartzGovernor is AccessControl {
 
     modifier proposalExists(uint256 _proposalId) {
         require(
-            _proposalId == 1 || proposals[_proposalId].submitter != address(0),
+            _proposalId == ABSTAIN_PROPOSAL_ID ||
+                proposals[_proposalId].submitter != address(0),
             ERROR_PROPOSAL_DOES_NOT_EXIST
         );
         _;
@@ -163,7 +164,7 @@ contract QuartzGovernor is AccessControl {
         _setupRole(ADMIN_ROLE, msg.sender);
 
         quartz = _quartz;
-        proposalCounter = 2; // First proposal should be #2, #1 is reserved for abstain proposal, #0 is not used for better UX.
+        proposalCounter = ABSTAIN_PROPOSAL_ID.add(1); // First proposal should be #2, #1 is reserved for abstain proposal, #0 is not used for better UX.
         decay = _decay;
         maxRatio = _maxRatio;
         weight = _weight;

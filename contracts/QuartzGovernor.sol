@@ -799,7 +799,7 @@ contract QuartzGovernor is AccessControl {
         uint256 inactiveWithdrawn = _withdrawInactiveVotes(_amount, _from);
         if (inactiveWithdrawn < _amount) {
             require(force, ERROR_NO_ENOUGH_INACTIVE_VOTES);
-            _withdrawActiveVotes(_amount, _from);
+            _withdrawActiveVotes(_amount.sub(inactiveWithdrawn), _from);
         }
     }
 

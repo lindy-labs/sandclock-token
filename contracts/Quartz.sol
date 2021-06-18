@@ -51,17 +51,6 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
         uint256 votes;
     }
 
-    bytes32 public constant DOMAIN_TYPEHASH =
-        keccak256(
-            "EIP712Domain(string name,uint256 chainId,address verifyingContract)"
-        );
-
-    bytes32 public constant DELEGATION_TYPEHASH =
-        keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
-
-    /// @notice A record of states for signing / validating signatures
-    mapping(address => uint256) public nonces;
-
     IQuartzGovernor public governor;
 
     mapping(address => uint256) public userVotesRep;
@@ -71,10 +60,6 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
     uint64 public stakeLength;
     // All stakes infos
     mapping(uint64 => StakeInfo) public stakes;
-    // Stake ids of owner
-    mapping(address => uint64[]) public ownerStakeIds;
-    // Stake ids of beneficiary
-    mapping(address => uint64[]) public beneficiaryIds;
     // Total staked amount
     uint256 public totalStaked;
 
@@ -117,8 +102,6 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
                 active: true
             });
         stakes[_stakeId] = stakeInfo;
-        ownerStakeIds[_owner].push(_stakeId);
-        beneficiaryIds[_beneficiary].push(_stakeId);
 
         userVotesRep[_beneficiary] = userVotesRep[_beneficiary].add(_amount);
         if (delegates[_beneficiary] == address(0)) {
@@ -299,21 +282,5 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
 
     function _getBlockTimestamp() private view returns (uint64) {
         return uint64(block.timestamp);
-    }
-
-    function getOwnerStakeIdsLength(address user)
-        external
-        view
-        returns (uint256)
-    {
-        return ownerStakeIds[user].length;
-    }
-
-    function getBeneficiaryIdsLength(address user)
-        external
-        view
-        returns (uint256)
-    {
-        return beneficiaryIds[user].length;
     }
 }

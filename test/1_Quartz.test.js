@@ -137,14 +137,7 @@ describe('Quartz', () => {
       );
       expect(await quartz.totalStaked()).equal(amount);
       expect(await quartz.stakeLength()).equal('1');
-      expect(await quartz.getOwnerStakeIdsLength(sender.address)).equal('1');
-      expect(await quartz.getBeneficiaryIdsLength(sender.address)).equal('0');
-      expect(await quartz.getOwnerStakeIdsLength(beneficiary.address)).equal(
-        '0',
-      );
-      expect(await quartz.getBeneficiaryIdsLength(beneficiary.address)).equal(
-        '1',
-      );
+
       const stakeInfo = await quartz.stakes(0);
       expect(stakeInfo.owner).equal(sender.address);
       expect(stakeInfo.beneficiary).equal(beneficiary.address);
@@ -205,14 +198,7 @@ describe('Quartz', () => {
       );
       expect(await quartz.totalStaked()).equal(amount.add(amount2));
       expect(await quartz.stakeLength()).equal('2');
-      expect(await quartz.getOwnerStakeIdsLength(sender.address)).equal('2');
-      expect(await quartz.getBeneficiaryIdsLength(sender.address)).equal('0');
-      expect(await quartz.getOwnerStakeIdsLength(beneficiary.address)).equal(
-        '0',
-      );
-      expect(await quartz.getBeneficiaryIdsLength(beneficiary.address)).equal(
-        '2',
-      );
+
       const stakeInfo = await quartz.stakes(1);
       expect(stakeInfo.owner).equal(sender.address);
       expect(stakeInfo.beneficiary).equal(beneficiary.address);
@@ -272,17 +258,7 @@ describe('Quartz', () => {
       );
       expect(await quartz.totalStaked()).equal(amount.add(amount2));
       expect(await quartz.stakeLength()).equal('2');
-      expect(await quartz.getOwnerStakeIdsLength(sender.address)).equal('2');
-      expect(await quartz.getBeneficiaryIdsLength(sender.address)).equal('0');
-      expect(await quartz.getOwnerStakeIdsLength(beneficiary.address)).equal(
-        '0',
-      );
-      expect(await quartz.getBeneficiaryIdsLength(beneficiary.address)).equal(
-        '1',
-      );
-      expect(await quartz.getBeneficiaryIdsLength(beneficiary2.address)).equal(
-        '1',
-      );
+
       let stakeInfo = await quartz.stakes(0);
       expect(stakeInfo.owner).equal(sender.address);
       expect(stakeInfo.beneficiary).equal(beneficiary.address);
@@ -346,14 +322,7 @@ describe('Quartz', () => {
       );
       expect(await quartz.totalStaked()).equal(amount);
       expect(await quartz.stakeLength()).equal('1');
-      expect(await quartz.getOwnerStakeIdsLength(sender.address)).equal('1');
-      expect(await quartz.getBeneficiaryIdsLength(sender.address)).equal('1');
-      expect(await quartz.getOwnerStakeIdsLength(beneficiary.address)).equal(
-        '1',
-      );
-      expect(await quartz.getBeneficiaryIdsLength(beneficiary.address)).equal(
-        '1',
-      );
+
       const stakeInfo = await quartz.stakes(0);
       expect(stakeInfo.owner).equal(sender.address);
       expect(stakeInfo.beneficiary).equal(beneficiary.address);
@@ -409,14 +378,7 @@ describe('Quartz', () => {
       );
       expect(await quartz.totalStaked()).equal(amount);
       expect(await quartz.stakeLength()).equal('1');
-      expect(await quartz.getOwnerStakeIdsLength(sender.address)).equal('1');
-      expect(await quartz.getBeneficiaryIdsLength(sender.address)).equal('0');
-      expect(await quartz.getOwnerStakeIdsLength(beneficiary.address)).equal(
-        '0',
-      );
-      expect(await quartz.getBeneficiaryIdsLength(beneficiary.address)).equal(
-        '1',
-      );
+
       const stakeInfo = await quartz.stakes(0);
       expect(stakeInfo.owner).equal(sender.address);
       expect(stakeInfo.beneficiary).equal(beneficiary.address);
@@ -498,14 +460,7 @@ describe('Quartz', () => {
       expect(await quartz.balanceOf(sender.address)).equal(totalSupply);
       expect(await quartz.totalStaked()).equal('0');
       expect(await quartz.stakeLength()).equal('1');
-      expect(await quartz.getOwnerStakeIdsLength(sender.address)).equal('1');
-      expect(await quartz.getBeneficiaryIdsLength(sender.address)).equal('0');
-      expect(await quartz.getOwnerStakeIdsLength(beneficiary.address)).equal(
-        '0',
-      );
-      expect(await quartz.getBeneficiaryIdsLength(beneficiary.address)).equal(
-        '1',
-      );
+
       const stakeInfo = await quartz.stakes(0);
       expect(stakeInfo.owner).equal(sender.address);
       expect(stakeInfo.beneficiary).equal(beneficiary.address);

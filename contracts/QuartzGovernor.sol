@@ -602,10 +602,6 @@ contract QuartzGovernor is AccessControl {
             ERROR_PROPOSAL_NOT_ACTIVE
         );
 
-        uint256 availableVotes = quartz.getCurrentVotes(_from);
-        if (_amount > availableVotes) {
-            _withdrawInactiveVotes(_amount.sub(availableVotes), _from);
-        }
         quartz.moveVotesToGovernor(_from, _amount);
 
         Vote storage votes;

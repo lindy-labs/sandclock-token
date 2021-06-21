@@ -12,11 +12,11 @@ describe('QuartzGovernor', () => {
   let governor;
   let decimalsUnit = BigNumber.from('10').pow(new BigNumber.from('18'));
   let totalSupply = BigNumber.from('100000000').mul(decimalsUnit);
-  let decay = BigNumber.from('3');
-  let maxRatio = BigNumber.from('4');
-  let weight = BigNumber.from('4');
+  let decay = BigNumber.from('9999799');
+  let maxRatio = BigNumber.from('1000000');
+  let weight = BigNumber.from('2500');
   let minThresholdStakePercentage = BigNumber.from('5');
-  let minVotesToPass = BigNumber.from('6');
+  let minVotesToPass = BigNumber.from('10000000000000000000');
   let updateSettingsRole;
   let createProposalsRole;
   let cancelProposalsRole;
@@ -325,23 +325,13 @@ describe('QuartzGovernor', () => {
       );
       expect(userVotes[0]).equal(votesToCast);
       expect(userVotes[1]).equal('0');
-      const increaseBlock = 10;
+      const increaseBlock = 10000;
       for (let i = 0; i < increaseBlock; i += 1) {
         await time.advanceBlock();
       }
       const conviction = BigNumber.from(
-        await governor.calculateConviction(increaseBlock, '0', votesToCast),
+        await governor.calculateConviction(increaseBlock + 1, '0', votesToCast),
       );
-      await governor
-        .connect(updateSettingsRole)
-        .setConvictionCalculationSettings(
-          decay,
-          maxRatio,
-          '0',
-          minThresholdStakePercentage,
-          minVotesToPass,
-        );
-
       const tx = await governor.connect(accounts[1]).executeProposal('2');
       expect(tx)
         .to.emit(governor, 'ProposalExecuted')
@@ -485,7 +475,7 @@ describe('QuartzGovernor', () => {
         await time.advanceBlock();
       }
       const conviction = BigNumber.from(
-        await governor.calculateConviction(increaseBlock, '0', votesToCast),
+        await governor.calculateConviction(increaseBlock + 1, '0', votesToCast),
       );
       const tx = await governor
         .connect(beneficiary)
@@ -607,7 +597,7 @@ describe('QuartzGovernor', () => {
         await time.advanceBlock();
       }
       const conviction = BigNumber.from(
-        await governor.calculateConviction(increaseBlock, '0', votesToCast),
+        await governor.calculateConviction(increaseBlock + 1, '0', votesToCast),
       );
 
       const tx = await governor
@@ -647,7 +637,7 @@ describe('QuartzGovernor', () => {
         await time.advanceBlock();
       }
       const conviction = BigNumber.from(
-        await governor.calculateConviction(increaseBlock, '0', votesToCast),
+        await governor.calculateConviction(increaseBlock + 1, '0', votesToCast),
       );
 
       const tx = await governor

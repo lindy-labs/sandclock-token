@@ -449,7 +449,7 @@ contract QuartzGovernor is AccessControl {
                 positiveVotes.convictionLast.sub(
                     negativeVotes.convictionLast
                 ) >=
-                calculateThreshold(minVotesToPass),
+                calculateThreshold(),
             ERROR_INSUFFICIENT_CONVICTION
         );
 
@@ -743,29 +743,24 @@ contract QuartzGovernor is AccessControl {
     }
 
     /**
-     * @dev Formula: ρ * totalStaked / (1 - a) / (β - requestedAmount / total)**2
+     * @dev Formula: ρ * totalStaked / (1 - a) / (β - minVotesToPass / total)**2
      * For the Solidity implementation we amplify ρ and β and simplify the formula:
      * weight = ρ * D
      * maxRatio = β * D
      * decay = a * D
-     * threshold = weight * totalStaked * D ** 2 * funds ** 2 / (D - decay) / (maxRatio * funds - requestedAmount * D) ** 2
-     * @param _requestedAmount Requested amount of tokens on certain proposal
+     * threshold = weight * totalStaked * D ** 2 * funds ** 2 / (D - decay) / (maxRatio * funds - minVotesToPass * D) ** 2
      * @return _threshold Threshold a proposal's conviction should surpass in order to be able to
      * executed it.
      */
-    function calculateThreshold(uint256 _requestedAmount)
-        public
-        view
-        returns (uint256 _threshold)
-    {
+    function calculateThreshold() public view returns (uint256 _threshold) {
         uint256 funds = quartz.totalStaked();
         require(
-            maxRatio.mul(funds) > _requestedAmount.mul(D),
+            maxRatio.mul(funds) > minVotesToPass.mul(D),
             ERROR_AMOUNT_OVER_MAX_RATIO
         );
-        // denom = maxRatio * 2 ** 64 / D  - requestedAmount * 2 ** 64 / funds
+        // denom = maxRatio * 2 ** 64 / D  - minVotesToPass * 2 ** 64 / funds
         uint256 denom =
-            (maxRatio << 64).div(D).sub((_requestedAmount << 64).div(funds));
+            (maxRatio << 64).div(D).sub((minVotesToPass << 64).div(funds));
         // _threshold = (weight * 2 ** 128 / D) / (denom ** 2 / 2 ** 64) * totalStaked * D / 2 ** 128
         _threshold =
             ((weight << 128).div(D).div(denom.mul(denom) >> 64))

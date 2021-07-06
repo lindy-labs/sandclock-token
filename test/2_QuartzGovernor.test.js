@@ -28,7 +28,7 @@ describe('QuartzGovernor', () => {
     createProposalsRole = accounts[3];
     cancelProposalsRole = accounts[4];
     const Quartz = await ethers.getContractFactory('Quartz');
-    quartz = await Quartz.deploy(totalSupply);
+    quartz = await Quartz.deploy();
     const QuartzGovernor = await ethers.getContractFactory('QuartzGovernor');
     governor = await QuartzGovernor.deploy(
       quartz.address,

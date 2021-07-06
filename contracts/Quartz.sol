@@ -63,8 +63,8 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
     // Total staked amount
     uint256 public totalStaked;
 
-    constructor(uint256 _totalSupply) {
-        _mint(msg.sender, _totalSupply);
+    constructor() {
+        _mint(msg.sender, 100000000 * 1e18);
     }
 
     function setGovernor(IQuartzGovernor _governor) external onlyOwner {

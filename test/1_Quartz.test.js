@@ -20,7 +20,7 @@ describe('Quartz', () => {
     owner = accounts[0];
 
     const Quartz = await ethers.getContractFactory('Quartz');
-    quartz = await Quartz.deploy(totalSupply);
+    quartz = await Quartz.deploy();
   });
 
   describe('Quartz tokenomics', () => {
@@ -624,7 +624,7 @@ describe('QuartzL1', () => {
     owner = accounts[0];
 
     const Quartz = await ethers.getContractFactory('QuartzL1');
-    quartz = await Quartz.deploy(totalSupply);
+    quartz = await Quartz.deploy();
   });
 
   describe('Quartz tokenomics', () => {

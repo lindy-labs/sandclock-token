@@ -6,7 +6,11 @@
   "scripts": {
     "coverage": "hardhat coverage",
     "test": "hardhat test",
-    "compile": "hardhat compile"
+    "compile": "hardhat compile",
+    "deploy:mainnet": "hardhat deploy --network mainnet",
+    "deploy:polygon": "hardhat deploy --network polygon",
+    "deploy:kovan": "hardhat deploy --network kovan",
+    "deploy:mumbai": "hardhat deploy --network mumbai"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
@@ -20,6 +24,8 @@
     "ethereum-waffle": "^3.3.0",
     "ethers": "^5.0.32",
     "hardhat": "^2.1.1",
+    "hardhat-deploy": "^0.8.9",
+    "hardhat-deploy-ethers": "^0.3.0-beta.10",
     "prettier": "^2.2.1",
     "prettier-plugin-solidity": "^1.0.0-beta.6",
     "solhint": "^3.3.3",
@@ -29,7 +35,7 @@
   "dependencies": {
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@openzeppelin/contracts": "^3.4.1",
-    "dotenv": "^9.0.2",
+    "dotenv": "^10.0.0",
     "ethereumjs-abi": "^0.6.8",
     "ethereumjs-util": "^7.0.10"
   }

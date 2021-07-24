@@ -1,6 +1,6 @@
 const deployQuartzL1 = async function ({ deployments, getNamedAccounts }) {
   const chainId = await getChainId();
-  if (chainId !== '1' && chainId !== '42') {
+  if (chainId !== '1' && chainId !== '4') {
     throw Error('Unsupported chain');
   }
 

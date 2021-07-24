@@ -117,8 +117,8 @@ contract QuartzGovernor is AccessControl {
         uint256 conviction,
         bool support
     );
-    event VotesWithdrawn(
-        address entity,
+    event VoteWithdrawn(
+        address indexed entity,
         uint256 indexed id,
         uint256 amount,
         uint256 conviction,
@@ -706,7 +706,7 @@ contract QuartzGovernor is AccessControl {
             _calculateAndSetConviction(votes, previousVote);
         }
 
-        emit VotesWithdrawn(
+        emit VoteWithdrawn(
             _from,
             _proposalId,
             _amount,

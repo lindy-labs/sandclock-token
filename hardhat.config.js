@@ -26,14 +26,19 @@ module.exports = {
       chainId: 137,
       accounts: [process.env.MAINNET_PRIVATE_KEY],
     },
-    kovan: {
-      url: `wss://kovan.infura.io/ws/v3/${process.env.INFURA_KEY}`,
-      chainId: 42,
+    rinkeby: {
+      url: `https://rinkeby.infura.io/v3/${process.env.INFURA_KEY}`,
+      chainId: 4,
       accounts: [process.env.TESTNET_PRIVATE_KEY],
     },
     mumbai: {
       url: 'https://rpc-mumbai.matic.today',
       chainId: 80001,
+      accounts: [process.env.TESTNET_PRIVATE_KEY],
+    },
+    xdai: {
+      url: 'https://rpc.xdaichain.com/',
+      chainId: 100,
       accounts: [process.env.TESTNET_PRIVATE_KEY],
     },
   },

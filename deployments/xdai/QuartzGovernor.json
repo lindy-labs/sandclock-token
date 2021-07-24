@@ -1,0 +1,1702 @@
+{
+  "address": "0xd62dc2C2831cBF5600895675A33791B2ed2AdC01",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "contract IQuartz",
+          "name": "_quartz",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_decay",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_maxRatio",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_weight",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_minThresholdStakePercentage",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_minVotesToPass",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "decay",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "maxRatio",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "weight",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "minThresholdStakePercentage",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "minVotesToPass",
+          "type": "uint256"
+        }
+      ],
+      "name": "ConvictionSettingsChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "entity",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "link",
+          "type": "bytes"
+        }
+      ],
+      "name": "ProposalAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "ProposalCancelled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "positiveConviction",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "negativeConviction",
+          "type": "uint256"
+        }
+      ],
+      "name": "ProposalExecuted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "previousAdminRole",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "newAdminRole",
+          "type": "bytes32"
+        }
+      ],
+      "name": "RoleAdminChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleGranted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "name": "RoleRevoked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "entity",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "conviction",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "support",
+          "type": "bool"
+        }
+      ],
+      "name": "VoteCasted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "entity",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "conviction",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "support",
+          "type": "bool"
+        }
+      ],
+      "name": "VoteWithdrawn",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "ABSTAIN_PROPOSAL_ID",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ADMIN_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "CANCEL_PROPOSAL_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "CREATE_PROPOSALS_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "D",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "DEFAULT_ADMIN_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "MAX_STAKED_PROPOSALS",
+      "outputs": [
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ONE_HUNDRED_PERCENT",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "UPDATE_SETTINGS_ROLE",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_title",
+          "type": "string"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_link",
+          "type": "bytes"
+        }
+      ],
+      "name": "addProposal",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_timePassed",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_lastConv",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_oldAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "calculateConviction",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "calculateThreshold",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "_threshold",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_proposalId",
+          "type": "uint256"
+        }
+      ],
+      "name": "cancelProposal",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_proposalId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "_support",
+          "type": "bool"
+        }
+      ],
+      "name": "castAllVotes",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_proposalId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "_support",
+          "type": "bool"
+        }
+      ],
+      "name": "castVotes",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "decay",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_proposalId",
+          "type": "uint256"
+        }
+      ],
+      "name": "executeProposal",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_proposalId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getProposal",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalVotes",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "convictionLast",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "blockLast",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct QuartzGovernor.Vote",
+          "name": "positiveVotes",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalVotes",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "convictionLast",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "blockLast",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct QuartzGovernor.Vote",
+          "name": "negativeVotes",
+          "type": "tuple"
+        },
+        {
+          "internalType": "enum QuartzGovernor.ProposalStatus",
+          "name": "proposalStatus",
+          "type": "uint8"
+        },
+        {
+          "internalType": "address",
+          "name": "submitter",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_proposalId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_voter",
+          "type": "address"
+        }
+      ],
+      "name": "getProposalUserVotes",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getRoleAdmin",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "getRoleMember",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getRoleMemberCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_voter",
+          "type": "address"
+        }
+      ],
+      "name": "getTotalUserVotes",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_voter",
+          "type": "address"
+        }
+      ],
+      "name": "getVoterCastedProposals",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "grantRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "hasRole",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "lastVoteId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "maxRatio",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "minThresholdStakePercentage",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "minVotesToPass",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "proposalCounter",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "quartz",
+      "outputs": [
+        {
+          "internalType": "contract IQuartz",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "renounceRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "role",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "revokeRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_decay",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_maxRatio",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_weight",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_minThresholdStakePercentage",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_minVotesToPass",
+          "type": "uint256"
+        }
+      ],
+      "name": "setConvictionCalculationSettings",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalVotes",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "userVotes",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "weight",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "withdrawAllInactiveVotes",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "withdrawnAmount",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_proposalId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "_support",
+          "type": "bool"
+        }
+      ],
+      "name": "withdrawAllVotesFromProposal",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "force",
+          "type": "bool"
+        }
+      ],
+      "name": "withdrawRequiredVotes",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_proposalId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "_support",
+          "type": "bool"
+        }
+      ],
+      "name": "withdrawVotes",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x6fa070abb7b8baa3aabf9d2c900676dbd133264be3252e2f140f98852b046254",
+  "receipt": {
+    "to": null,
+    "from": "0xFC0Fb7c5ecDC08FAE522372c385577c09ca64C3c",
+    "contractAddress": "0xd62dc2C2831cBF5600895675A33791B2ed2AdC01",
+    "transactionIndex": 0,
+    "gasUsed": "3052037",
+    "logsBloom": "0x00000004000000000800000000000000080000000000000000000000000000000000000000080000000000000000000000000000000000000000000000040000000000000000000000000200000000200000000020040000200000000000000000000000020000400004000000000800200000000000000800000100000010000000000000000000000000000000004000000000000000000000000120000000000000000100004000008000000000000000000000000000001000000000000400000000000000000000000000000000000000000008000100000000000060000000080000000000000000000000020008000000000000000000000000000000",
+    "blockHash": "0x71b413413a48f479054d2cb72c8dd8d10e07c4cc06839204248c53d134b51e76",
+    "transactionHash": "0x6fa070abb7b8baa3aabf9d2c900676dbd133264be3252e2f140f98852b046254",
+    "logs": [
+      {
+        "transactionIndex": 0,
+        "blockNumber": 17140160,
+        "transactionHash": "0x6fa070abb7b8baa3aabf9d2c900676dbd133264be3252e2f140f98852b046254",
+        "address": "0xd62dc2C2831cBF5600895675A33791B2ed2AdC01",
+        "topics": [
+          "0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff",
+          "0x9d4f140430c9045e12b5a104aa9e641c09b980a26ab8e12a32a2f3d155229ae3",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0xa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775"
+        ],
+        "data": "0x",
+        "logIndex": 0,
+        "blockHash": "0x71b413413a48f479054d2cb72c8dd8d10e07c4cc06839204248c53d134b51e76"
+      },
+      {
+        "transactionIndex": 0,
+        "blockNumber": 17140160,
+        "transactionHash": "0x6fa070abb7b8baa3aabf9d2c900676dbd133264be3252e2f140f98852b046254",
+        "address": "0xd62dc2C2831cBF5600895675A33791B2ed2AdC01",
+        "topics": [
+          "0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff",
+          "0xbf05b9322505d747ab5880dfb677dc4864381e9fc3a25ccfa184a3a53d02f4b2",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0xa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775"
+        ],
+        "data": "0x",
+        "logIndex": 1,
+        "blockHash": "0x71b413413a48f479054d2cb72c8dd8d10e07c4cc06839204248c53d134b51e76"
+      },
+      {
+        "transactionIndex": 0,
+        "blockNumber": 17140160,
+        "transactionHash": "0x6fa070abb7b8baa3aabf9d2c900676dbd133264be3252e2f140f98852b046254",
+        "address": "0xd62dc2C2831cBF5600895675A33791B2ed2AdC01",
+        "topics": [
+          "0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff",
+          "0x3e317d8f3de745777f176274dda437b0b9bbbe0704f48e9be1821136c177b933",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0xa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775"
+        ],
+        "data": "0x",
+        "logIndex": 2,
+        "blockHash": "0x71b413413a48f479054d2cb72c8dd8d10e07c4cc06839204248c53d134b51e76"
+      },
+      {
+        "transactionIndex": 0,
+        "blockNumber": 17140160,
+        "transactionHash": "0x6fa070abb7b8baa3aabf9d2c900676dbd133264be3252e2f140f98852b046254",
+        "address": "0xd62dc2C2831cBF5600895675A33791B2ed2AdC01",
+        "topics": [
+          "0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d",
+          "0xa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775",
+          "0x000000000000000000000000fc0fb7c5ecdc08fae522372c385577c09ca64c3c",
+          "0x000000000000000000000000fc0fb7c5ecdc08fae522372c385577c09ca64c3c"
+        ],
+        "data": "0x",
+        "logIndex": 3,
+        "blockHash": "0x71b413413a48f479054d2cb72c8dd8d10e07c4cc06839204248c53d134b51e76"
+      },
+      {
+        "transactionIndex": 0,
+        "blockNumber": 17140160,
+        "transactionHash": "0x6fa070abb7b8baa3aabf9d2c900676dbd133264be3252e2f140f98852b046254",
+        "address": "0xd62dc2C2831cBF5600895675A33791B2ed2AdC01",
+        "topics": [
+          "0x1ae6f721faa65aa5050175f30956a86dac475b9493b7f5719fd4ecee9beadec7",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x0000000000000000000000000000000000000000000000000000000000000001"
+        ],
+        "data": "0x0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000104162737461696e2070726f706f73616c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "logIndex": 4,
+        "blockHash": "0x71b413413a48f479054d2cb72c8dd8d10e07c4cc06839204248c53d134b51e76"
+      }
+    ],
+    "blockNumber": 17140160,
+    "cumulativeGasUsed": "3052037",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x7B89414F14a7B9090Cc5f0Abf7F524255b10139a",
+    9999799,
+    1000000,
+    2500,
+    "200000000000000000",
+    "100000000000000000000"
+  ],
+  "solcInputHash": "2206f8f61be32368c66762869f963073",
+  "metadata": "{\"compiler\":{\"version\":\"0.7.3+commit.9bfce1f6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract IQuartz\",\"name\":\"_quartz\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_decay\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_maxRatio\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_weight\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_minThresholdStakePercentage\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_minVotesToPass\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"decay\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"maxRatio\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"weight\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minThresholdStakePercentage\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minVotesToPass\",\"type\":\"uint256\"}],\"name\":\"ConvictionSettingsChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"entity\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"title\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"bytes\",\"name\":\"link\",\"type\":\"bytes\"}],\"name\":\"ProposalAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"}],\"name\":\"ProposalCancelled\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"positiveConviction\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"negativeConviction\",\"type\":\"uint256\"}],\"name\":\"ProposalExecuted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"entity\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"conviction\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"support\",\"type\":\"bool\"}],\"name\":\"VoteCasted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"entity\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"conviction\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"support\",\"type\":\"bool\"}],\"name\":\"VoteWithdrawn\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"ABSTAIN_PROPOSAL_ID\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"CANCEL_PROPOSAL_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"CREATE_PROPOSALS_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"D\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"MAX_STAKED_PROPOSALS\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"ONE_HUNDRED_PERCENT\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"UPDATE_SETTINGS_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_title\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"_link\",\"type\":\"bytes\"}],\"name\":\"addProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_timePassed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_lastConv\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_oldAmount\",\"type\":\"uint256\"}],\"name\":\"calculateConviction\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"calculateThreshold\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"_threshold\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_proposalId\",\"type\":\"uint256\"}],\"name\":\"cancelProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_proposalId\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_support\",\"type\":\"bool\"}],\"name\":\"castAllVotes\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_proposalId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_support\",\"type\":\"bool\"}],\"name\":\"castVotes\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"decay\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_proposalId\",\"type\":\"uint256\"}],\"name\":\"executeProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_proposalId\",\"type\":\"uint256\"}],\"name\":\"getProposal\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalVotes\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"convictionLast\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"blockLast\",\"type\":\"uint256\"}],\"internalType\":\"struct QuartzGovernor.Vote\",\"name\":\"positiveVotes\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalVotes\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"convictionLast\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"blockLast\",\"type\":\"uint256\"}],\"internalType\":\"struct QuartzGovernor.Vote\",\"name\":\"negativeVotes\",\"type\":\"tuple\"},{\"internalType\":\"enum QuartzGovernor.ProposalStatus\",\"name\":\"proposalStatus\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"submitter\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_proposalId\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_voter\",\"type\":\"address\"}],\"name\":\"getProposalUserVotes\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getRoleMember\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleMemberCount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_voter\",\"type\":\"address\"}],\"name\":\"getTotalUserVotes\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_voter\",\"type\":\"address\"}],\"name\":\"getVoterCastedProposals\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"lastVoteId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maxRatio\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"minThresholdStakePercentage\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"minVotesToPass\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"proposalCounter\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"quartz\",\"outputs\":[{\"internalType\":\"contract IQuartz\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_decay\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_maxRatio\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_weight\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_minThresholdStakePercentage\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_minVotesToPass\",\"type\":\"uint256\"}],\"name\":\"setConvictionCalculationSettings\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalVotes\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"userVotes\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"weight\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawAllInactiveVotes\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"withdrawnAmount\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_proposalId\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_support\",\"type\":\"bool\"}],\"name\":\"withdrawAllVotesFromProposal\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"force\",\"type\":\"bool\"}],\"name\":\"withdrawRequiredVotes\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_proposalId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_support\",\"type\":\"bool\"}],\"name\":\"withdrawVotes\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"addProposal(string,bytes)\":{\"params\":{\"_link\":\"IPFS or HTTP link with proposal's description\",\"_title\":\"Title of the proposal\"}},\"calculateConviction(uint256,uint256,uint256)\":{\"details\":\"Conviction formula: a^t * y(0) + x * (1 - a^t) / (1 - a) Solidity implementation: y = (2^128 * a^t * y0 + x * D * (2^128 - 2^128 * a^t) / (D - aD) + 2^127) / 2^128\",\"params\":{\"_lastConv\":\"Last conviction record\",\"_oldAmount\":\"Amount of tokens staked until now\",\"_timePassed\":\"Number of blocks since last conviction record\"},\"returns\":{\"_0\":\"Current conviction\"}},\"calculateThreshold()\":{\"details\":\"Formula: \\u03c1 * totalStaked / (1 - a) / (\\u03b2 - minVotesToPass / total)**2 For the Solidity implementation we amplify \\u03c1 and \\u03b2 and simplify the formula: weight = \\u03c1 * D maxRatio = \\u03b2 * D decay = a * D threshold = weight * totalStaked * D ** 2 * funds ** 2 / (D - decay) / (maxRatio * funds - minVotesToPass * D) ** 2\",\"returns\":{\"_threshold\":\"Threshold a proposal's conviction should surpass in order to be able to executed it.\"}},\"cancelProposal(uint256)\":{\"params\":{\"_proposalId\":\"Proposal id\"}},\"castAllVotes(uint256,bool)\":{\"params\":{\"_proposalId\":\"Proposal id\",\"_support\":\"Positive or negative\"}},\"castVotes(uint256,uint256,bool)\":{\"params\":{\"_amount\":\"Amount of votes to cast\",\"_proposalId\":\"Proposal id\",\"_support\":\"Positive or negative\"}},\"executeProposal(uint256)\":{\"params\":{\"_proposalId\":\"Proposal id\"}},\"getProposal(uint256)\":{\"details\":\"Get proposal details\",\"params\":{\"_proposalId\":\"Proposal id\"},\"returns\":{\"negativeVotes\":\"Negative votes info\",\"positiveVotes\":\"Positive votes info\",\"proposalStatus\":\"ProposalStatus defining the state of the proposal\",\"submitter\":\"Submitter of the proposal\"}},\"getProposalUserVotes(uint256,address)\":{\"params\":{\"_proposalId\":\"Proposal id\",\"_voter\":\"Voter address\"},\"returns\":{\"_0\":\"Positive user votes\",\"_1\":\"Negative user votes\"}},\"getRoleAdmin(bytes32)\":{\"details\":\"Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}.\"},\"getRoleMember(bytes32,uint256)\":{\"details\":\"Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information.\"},\"getRoleMemberCount(bytes32)\":{\"details\":\"Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role.\"},\"getTotalUserVotes(address)\":{\"params\":{\"_voter\":\"Voter address\"},\"returns\":{\"_0\":\"Total user votes\"}},\"getVoterCastedProposals(address)\":{\"params\":{\"_voter\":\"Voter address\"},\"returns\":{\"_0\":\"Voter proposals\"}},\"grantRole(bytes32,address)\":{\"details\":\"Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role.\"},\"hasRole(bytes32,address)\":{\"details\":\"Returns `true` if `account` has been granted `role`.\"},\"renounceRole(bytes32,address)\":{\"details\":\"Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`.\"},\"revokeRole(bytes32,address)\":{\"details\":\"Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role.\"},\"setConvictionCalculationSettings(uint256,uint256,uint256,uint256,uint256)\":{\"params\":{\"_decay\":\"The rate at which conviction is accrued or lost from a proposal\",\"_maxRatio\":\"Proposal threshold parameter\",\"_minThresholdStakePercentage\":\"The minimum percent of stake token max supply that is used for calculating conviction\",\"_minVotesToPass\":\"The minimum votes to be passed\",\"_weight\":\"Proposal threshold parameter\"}},\"withdrawAllVotesFromProposal(uint256,bool)\":{\"params\":{\"_proposalId\":\"Proposal id\",\"_support\":\"Positive or negative\"}},\"withdrawRequiredVotes(address,uint256,bool)\":{\"details\":\"Withdraw required votes to move delegates\"},\"withdrawVotes(uint256,uint256,bool)\":{\"params\":{\"_amount\":\"Amount of votes to withdraw\",\"_proposalId\":\"Proposal id\",\"_support\":\"Positive or negative\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"addProposal(string,bytes)\":{\"notice\":\"Add proposal\"},\"cancelProposal(uint256)\":{\"notice\":\"Cancel proposal #`_proposalId`\"},\"castAllVotes(uint256,bool)\":{\"notice\":\"Cast all available votes to proposal\"},\"castVotes(uint256,uint256,bool)\":{\"notice\":\"Cast votes on proposal\"},\"executeProposal(uint256)\":{\"notice\":\"Execute proposal #`_proposalId`\"},\"getProposalUserVotes(uint256,address)\":{\"notice\":\"Get stake of voter `_voter` on proposal #`_proposalId`\"},\"getTotalUserVotes(address)\":{\"notice\":\"Get the total votes of voter `_voter` on all proposals\"},\"getVoterCastedProposals(address)\":{\"notice\":\"Get all proposal ID's voter `_voter` has currently voted\"},\"setConvictionCalculationSettings(uint256,uint256,uint256,uint256,uint256)\":{\"notice\":\"Update the conviction voting parameters\"},\"withdrawAllInactiveVotes()\":{\"notice\":\"Withdraw all votes from executed or cancelled proposal\"},\"withdrawAllVotesFromProposal(uint256,bool)\":{\"notice\":\"Withdraw all votes from proposal\"},\"withdrawVotes(uint256,uint256,bool)\":{\"notice\":\"Withdraw votes from proposal\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/QuartzGovernor.sol\":\"QuartzGovernor\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/access/AccessControl.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.6.0 <0.8.0;\\n\\nimport \\\"../utils/EnumerableSet.sol\\\";\\nimport \\\"../utils/Address.sol\\\";\\nimport \\\"../utils/Context.sol\\\";\\n\\n/**\\n * @dev Contract module that allows children to implement role-based access\\n * control mechanisms.\\n *\\n * Roles are referred to by their `bytes32` identifier. These should be exposed\\n * in the external API and be unique. The best way to achieve this is by\\n * using `public constant` hash digests:\\n *\\n * ```\\n * bytes32 public constant MY_ROLE = keccak256(\\\"MY_ROLE\\\");\\n * ```\\n *\\n * Roles can be used to represent a set of permissions. To restrict access to a\\n * function call, use {hasRole}:\\n *\\n * ```\\n * function foo() public {\\n *     require(hasRole(MY_ROLE, msg.sender));\\n *     ...\\n * }\\n * ```\\n *\\n * Roles can be granted and revoked dynamically via the {grantRole} and\\n * {revokeRole} functions. Each role has an associated admin role, and only\\n * accounts that have a role's admin role can call {grantRole} and {revokeRole}.\\n *\\n * By default, the admin role for all roles is `DEFAULT_ADMIN_ROLE`, which means\\n * that only accounts with this role will be able to grant or revoke other\\n * roles. More complex role relationships can be created by using\\n * {_setRoleAdmin}.\\n *\\n * WARNING: The `DEFAULT_ADMIN_ROLE` is also its own admin: it has permission to\\n * grant and revoke this role. Extra precautions should be taken to secure\\n * accounts that have been granted it.\\n */\\nabstract contract AccessControl is Context {\\n    using EnumerableSet for EnumerableSet.AddressSet;\\n    using Address for address;\\n\\n    struct RoleData {\\n        EnumerableSet.AddressSet members;\\n        bytes32 adminRole;\\n    }\\n\\n    mapping (bytes32 => RoleData) private _roles;\\n\\n    bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;\\n\\n    /**\\n     * @dev Emitted when `newAdminRole` is set as ``role``'s admin role, replacing `previousAdminRole`\\n     *\\n     * `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite\\n     * {RoleAdminChanged} not being emitted signaling this.\\n     *\\n     * _Available since v3.1._\\n     */\\n    event RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole);\\n\\n    /**\\n     * @dev Emitted when `account` is granted `role`.\\n     *\\n     * `sender` is the account that originated the contract call, an admin role\\n     * bearer except when using {_setupRole}.\\n     */\\n    event RoleGranted(bytes32 indexed role, address indexed account, address indexed sender);\\n\\n    /**\\n     * @dev Emitted when `account` is revoked `role`.\\n     *\\n     * `sender` is the account that originated the contract call:\\n     *   - if using `revokeRole`, it is the admin role bearer\\n     *   - if using `renounceRole`, it is the role bearer (i.e. `account`)\\n     */\\n    event RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender);\\n\\n    /**\\n     * @dev Returns `true` if `account` has been granted `role`.\\n     */\\n    function hasRole(bytes32 role, address account) public view returns (bool) {\\n        return _roles[role].members.contains(account);\\n    }\\n\\n    /**\\n     * @dev Returns the number of accounts that have `role`. Can be used\\n     * together with {getRoleMember} to enumerate all bearers of a role.\\n     */\\n    function getRoleMemberCount(bytes32 role) public view returns (uint256) {\\n        return _roles[role].members.length();\\n    }\\n\\n    /**\\n     * @dev Returns one of the accounts that have `role`. `index` must be a\\n     * value between 0 and {getRoleMemberCount}, non-inclusive.\\n     *\\n     * Role bearers are not sorted in any particular way, and their ordering may\\n     * change at any point.\\n     *\\n     * WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure\\n     * you perform all queries on the same block. See the following\\n     * https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post]\\n     * for more information.\\n     */\\n    function getRoleMember(bytes32 role, uint256 index) public view returns (address) {\\n        return _roles[role].members.at(index);\\n    }\\n\\n    /**\\n     * @dev Returns the admin role that controls `role`. See {grantRole} and\\n     * {revokeRole}.\\n     *\\n     * To change a role's admin, use {_setRoleAdmin}.\\n     */\\n    function getRoleAdmin(bytes32 role) public view returns (bytes32) {\\n        return _roles[role].adminRole;\\n    }\\n\\n    /**\\n     * @dev Grants `role` to `account`.\\n     *\\n     * If `account` had not been already granted `role`, emits a {RoleGranted}\\n     * event.\\n     *\\n     * Requirements:\\n     *\\n     * - the caller must have ``role``'s admin role.\\n     */\\n    function grantRole(bytes32 role, address account) public virtual {\\n        require(hasRole(_roles[role].adminRole, _msgSender()), \\\"AccessControl: sender must be an admin to grant\\\");\\n\\n        _grantRole(role, account);\\n    }\\n\\n    /**\\n     * @dev Revokes `role` from `account`.\\n     *\\n     * If `account` had been granted `role`, emits a {RoleRevoked} event.\\n     *\\n     * Requirements:\\n     *\\n     * - the caller must have ``role``'s admin role.\\n     */\\n    function revokeRole(bytes32 role, address account) public virtual {\\n        require(hasRole(_roles[role].adminRole, _msgSender()), \\\"AccessControl: sender must be an admin to revoke\\\");\\n\\n        _revokeRole(role, account);\\n    }\\n\\n    /**\\n     * @dev Revokes `role` from the calling account.\\n     *\\n     * Roles are often managed via {grantRole} and {revokeRole}: this function's\\n     * purpose is to provide a mechanism for accounts to lose their privileges\\n     * if they are compromised (such as when a trusted device is misplaced).\\n     *\\n     * If the calling account had been granted `role`, emits a {RoleRevoked}\\n     * event.\\n     *\\n     * Requirements:\\n     *\\n     * - the caller must be `account`.\\n     */\\n    function renounceRole(bytes32 role, address account) public virtual {\\n        require(account == _msgSender(), \\\"AccessControl: can only renounce roles for self\\\");\\n\\n        _revokeRole(role, account);\\n    }\\n\\n    /**\\n     * @dev Grants `role` to `account`.\\n     *\\n     * If `account` had not been already granted `role`, emits a {RoleGranted}\\n     * event. Note that unlike {grantRole}, this function doesn't perform any\\n     * checks on the calling account.\\n     *\\n     * [WARNING]\\n     * ====\\n     * This function should only be called from the constructor when setting\\n     * up the initial roles for the system.\\n     *\\n     * Using this function in any other way is effectively circumventing the admin\\n     * system imposed by {AccessControl}.\\n     * ====\\n     */\\n    function _setupRole(bytes32 role, address account) internal virtual {\\n        _grantRole(role, account);\\n    }\\n\\n    /**\\n     * @dev Sets `adminRole` as ``role``'s admin role.\\n     *\\n     * Emits a {RoleAdminChanged} event.\\n     */\\n    function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {\\n        emit RoleAdminChanged(role, _roles[role].adminRole, adminRole);\\n        _roles[role].adminRole = adminRole;\\n    }\\n\\n    function _grantRole(bytes32 role, address account) private {\\n        if (_roles[role].members.add(account)) {\\n            emit RoleGranted(role, account, _msgSender());\\n        }\\n    }\\n\\n    function _revokeRole(bytes32 role, address account) private {\\n        if (_roles[role].members.remove(account)) {\\n            emit RoleRevoked(role, account, _msgSender());\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x4fc155a2f7837603d69a13cfa481eb5e7f5e02cb77e2ec9edbac30986db37988\",\"license\":\"MIT\"},\"@openzeppelin/contracts/math/Math.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.6.0 <0.8.0;\\n\\n/**\\n * @dev Standard math utilities missing in the Solidity language.\\n */\\nlibrary Math {\\n    /**\\n     * @dev Returns the largest of two numbers.\\n     */\\n    function max(uint256 a, uint256 b) internal pure returns (uint256) {\\n        return a >= b ? a : b;\\n    }\\n\\n    /**\\n     * @dev Returns the smallest of two numbers.\\n     */\\n    function min(uint256 a, uint256 b) internal pure returns (uint256) {\\n        return a < b ? a : b;\\n    }\\n\\n    /**\\n     * @dev Returns the average of two numbers. The result is rounded towards\\n     * zero.\\n     */\\n    function average(uint256 a, uint256 b) internal pure returns (uint256) {\\n        // (a + b) / 2 can overflow, so we distribute\\n        return (a / 2) + (b / 2) + ((a % 2 + b % 2) / 2);\\n    }\\n}\\n\",\"keccak256\":\"0x363bd3b45201f07c9b71c2edc96533468cf14a3d029fabd82fddceb1eb3ebd9c\",\"license\":\"MIT\"},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.6.0 <0.8.0;\\n\\n/**\\n * @dev Wrappers over Solidity's arithmetic operations with added overflow\\n * checks.\\n *\\n * Arithmetic operations in Solidity wrap on overflow. This can easily result\\n * in bugs, because programmers usually assume that an overflow raises an\\n * error, which is the standard behavior in high level programming languages.\\n * `SafeMath` restores this intuition by reverting the transaction when an\\n * operation overflows.\\n *\\n * Using this library instead of the unchecked operations eliminates an entire\\n * class of bugs, so it's recommended to use it always.\\n */\\nlibrary SafeMath {\\n    /**\\n     * @dev Returns the addition of two unsigned integers, with an overflow flag.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function tryAdd(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        uint256 c = a + b;\\n        if (c < a) return (false, 0);\\n        return (true, c);\\n    }\\n\\n    /**\\n     * @dev Returns the substraction of two unsigned integers, with an overflow flag.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function trySub(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        if (b > a) return (false, 0);\\n        return (true, a - b);\\n    }\\n\\n    /**\\n     * @dev Returns the multiplication of two unsigned integers, with an overflow flag.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function tryMul(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the\\n        // benefit is lost if 'b' is also tested.\\n        // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522\\n        if (a == 0) return (true, 0);\\n        uint256 c = a * b;\\n        if (c / a != b) return (false, 0);\\n        return (true, c);\\n    }\\n\\n    /**\\n     * @dev Returns the division of two unsigned integers, with a division by zero flag.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function tryDiv(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        if (b == 0) return (false, 0);\\n        return (true, a / b);\\n    }\\n\\n    /**\\n     * @dev Returns the remainder of dividing two unsigned integers, with a division by zero flag.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function tryMod(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        if (b == 0) return (false, 0);\\n        return (true, a % b);\\n    }\\n\\n    /**\\n     * @dev Returns the addition of two unsigned integers, reverting on\\n     * overflow.\\n     *\\n     * Counterpart to Solidity's `+` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - Addition cannot overflow.\\n     */\\n    function add(uint256 a, uint256 b) internal pure returns (uint256) {\\n        uint256 c = a + b;\\n        require(c >= a, \\\"SafeMath: addition overflow\\\");\\n        return c;\\n    }\\n\\n    /**\\n     * @dev Returns the subtraction of two unsigned integers, reverting on\\n     * overflow (when the result is negative).\\n     *\\n     * Counterpart to Solidity's `-` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - Subtraction cannot overflow.\\n     */\\n    function sub(uint256 a, uint256 b) internal pure returns (uint256) {\\n        require(b <= a, \\\"SafeMath: subtraction overflow\\\");\\n        return a - b;\\n    }\\n\\n    /**\\n     * @dev Returns the multiplication of two unsigned integers, reverting on\\n     * overflow.\\n     *\\n     * Counterpart to Solidity's `*` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - Multiplication cannot overflow.\\n     */\\n    function mul(uint256 a, uint256 b) internal pure returns (uint256) {\\n        if (a == 0) return 0;\\n        uint256 c = a * b;\\n        require(c / a == b, \\\"SafeMath: multiplication overflow\\\");\\n        return c;\\n    }\\n\\n    /**\\n     * @dev Returns the integer division of two unsigned integers, reverting on\\n     * division by zero. The result is rounded towards zero.\\n     *\\n     * Counterpart to Solidity's `/` operator. Note: this function uses a\\n     * `revert` opcode (which leaves remaining gas untouched) while Solidity\\n     * uses an invalid opcode to revert (consuming all remaining gas).\\n     *\\n     * Requirements:\\n     *\\n     * - The divisor cannot be zero.\\n     */\\n    function div(uint256 a, uint256 b) internal pure returns (uint256) {\\n        require(b > 0, \\\"SafeMath: division by zero\\\");\\n        return a / b;\\n    }\\n\\n    /**\\n     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),\\n     * reverting when dividing by zero.\\n     *\\n     * Counterpart to Solidity's `%` operator. This function uses a `revert`\\n     * opcode (which leaves remaining gas untouched) while Solidity uses an\\n     * invalid opcode to revert (consuming all remaining gas).\\n     *\\n     * Requirements:\\n     *\\n     * - The divisor cannot be zero.\\n     */\\n    function mod(uint256 a, uint256 b) internal pure returns (uint256) {\\n        require(b > 0, \\\"SafeMath: modulo by zero\\\");\\n        return a % b;\\n    }\\n\\n    /**\\n     * @dev Returns the subtraction of two unsigned integers, reverting with custom message on\\n     * overflow (when the result is negative).\\n     *\\n     * CAUTION: This function is deprecated because it requires allocating memory for the error\\n     * message unnecessarily. For custom revert reasons use {trySub}.\\n     *\\n     * Counterpart to Solidity's `-` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - Subtraction cannot overflow.\\n     */\\n    function sub(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {\\n        require(b <= a, errorMessage);\\n        return a - b;\\n    }\\n\\n    /**\\n     * @dev Returns the integer division of two unsigned integers, reverting with custom message on\\n     * division by zero. The result is rounded towards zero.\\n     *\\n     * CAUTION: This function is deprecated because it requires allocating memory for the error\\n     * message unnecessarily. For custom revert reasons use {tryDiv}.\\n     *\\n     * Counterpart to Solidity's `/` operator. Note: this function uses a\\n     * `revert` opcode (which leaves remaining gas untouched) while Solidity\\n     * uses an invalid opcode to revert (consuming all remaining gas).\\n     *\\n     * Requirements:\\n     *\\n     * - The divisor cannot be zero.\\n     */\\n    function div(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {\\n        require(b > 0, errorMessage);\\n        return a / b;\\n    }\\n\\n    /**\\n     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),\\n     * reverting with custom message when dividing by zero.\\n     *\\n     * CAUTION: This function is deprecated because it requires allocating memory for the error\\n     * message unnecessarily. For custom revert reasons use {tryMod}.\\n     *\\n     * Counterpart to Solidity's `%` operator. This function uses a `revert`\\n     * opcode (which leaves remaining gas untouched) while Solidity uses an\\n     * invalid opcode to revert (consuming all remaining gas).\\n     *\\n     * Requirements:\\n     *\\n     * - The divisor cannot be zero.\\n     */\\n    function mod(uint256 a, uint256 b, string memory errorMessage) internal pure returns (uint256) {\\n        require(b > 0, errorMessage);\\n        return a % b;\\n    }\\n}\\n\",\"keccak256\":\"0xcc78a17dd88fa5a2edc60c8489e2f405c0913b377216a5b26b35656b2d0dab52\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Address.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.6.2 <0.8.0;\\n\\n/**\\n * @dev Collection of functions related to the address type\\n */\\nlibrary Address {\\n    /**\\n     * @dev Returns true if `account` is a contract.\\n     *\\n     * [IMPORTANT]\\n     * ====\\n     * It is unsafe to assume that an address for which this function returns\\n     * false is an externally-owned account (EOA) and not a contract.\\n     *\\n     * Among others, `isContract` will return false for the following\\n     * types of addresses:\\n     *\\n     *  - an externally-owned account\\n     *  - a contract in construction\\n     *  - an address where a contract will be created\\n     *  - an address where a contract lived, but was destroyed\\n     * ====\\n     */\\n    function isContract(address account) internal view returns (bool) {\\n        // This method relies on extcodesize, which returns 0 for contracts in\\n        // construction, since the code is only stored at the end of the\\n        // constructor execution.\\n\\n        uint256 size;\\n        // solhint-disable-next-line no-inline-assembly\\n        assembly { size := extcodesize(account) }\\n        return size > 0;\\n    }\\n\\n    /**\\n     * @dev Replacement for Solidity's `transfer`: sends `amount` wei to\\n     * `recipient`, forwarding all available gas and reverting on errors.\\n     *\\n     * https://eips.ethereum.org/EIPS/eip-1884[EIP1884] increases the gas cost\\n     * of certain opcodes, possibly making contracts go over the 2300 gas limit\\n     * imposed by `transfer`, making them unable to receive funds via\\n     * `transfer`. {sendValue} removes this limitation.\\n     *\\n     * https://diligence.consensys.net/posts/2019/09/stop-using-soliditys-transfer-now/[Learn more].\\n     *\\n     * IMPORTANT: because control is transferred to `recipient`, care must be\\n     * taken to not create reentrancy vulnerabilities. Consider using\\n     * {ReentrancyGuard} or the\\n     * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].\\n     */\\n    function sendValue(address payable recipient, uint256 amount) internal {\\n        require(address(this).balance >= amount, \\\"Address: insufficient balance\\\");\\n\\n        // solhint-disable-next-line avoid-low-level-calls, avoid-call-value\\n        (bool success, ) = recipient.call{ value: amount }(\\\"\\\");\\n        require(success, \\\"Address: unable to send value, recipient may have reverted\\\");\\n    }\\n\\n    /**\\n     * @dev Performs a Solidity function call using a low level `call`. A\\n     * plain`call` is an unsafe replacement for a function call: use this\\n     * function instead.\\n     *\\n     * If `target` reverts with a revert reason, it is bubbled up by this\\n     * function (like regular Solidity function calls).\\n     *\\n     * Returns the raw returned data. To convert to the expected return value,\\n     * use https://solidity.readthedocs.io/en/latest/units-and-global-variables.html?highlight=abi.decode#abi-encoding-and-decoding-functions[`abi.decode`].\\n     *\\n     * Requirements:\\n     *\\n     * - `target` must be a contract.\\n     * - calling `target` with `data` must not revert.\\n     *\\n     * _Available since v3.1._\\n     */\\n    function functionCall(address target, bytes memory data) internal returns (bytes memory) {\\n      return functionCall(target, data, \\\"Address: low-level call failed\\\");\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`], but with\\n     * `errorMessage` as a fallback revert reason when `target` reverts.\\n     *\\n     * _Available since v3.1._\\n     */\\n    function functionCall(address target, bytes memory data, string memory errorMessage) internal returns (bytes memory) {\\n        return functionCallWithValue(target, data, 0, errorMessage);\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],\\n     * but also transferring `value` wei to `target`.\\n     *\\n     * Requirements:\\n     *\\n     * - the calling contract must have an ETH balance of at least `value`.\\n     * - the called Solidity function must be `payable`.\\n     *\\n     * _Available since v3.1._\\n     */\\n    function functionCallWithValue(address target, bytes memory data, uint256 value) internal returns (bytes memory) {\\n        return functionCallWithValue(target, data, value, \\\"Address: low-level call with value failed\\\");\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCallWithValue-address-bytes-uint256-}[`functionCallWithValue`], but\\n     * with `errorMessage` as a fallback revert reason when `target` reverts.\\n     *\\n     * _Available since v3.1._\\n     */\\n    function functionCallWithValue(address target, bytes memory data, uint256 value, string memory errorMessage) internal returns (bytes memory) {\\n        require(address(this).balance >= value, \\\"Address: insufficient balance for call\\\");\\n        require(isContract(target), \\\"Address: call to non-contract\\\");\\n\\n        // solhint-disable-next-line avoid-low-level-calls\\n        (bool success, bytes memory returndata) = target.call{ value: value }(data);\\n        return _verifyCallResult(success, returndata, errorMessage);\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],\\n     * but performing a static call.\\n     *\\n     * _Available since v3.3._\\n     */\\n    function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {\\n        return functionStaticCall(target, data, \\\"Address: low-level static call failed\\\");\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],\\n     * but performing a static call.\\n     *\\n     * _Available since v3.3._\\n     */\\n    function functionStaticCall(address target, bytes memory data, string memory errorMessage) internal view returns (bytes memory) {\\n        require(isContract(target), \\\"Address: static call to non-contract\\\");\\n\\n        // solhint-disable-next-line avoid-low-level-calls\\n        (bool success, bytes memory returndata) = target.staticcall(data);\\n        return _verifyCallResult(success, returndata, errorMessage);\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],\\n     * but performing a delegate call.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {\\n        return functionDelegateCall(target, data, \\\"Address: low-level delegate call failed\\\");\\n    }\\n\\n    /**\\n     * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],\\n     * but performing a delegate call.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function functionDelegateCall(address target, bytes memory data, string memory errorMessage) internal returns (bytes memory) {\\n        require(isContract(target), \\\"Address: delegate call to non-contract\\\");\\n\\n        // solhint-disable-next-line avoid-low-level-calls\\n        (bool success, bytes memory returndata) = target.delegatecall(data);\\n        return _verifyCallResult(success, returndata, errorMessage);\\n    }\\n\\n    function _verifyCallResult(bool success, bytes memory returndata, string memory errorMessage) private pure returns(bytes memory) {\\n        if (success) {\\n            return returndata;\\n        } else {\\n            // Look for revert reason and bubble it up if present\\n            if (returndata.length > 0) {\\n                // The easiest way to bubble the revert reason is using memory via assembly\\n\\n                // solhint-disable-next-line no-inline-assembly\\n                assembly {\\n                    let returndata_size := mload(returndata)\\n                    revert(add(32, returndata), returndata_size)\\n                }\\n            } else {\\n                revert(errorMessage);\\n            }\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x28911e614500ae7c607a432a709d35da25f3bc5ddc8bd12b278b66358070c0ea\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Context.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.6.0 <0.8.0;\\n\\n/*\\n * @dev Provides information about the current execution context, including the\\n * sender of the transaction and its data. While these are generally available\\n * via msg.sender and msg.data, they should not be accessed in such a direct\\n * manner, since when dealing with GSN meta-transactions the account sending and\\n * paying for execution may not be the actual sender (as far as an application\\n * is concerned).\\n *\\n * This contract is only required for intermediate, library-like contracts.\\n */\\nabstract contract Context {\\n    function _msgSender() internal view virtual returns (address payable) {\\n        return msg.sender;\\n    }\\n\\n    function _msgData() internal view virtual returns (bytes memory) {\\n        this; // silence state mutability warning without generating bytecode - see https://github.com/ethereum/solidity/issues/2691\\n        return msg.data;\\n    }\\n}\\n\",\"keccak256\":\"0x8d3cb350f04ff49cfb10aef08d87f19dcbaecc8027b0bed12f3275cd12f38cf0\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/EnumerableSet.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n\\npragma solidity >=0.6.0 <0.8.0;\\n\\n/**\\n * @dev Library for managing\\n * https://en.wikipedia.org/wiki/Set_(abstract_data_type)[sets] of primitive\\n * types.\\n *\\n * Sets have the following properties:\\n *\\n * - Elements are added, removed, and checked for existence in constant time\\n * (O(1)).\\n * - Elements are enumerated in O(n). No guarantees are made on the ordering.\\n *\\n * ```\\n * contract Example {\\n *     // Add the library methods\\n *     using EnumerableSet for EnumerableSet.AddressSet;\\n *\\n *     // Declare a set state variable\\n *     EnumerableSet.AddressSet private mySet;\\n * }\\n * ```\\n *\\n * As of v3.3.0, sets of type `bytes32` (`Bytes32Set`), `address` (`AddressSet`)\\n * and `uint256` (`UintSet`) are supported.\\n */\\nlibrary EnumerableSet {\\n    // To implement this library for multiple types with as little code\\n    // repetition as possible, we write it in terms of a generic Set type with\\n    // bytes32 values.\\n    // The Set implementation uses private functions, and user-facing\\n    // implementations (such as AddressSet) are just wrappers around the\\n    // underlying Set.\\n    // This means that we can only create new EnumerableSets for types that fit\\n    // in bytes32.\\n\\n    struct Set {\\n        // Storage of set values\\n        bytes32[] _values;\\n\\n        // Position of the value in the `values` array, plus 1 because index 0\\n        // means a value is not in the set.\\n        mapping (bytes32 => uint256) _indexes;\\n    }\\n\\n    /**\\n     * @dev Add a value to a set. O(1).\\n     *\\n     * Returns true if the value was added to the set, that is if it was not\\n     * already present.\\n     */\\n    function _add(Set storage set, bytes32 value) private returns (bool) {\\n        if (!_contains(set, value)) {\\n            set._values.push(value);\\n            // The value is stored at length-1, but we add 1 to all indexes\\n            // and use 0 as a sentinel value\\n            set._indexes[value] = set._values.length;\\n            return true;\\n        } else {\\n            return false;\\n        }\\n    }\\n\\n    /**\\n     * @dev Removes a value from a set. O(1).\\n     *\\n     * Returns true if the value was removed from the set, that is if it was\\n     * present.\\n     */\\n    function _remove(Set storage set, bytes32 value) private returns (bool) {\\n        // We read and store the value's index to prevent multiple reads from the same storage slot\\n        uint256 valueIndex = set._indexes[value];\\n\\n        if (valueIndex != 0) { // Equivalent to contains(set, value)\\n            // To delete an element from the _values array in O(1), we swap the element to delete with the last one in\\n            // the array, and then remove the last element (sometimes called as 'swap and pop').\\n            // This modifies the order of the array, as noted in {at}.\\n\\n            uint256 toDeleteIndex = valueIndex - 1;\\n            uint256 lastIndex = set._values.length - 1;\\n\\n            // When the value to delete is the last one, the swap operation is unnecessary. However, since this occurs\\n            // so rarely, we still do the swap anyway to avoid the gas cost of adding an 'if' statement.\\n\\n            bytes32 lastvalue = set._values[lastIndex];\\n\\n            // Move the last value to the index where the value to delete is\\n            set._values[toDeleteIndex] = lastvalue;\\n            // Update the index for the moved value\\n            set._indexes[lastvalue] = toDeleteIndex + 1; // All indexes are 1-based\\n\\n            // Delete the slot where the moved value was stored\\n            set._values.pop();\\n\\n            // Delete the index for the deleted slot\\n            delete set._indexes[value];\\n\\n            return true;\\n        } else {\\n            return false;\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns true if the value is in the set. O(1).\\n     */\\n    function _contains(Set storage set, bytes32 value) private view returns (bool) {\\n        return set._indexes[value] != 0;\\n    }\\n\\n    /**\\n     * @dev Returns the number of values on the set. O(1).\\n     */\\n    function _length(Set storage set) private view returns (uint256) {\\n        return set._values.length;\\n    }\\n\\n   /**\\n    * @dev Returns the value stored at position `index` in the set. O(1).\\n    *\\n    * Note that there are no guarantees on the ordering of values inside the\\n    * array, and it may change when more values are added or removed.\\n    *\\n    * Requirements:\\n    *\\n    * - `index` must be strictly less than {length}.\\n    */\\n    function _at(Set storage set, uint256 index) private view returns (bytes32) {\\n        require(set._values.length > index, \\\"EnumerableSet: index out of bounds\\\");\\n        return set._values[index];\\n    }\\n\\n    // Bytes32Set\\n\\n    struct Bytes32Set {\\n        Set _inner;\\n    }\\n\\n    /**\\n     * @dev Add a value to a set. O(1).\\n     *\\n     * Returns true if the value was added to the set, that is if it was not\\n     * already present.\\n     */\\n    function add(Bytes32Set storage set, bytes32 value) internal returns (bool) {\\n        return _add(set._inner, value);\\n    }\\n\\n    /**\\n     * @dev Removes a value from a set. O(1).\\n     *\\n     * Returns true if the value was removed from the set, that is if it was\\n     * present.\\n     */\\n    function remove(Bytes32Set storage set, bytes32 value) internal returns (bool) {\\n        return _remove(set._inner, value);\\n    }\\n\\n    /**\\n     * @dev Returns true if the value is in the set. O(1).\\n     */\\n    function contains(Bytes32Set storage set, bytes32 value) internal view returns (bool) {\\n        return _contains(set._inner, value);\\n    }\\n\\n    /**\\n     * @dev Returns the number of values in the set. O(1).\\n     */\\n    function length(Bytes32Set storage set) internal view returns (uint256) {\\n        return _length(set._inner);\\n    }\\n\\n   /**\\n    * @dev Returns the value stored at position `index` in the set. O(1).\\n    *\\n    * Note that there are no guarantees on the ordering of values inside the\\n    * array, and it may change when more values are added or removed.\\n    *\\n    * Requirements:\\n    *\\n    * - `index` must be strictly less than {length}.\\n    */\\n    function at(Bytes32Set storage set, uint256 index) internal view returns (bytes32) {\\n        return _at(set._inner, index);\\n    }\\n\\n    // AddressSet\\n\\n    struct AddressSet {\\n        Set _inner;\\n    }\\n\\n    /**\\n     * @dev Add a value to a set. O(1).\\n     *\\n     * Returns true if the value was added to the set, that is if it was not\\n     * already present.\\n     */\\n    function add(AddressSet storage set, address value) internal returns (bool) {\\n        return _add(set._inner, bytes32(uint256(uint160(value))));\\n    }\\n\\n    /**\\n     * @dev Removes a value from a set. O(1).\\n     *\\n     * Returns true if the value was removed from the set, that is if it was\\n     * present.\\n     */\\n    function remove(AddressSet storage set, address value) internal returns (bool) {\\n        return _remove(set._inner, bytes32(uint256(uint160(value))));\\n    }\\n\\n    /**\\n     * @dev Returns true if the value is in the set. O(1).\\n     */\\n    function contains(AddressSet storage set, address value) internal view returns (bool) {\\n        return _contains(set._inner, bytes32(uint256(uint160(value))));\\n    }\\n\\n    /**\\n     * @dev Returns the number of values in the set. O(1).\\n     */\\n    function length(AddressSet storage set) internal view returns (uint256) {\\n        return _length(set._inner);\\n    }\\n\\n   /**\\n    * @dev Returns the value stored at position `index` in the set. O(1).\\n    *\\n    * Note that there are no guarantees on the ordering of values inside the\\n    * array, and it may change when more values are added or removed.\\n    *\\n    * Requirements:\\n    *\\n    * - `index` must be strictly less than {length}.\\n    */\\n    function at(AddressSet storage set, uint256 index) internal view returns (address) {\\n        return address(uint160(uint256(_at(set._inner, index))));\\n    }\\n\\n\\n    // UintSet\\n\\n    struct UintSet {\\n        Set _inner;\\n    }\\n\\n    /**\\n     * @dev Add a value to a set. O(1).\\n     *\\n     * Returns true if the value was added to the set, that is if it was not\\n     * already present.\\n     */\\n    function add(UintSet storage set, uint256 value) internal returns (bool) {\\n        return _add(set._inner, bytes32(value));\\n    }\\n\\n    /**\\n     * @dev Removes a value from a set. O(1).\\n     *\\n     * Returns true if the value was removed from the set, that is if it was\\n     * present.\\n     */\\n    function remove(UintSet storage set, uint256 value) internal returns (bool) {\\n        return _remove(set._inner, bytes32(value));\\n    }\\n\\n    /**\\n     * @dev Returns true if the value is in the set. O(1).\\n     */\\n    function contains(UintSet storage set, uint256 value) internal view returns (bool) {\\n        return _contains(set._inner, bytes32(value));\\n    }\\n\\n    /**\\n     * @dev Returns the number of values on the set. O(1).\\n     */\\n    function length(UintSet storage set) internal view returns (uint256) {\\n        return _length(set._inner);\\n    }\\n\\n   /**\\n    * @dev Returns the value stored at position `index` in the set. O(1).\\n    *\\n    * Note that there are no guarantees on the ordering of values inside the\\n    * array, and it may change when more values are added or removed.\\n    *\\n    * Requirements:\\n    *\\n    * - `index` must be strictly less than {length}.\\n    */\\n    function at(UintSet storage set, uint256 index) internal view returns (uint256) {\\n        return uint256(_at(set._inner, index));\\n    }\\n}\\n\",\"keccak256\":\"0x1562cd9922fbf739edfb979f506809e2743789cbde3177515542161c3d04b164\",\"license\":\"MIT\"},\"contracts/QuartzGovernor.sol\":{\"content\":\"pragma solidity 0.7.3;\\npragma experimental ABIEncoderV2;\\n\\nimport \\\"@openzeppelin/contracts/math/Math.sol\\\";\\nimport \\\"@openzeppelin/contracts/math/SafeMath.sol\\\";\\nimport \\\"@openzeppelin/contracts/access/AccessControl.sol\\\";\\nimport \\\"./interfaces/IQuartz.sol\\\";\\n\\ncontract QuartzGovernor is AccessControl {\\n    using SafeMath for uint256;\\n\\n    bytes32 public constant ADMIN_ROLE = keccak256(\\\"ADMIN_ROLE\\\");\\n    bytes32 public constant UPDATE_SETTINGS_ROLE =\\n        keccak256(\\\"UPDATE_SETTINGS_ROLE\\\");\\n    bytes32 public constant CREATE_PROPOSALS_ROLE =\\n        keccak256(\\\"CREATE_PROPOSALS_ROLE\\\");\\n    bytes32 public constant CANCEL_PROPOSAL_ROLE =\\n        keccak256(\\\"CANCEL_PROPOSAL_ROLE\\\");\\n\\n    uint256 public constant D = 10000000;\\n    uint256 public constant ONE_HUNDRED_PERCENT = 1e18;\\n    uint256 private constant TWO_128 = 0x100000000000000000000000000000000; // 2^128\\n    uint256 private constant TWO_127 = 0x80000000000000000000000000000000; // 2^127\\n    uint256 private constant TWO_64 = 0x10000000000000000; // 2^64\\n    uint256 public constant ABSTAIN_PROPOSAL_ID = 1;\\n    uint64 public constant MAX_STAKED_PROPOSALS = 10;\\n\\n    string private constant ERROR_PROPOSAL_DOES_NOT_EXIST =\\n        \\\"QG_PROPOSAL_DOES_NOT_EXIST\\\";\\n    string private constant ERROR_PROPOSAL_NOT_ACTIVE =\\n        \\\"QG_PROPOSAL_NOT_ACTIVE\\\";\\n    string private constant ERROR_CANNOT_EXECUTE_ABSTAIN_PROPOSAL =\\n        \\\"QG_CANNOT_EXECUTE_ABSTAIN_PROPOSAL\\\";\\n    string private constant ERROR_INSUFFICIENT_CONVICTION =\\n        \\\"QG_INSUFFICIENT_CONVICTION\\\";\\n    string private constant ERROR_SENDER_CANNOT_CANCEL =\\n        \\\"QG_SENDER_CANNOT_CANCEL\\\";\\n    string private constant ERROR_CANNOT_CANCEL_ABSTAIN_PROPOSAL =\\n        \\\"QG_CANNOT_CANCEL_ABSTAIN_PROPOSAL\\\";\\n    string private constant ERROR_AMOUNT_OVER_MAX_RATIO =\\n        \\\"QG_AMOUNT_OVER_MAX_RATIO\\\";\\n    string private constant ERROR_AMOUNT_CAN_NOT_BE_ZERO =\\n        \\\"QG_AMOUNT_CAN_NOT_BE_ZERO\\\";\\n    string private constant ERROR_VOTES_MORE_THAN_AVAILABLE =\\n        \\\"QG_VOTES_MORE_THAN_AVAILABLE\\\";\\n    string private constant ERROR_ALREADY_POSITIVE_VOTED =\\n        \\\"QG_ALREADY_POSITIVE_VOTED\\\";\\n    string private constant ERROR_ALREADY_NEGATIVE_VOTED =\\n        \\\"QG_ALREADY_NEGATIVE_VOTED\\\";\\n    string private constant ERROR_MAX_PROPOSALS_REACHED =\\n        \\\"QG_MAX_PROPOSALS_REACHED\\\";\\n    string private constant ERROR_WITHDRAW_MORE_THAN_VOTED =\\n        \\\"QG_WITHDRAW_MORE_THAN_VOTED\\\";\\n    string private constant ERROR_ONLY_QUARTZ = \\\"QG_ONLY_QUARTZ\\\";\\n    string private constant ERROR_AUTH_FAILED = \\\"QG_AUTH_FAILED\\\";\\n    string private constant ERROR_NOT_ENOUGH_INACTIVE_VOTES =\\n        \\\"QG_NOT_ENOUGH_INACTIVE_VOTES\\\";\\n    string private constant ERROR_NO_ENOUGH_VOTES = \\\"QG_NO_ENOUGH_VOTES\\\";\\n    string private constant ERROR_MIN_VOTES_TO_PASS_CAN_NOT_BE_ZERO =\\n        \\\"QG_MIN_VOTES_TO_PASS_CAN_NOT_BE_ZERO\\\";\\n\\n    enum ProposalStatus {\\n        Cancelled, // A vote that has been cancelled\\n        Active, // A vote that has been reported to Agreements\\n        Executed // A vote that has been executed\\n    }\\n\\n    struct Vote {\\n        uint256 id;\\n        uint256 totalVotes;\\n        uint256 convictionLast;\\n        uint256 blockLast;\\n    }\\n\\n    struct Proposal {\\n        Vote positiveVotes;\\n        Vote negativeVotes;\\n        ProposalStatus proposalStatus;\\n        address submitter;\\n    }\\n\\n    mapping(uint256 => mapping(address => uint256)) public userVotes;\\n    uint256 public lastVoteId;\\n\\n    IQuartz public immutable quartz;\\n    uint256 public decay;\\n    uint256 public maxRatio;\\n    uint256 public weight;\\n    uint256 public minThresholdStakePercentage;\\n    uint256 public minVotesToPass;\\n    uint256 public proposalCounter;\\n    uint256 public totalVotes;\\n\\n    mapping(uint256 => Proposal) internal proposals;\\n    mapping(address => uint256) internal totalUserVotes;\\n    mapping(address => uint256[]) internal voterCastedProposals;\\n    mapping(address => mapping(uint256 => uint256))\\n        internal userVotedProposalIds;\\n\\n    event ConvictionSettingsChanged(\\n        uint256 decay,\\n        uint256 maxRatio,\\n        uint256 weight,\\n        uint256 minThresholdStakePercentage,\\n        uint256 minVotesToPass\\n    );\\n    event ProposalAdded(\\n        address indexed entity,\\n        uint256 indexed id,\\n        string title,\\n        bytes link\\n    );\\n    event VoteCasted(\\n        address indexed entity,\\n        uint256 indexed id,\\n        uint256 amount,\\n        uint256 conviction,\\n        bool support\\n    );\\n    event VoteWithdrawn(\\n        address indexed entity,\\n        uint256 indexed id,\\n        uint256 amount,\\n        uint256 conviction,\\n        bool support\\n    );\\n    event ProposalExecuted(\\n        uint256 indexed id,\\n        uint256 positiveConviction,\\n        uint256 negativeConviction\\n    );\\n    event ProposalCancelled(uint256 indexed id);\\n\\n    modifier auth(bytes32 _role) {\\n        require(hasRole(_role, msg.sender), ERROR_AUTH_FAILED);\\n        _;\\n    }\\n\\n    modifier proposalExists(uint256 _proposalId) {\\n        require(\\n            _proposalId == ABSTAIN_PROPOSAL_ID ||\\n                proposals[_proposalId].submitter != address(0),\\n            ERROR_PROPOSAL_DOES_NOT_EXIST\\n        );\\n        _;\\n    }\\n\\n    modifier onlyQuartz() {\\n        require(msg.sender == address(quartz), ERROR_ONLY_QUARTZ);\\n        _;\\n    }\\n\\n    constructor(\\n        IQuartz _quartz,\\n        uint256 _decay,\\n        uint256 _maxRatio,\\n        uint256 _weight,\\n        uint256 _minThresholdStakePercentage,\\n        uint256 _minVotesToPass\\n    ) {\\n        _setRoleAdmin(UPDATE_SETTINGS_ROLE, ADMIN_ROLE);\\n        _setRoleAdmin(CREATE_PROPOSALS_ROLE, ADMIN_ROLE);\\n        _setRoleAdmin(CANCEL_PROPOSAL_ROLE, ADMIN_ROLE);\\n        _setupRole(ADMIN_ROLE, msg.sender);\\n\\n        quartz = _quartz;\\n        proposalCounter = ABSTAIN_PROPOSAL_ID.add(1); // First proposal should be #2, #1 is reserved for abstain proposal, #0 is not used for better UX.\\n        decay = _decay;\\n        maxRatio = _maxRatio;\\n        weight = _weight;\\n        minThresholdStakePercentage = _minThresholdStakePercentage;\\n        require(_minVotesToPass > 0, ERROR_MIN_VOTES_TO_PASS_CAN_NOT_BE_ZERO);\\n        minVotesToPass = _minVotesToPass;\\n\\n        Vote memory abstainVote1 =\\n            Vote({id: 1, totalVotes: 0, convictionLast: 0, blockLast: 0});\\n        Vote memory abstainVote2 =\\n            Vote({id: 2, totalVotes: 0, convictionLast: 0, blockLast: 0});\\n\\n        proposals[ABSTAIN_PROPOSAL_ID] = Proposal({\\n            positiveVotes: abstainVote1,\\n            negativeVotes: abstainVote2,\\n            proposalStatus: ProposalStatus.Active,\\n            submitter: address(0)\\n        });\\n\\n        lastVoteId = 2;\\n\\n        emit ProposalAdded(\\n            address(0),\\n            ABSTAIN_PROPOSAL_ID,\\n            \\\"Abstain proposal\\\",\\n            \\\"\\\"\\n        );\\n    }\\n\\n    /**\\n     * @notice Update the conviction voting parameters\\n     * @param _decay The rate at which conviction is accrued or lost from a proposal\\n     * @param _maxRatio Proposal threshold parameter\\n     * @param _weight Proposal threshold parameter\\n     * @param _minThresholdStakePercentage The minimum percent of stake token max supply that is used for calculating\\n        conviction\\n     * @param _minVotesToPass The minimum votes to be passed\\n     */\\n    function setConvictionCalculationSettings(\\n        uint256 _decay,\\n        uint256 _maxRatio,\\n        uint256 _weight,\\n        uint256 _minThresholdStakePercentage,\\n        uint256 _minVotesToPass\\n    ) public auth(UPDATE_SETTINGS_ROLE) {\\n        decay = _decay;\\n        maxRatio = _maxRatio;\\n        weight = _weight;\\n        minThresholdStakePercentage = _minThresholdStakePercentage;\\n\\n        require(_minVotesToPass > 0, ERROR_MIN_VOTES_TO_PASS_CAN_NOT_BE_ZERO);\\n        minVotesToPass = _minVotesToPass;\\n\\n        emit ConvictionSettingsChanged(\\n            _decay,\\n            _maxRatio,\\n            _weight,\\n            _minThresholdStakePercentage,\\n            _minVotesToPass\\n        );\\n    }\\n\\n    /**\\n     * @notice Add proposal\\n     * @param _title Title of the proposal\\n     * @param _link IPFS or HTTP link with proposal's description\\n     */\\n    function addProposal(string memory _title, bytes memory _link)\\n        external\\n        auth(CREATE_PROPOSALS_ROLE)\\n    {\\n        Vote memory emptyVote1 =\\n            Vote({\\n                id: lastVoteId.add(1),\\n                totalVotes: 0,\\n                convictionLast: 0,\\n                blockLast: 0\\n            });\\n        Vote memory emptyVote2 =\\n            Vote({\\n                id: lastVoteId.add(2),\\n                totalVotes: 0,\\n                convictionLast: 0,\\n                blockLast: 0\\n            });\\n\\n        proposals[proposalCounter] = Proposal({\\n            positiveVotes: emptyVote1,\\n            negativeVotes: emptyVote2,\\n            proposalStatus: ProposalStatus.Active,\\n            submitter: msg.sender\\n        });\\n\\n        lastVoteId = lastVoteId.add(2);\\n\\n        emit ProposalAdded(msg.sender, proposalCounter, _title, _link);\\n        proposalCounter = proposalCounter.add(1);\\n    }\\n\\n    /**\\n     * @notice Cast votes on proposal\\n     * @param _proposalId Proposal id\\n     * @param _amount Amount of votes to cast\\n     * @param _support Positive or negative\\n     */\\n    function castVotes(\\n        uint256 _proposalId,\\n        uint256 _amount,\\n        bool _support\\n    ) external {\\n        _castVotes(_proposalId, _amount, msg.sender, _support);\\n    }\\n\\n    /**\\n     * @notice Cast all available votes to proposal\\n     * @param _proposalId Proposal id\\n     * @param _support Positive or negative\\n     */\\n    function castAllVotes(uint256 _proposalId, bool _support) external {\\n        _castVotes(\\n            _proposalId,\\n            quartz.getCurrentVotes(msg.sender),\\n            msg.sender,\\n            _support\\n        );\\n    }\\n\\n    /**\\n     * @notice Withdraw votes from proposal\\n     * @param _proposalId Proposal id\\n     * @param _amount Amount of votes to withdraw\\n     * @param _support Positive or negative\\n     */\\n    function withdrawVotes(\\n        uint256 _proposalId,\\n        uint256 _amount,\\n        bool _support\\n    ) external proposalExists(_proposalId) {\\n        _withdrawVotesFromProposal(_proposalId, _amount, msg.sender, _support);\\n    }\\n\\n    /**\\n     * @notice Withdraw all votes from executed or cancelled proposal\\n     */\\n    function withdrawAllInactiveVotes()\\n        external\\n        returns (uint256 withdrawnAmount)\\n    {\\n        withdrawnAmount = _withdrawInactiveVotes(0, msg.sender);\\n    }\\n\\n    /**\\n     * @dev Withdraw votes from executed or cancelled proposals until a target amount is reached.\\n     * @param _targetAmount Target at which to stop withdrawing tokens\\n     * @param _from Account to withdraw from\\n     */\\n    function _withdrawInactiveVotes(uint256 _targetAmount, address _from)\\n        internal\\n        returns (uint256 withdrawnAmount)\\n    {\\n        uint256 i;\\n        uint256[] memory voterCastedProposalsCopy = voterCastedProposals[_from];\\n\\n        while (\\n            i < voterCastedProposalsCopy.length &&\\n            (_targetAmount == 0 || withdrawnAmount < _targetAmount)\\n        ) {\\n            uint256 proposalId = voterCastedProposalsCopy[i];\\n            Proposal storage proposal = proposals[proposalId];\\n\\n            if (proposal.proposalStatus != ProposalStatus.Active) {\\n                uint256 toWithdraw =\\n                    userVotes[proposal.positiveVotes.id][_from].add(\\n                        userVotes[proposal.negativeVotes.id][_from]\\n                    );\\n                if (toWithdraw > 0) {\\n                    _withdrawVotesFromProposal(\\n                        proposalId,\\n                        toWithdraw,\\n                        _from,\\n                        userVotes[proposal.positiveVotes.id][_from] > 0\\n                            ? true\\n                            : false\\n                    );\\n                    withdrawnAmount = withdrawnAmount.add(toWithdraw);\\n                }\\n            }\\n            i += 1;\\n        }\\n    }\\n\\n    /**\\n     * @dev Withdraw votes from active proposals until a target amount is reached.\\n     * @param _targetAmount Target at which to stop withdrawing tokens\\n     * @param _from Account to withdraw from\\n     */\\n    function _withdrawActiveVotes(uint256 _targetAmount, address _from)\\n        internal\\n        returns (uint256 withdrawnAmount)\\n    {\\n        uint256 i;\\n        uint256[] memory voterCastedProposalsCopy = voterCastedProposals[_from];\\n\\n        while (\\n            i < voterCastedProposalsCopy.length &&\\n            withdrawnAmount < _targetAmount\\n        ) {\\n            uint256 proposalId = voterCastedProposalsCopy[i];\\n            Proposal storage proposal = proposals[proposalId];\\n\\n            if (proposal.proposalStatus == ProposalStatus.Active) {\\n                // In active proposals, we only subtract the needed amount to reach the target\\n                uint256 toWithdraw =\\n                    Math.min(\\n                        _targetAmount.sub(withdrawnAmount),\\n                        userVotes[proposal.positiveVotes.id][_from].add(\\n                            userVotes[proposal.negativeVotes.id][_from]\\n                        )\\n                    );\\n                if (toWithdraw > 0) {\\n                    _withdrawVotesFromProposal(\\n                        proposalId,\\n                        toWithdraw,\\n                        _from,\\n                        userVotes[proposal.positiveVotes.id][_from] > 0\\n                            ? true\\n                            : false\\n                    );\\n                    withdrawnAmount = withdrawnAmount.add(toWithdraw);\\n                }\\n            }\\n            i += 1;\\n        }\\n    }\\n\\n    /**\\n     * @notice Withdraw all votes from proposal\\n     * @param _proposalId Proposal id\\n     * @param _support Positive or negative\\n     */\\n    function withdrawAllVotesFromProposal(uint256 _proposalId, bool _support)\\n        external\\n        proposalExists(_proposalId)\\n    {\\n        _withdrawVotesFromProposal(\\n            _proposalId,\\n            _support\\n                ? userVotes[proposals[_proposalId].positiveVotes.id][msg.sender]\\n                : userVotes[proposals[_proposalId].negativeVotes.id][\\n                    msg.sender\\n                ],\\n            msg.sender,\\n            _support\\n        );\\n    }\\n\\n    /**\\n     * @notice Execute proposal #`_proposalId`\\n     * @param _proposalId Proposal id\\n     */\\n    function executeProposal(uint256 _proposalId)\\n        external\\n        proposalExists(_proposalId)\\n    {\\n        Proposal storage proposal = proposals[_proposalId];\\n\\n        require(\\n            _proposalId != ABSTAIN_PROPOSAL_ID,\\n            ERROR_CANNOT_EXECUTE_ABSTAIN_PROPOSAL\\n        );\\n        require(\\n            proposal.proposalStatus == ProposalStatus.Active,\\n            ERROR_PROPOSAL_NOT_ACTIVE\\n        );\\n        Vote storage positiveVotes = proposal.positiveVotes;\\n        Vote storage negativeVotes = proposal.negativeVotes;\\n        _calculateAndSetConviction(positiveVotes, positiveVotes.totalVotes);\\n        _calculateAndSetConviction(negativeVotes, negativeVotes.totalVotes);\\n\\n        require(\\n            positiveVotes.convictionLast > negativeVotes.convictionLast &&\\n                positiveVotes.convictionLast.sub(\\n                    negativeVotes.convictionLast\\n                ) >=\\n                calculateThreshold(),\\n            ERROR_INSUFFICIENT_CONVICTION\\n        );\\n\\n        proposal.proposalStatus = ProposalStatus.Executed;\\n\\n        emit ProposalExecuted(\\n            _proposalId,\\n            proposal.positiveVotes.convictionLast,\\n            proposal.negativeVotes.convictionLast\\n        );\\n    }\\n\\n    /**\\n     * @notice Cancel proposal #`_proposalId`\\n     * @param _proposalId Proposal id\\n     */\\n    function cancelProposal(uint256 _proposalId)\\n        external\\n        proposalExists(_proposalId)\\n    {\\n        Proposal storage proposal = proposals[_proposalId];\\n\\n        bool senderHasPermission = hasRole(CANCEL_PROPOSAL_ROLE, msg.sender);\\n        require(\\n            proposal.submitter == msg.sender || senderHasPermission,\\n            ERROR_SENDER_CANNOT_CANCEL\\n        );\\n        require(\\n            _proposalId != ABSTAIN_PROPOSAL_ID,\\n            ERROR_CANNOT_CANCEL_ABSTAIN_PROPOSAL\\n        );\\n        require(\\n            proposal.proposalStatus == ProposalStatus.Active,\\n            ERROR_PROPOSAL_NOT_ACTIVE\\n        );\\n\\n        proposal.proposalStatus = ProposalStatus.Cancelled;\\n\\n        emit ProposalCancelled(_proposalId);\\n    }\\n\\n    /**\\n     * @dev Get proposal details\\n     * @param _proposalId Proposal id\\n     * @return positiveVotes Positive votes info\\n     * @return negativeVotes Negative votes info\\n     * @return proposalStatus ProposalStatus defining the state of the proposal\\n     * @return submitter Submitter of the proposal\\n     */\\n    function getProposal(uint256 _proposalId)\\n        external\\n        view\\n        returns (\\n            Vote memory positiveVotes,\\n            Vote memory negativeVotes,\\n            ProposalStatus proposalStatus,\\n            address submitter\\n        )\\n    {\\n        Proposal storage proposal = proposals[_proposalId];\\n        return (\\n            proposal.positiveVotes,\\n            proposal.negativeVotes,\\n            proposal.proposalStatus,\\n            proposal.submitter\\n        );\\n    }\\n\\n    /**\\n     * @notice Get stake of voter `_voter` on proposal #`_proposalId`\\n     * @param _proposalId Proposal id\\n     * @param _voter Voter address\\n     * @return Positive user votes\\n     * @return Negative user votes\\n     */\\n    function getProposalUserVotes(uint256 _proposalId, address _voter)\\n        external\\n        view\\n        returns (uint256, uint256)\\n    {\\n        return (\\n            userVotes[proposals[_proposalId].positiveVotes.id][_voter],\\n            userVotes[proposals[_proposalId].negativeVotes.id][_voter]\\n        );\\n    }\\n\\n    /**\\n     * @notice Get the total votes of voter `_voter` on all proposals\\n     * @param _voter Voter address\\n     * @return Total user votes\\n     */\\n    function getTotalUserVotes(address _voter) external view returns (uint256) {\\n        return totalUserVotes[_voter];\\n    }\\n\\n    /**\\n     * @notice Get all proposal ID's voter `_voter` has currently voted\\n     * @param _voter Voter address\\n     * @return Voter proposals\\n     */\\n    function getVoterCastedProposals(address _voter)\\n        external\\n        view\\n        returns (uint256[] memory)\\n    {\\n        return voterCastedProposals[_voter];\\n    }\\n\\n    /**\\n     * @dev Calculate conviction and store it on the proposal\\n     * @param _vote Vote\\n     * @param _oldVote Amount of votes on a proposal until now\\n     */\\n    function _calculateAndSetConviction(Vote storage _vote, uint256 _oldVote)\\n        internal\\n    {\\n        uint256 blockNumber = block.number;\\n        assert(_vote.blockLast <= blockNumber);\\n        if (_vote.blockLast == blockNumber) {\\n            return; // Conviction already stored\\n        }\\n        // calculateConviction and store it\\n        uint256 conviction =\\n            calculateConviction(\\n                blockNumber - _vote.blockLast, // we assert it doesn't overflow above\\n                _vote.convictionLast,\\n                _oldVote\\n            );\\n        _vote.blockLast = blockNumber;\\n        _vote.convictionLast = conviction;\\n    }\\n\\n    /**\\n     * @dev Stake an amount of tokens on a proposal\\n     * @param _proposalId Proposal id\\n     * @param _amount Amount of staked tokens\\n     * @param _from Account from which we stake\\n     */\\n    function _castVotes(\\n        uint256 _proposalId,\\n        uint256 _amount,\\n        address _from,\\n        bool _support\\n    ) internal proposalExists(_proposalId) {\\n        Proposal storage proposal = proposals[_proposalId];\\n        require(_amount > 0, ERROR_AMOUNT_CAN_NOT_BE_ZERO);\\n        require(\\n            proposal.proposalStatus == ProposalStatus.Active,\\n            ERROR_PROPOSAL_NOT_ACTIVE\\n        );\\n\\n        quartz.moveVotesToGovernor(_from, _amount);\\n\\n        Vote storage votes;\\n\\n        if (_support) {\\n            require(\\n                userVotes[proposal.negativeVotes.id][_from] == 0,\\n                ERROR_ALREADY_NEGATIVE_VOTED\\n            );\\n            votes = proposal.positiveVotes;\\n        } else {\\n            require(\\n                userVotes[proposal.positiveVotes.id][_from] == 0,\\n                ERROR_ALREADY_POSITIVE_VOTED\\n            );\\n            votes = proposal.negativeVotes;\\n        }\\n        uint256 previousVote = votes.totalVotes;\\n        votes.totalVotes = previousVote.add(_amount);\\n        userVotes[votes.id][_from] = userVotes[votes.id][_from].add(_amount);\\n        totalUserVotes[_from] = totalUserVotes[_from].add(_amount);\\n        totalVotes = totalVotes.add(_amount);\\n\\n        if (votes.blockLast == 0) {\\n            votes.blockLast = block.number;\\n        } else {\\n            _calculateAndSetConviction(votes, previousVote);\\n        }\\n\\n        _updateVoterCastedProposals(_proposalId, _from);\\n\\n        emit VoteCasted(\\n            _from,\\n            _proposalId,\\n            _amount,\\n            votes.convictionLast,\\n            _support\\n        );\\n    }\\n\\n    function _updateVoterCastedProposals(\\n        uint256 _proposalId,\\n        address _submitter\\n    ) internal {\\n        uint256[] storage voterCastedProposalsArray =\\n            voterCastedProposals[_submitter];\\n\\n        if (userVotedProposalIds[_submitter][_proposalId] == 0) {\\n            require(\\n                voterCastedProposalsArray.length < MAX_STAKED_PROPOSALS,\\n                ERROR_MAX_PROPOSALS_REACHED\\n            );\\n            voterCastedProposalsArray.push(_proposalId);\\n            userVotedProposalIds[_submitter][\\n                _proposalId\\n            ] = voterCastedProposalsArray.length;\\n        }\\n    }\\n\\n    /**\\n     * @dev Withdraw an amount of tokens from a proposal\\n     * @param _proposalId Proposal id\\n     * @param _amount Amount of withdrawn tokens\\n     * @param _from Account to withdraw from\\n     * @param _support Positive or negative\\n     */\\n    function _withdrawVotesFromProposal(\\n        uint256 _proposalId,\\n        uint256 _amount,\\n        address _from,\\n        bool _support\\n    ) internal {\\n        Proposal storage proposal = proposals[_proposalId];\\n        Vote storage votes =\\n            _support ? proposal.positiveVotes : proposal.negativeVotes;\\n\\n        require(\\n            userVotes[votes.id][_from] >= _amount,\\n            ERROR_WITHDRAW_MORE_THAN_VOTED\\n        );\\n        require(_amount > 0, ERROR_AMOUNT_CAN_NOT_BE_ZERO);\\n\\n        quartz.moveVotesFromGovernor(_from, _amount);\\n        uint256 previousVote = votes.totalVotes;\\n\\n        votes.totalVotes = previousVote.sub(_amount);\\n        userVotes[votes.id][_from] = userVotes[votes.id][_from].sub(_amount);\\n        totalUserVotes[_from] = totalUserVotes[_from].sub(_amount);\\n        totalVotes = totalVotes.sub(_amount);\\n\\n        if (userVotes[votes.id][_from] == 0) {\\n            uint256 index = userVotedProposalIds[_from][_proposalId].sub(1);\\n            userVotedProposalIds[_from][_proposalId] = 0;\\n            uint256 lastIndex = voterCastedProposals[_from].length.sub(1);\\n            uint256 lastProposalId = voterCastedProposals[_from][lastIndex];\\n            voterCastedProposals[_from][index] = lastProposalId;\\n            userVotedProposalIds[_from][lastProposalId] = index.add(1);\\n\\n            voterCastedProposals[_from].pop();\\n        }\\n\\n        if (proposal.proposalStatus == ProposalStatus.Active) {\\n            _calculateAndSetConviction(votes, previousVote);\\n        }\\n\\n        emit VoteWithdrawn(\\n            _from,\\n            _proposalId,\\n            _amount,\\n            votes.convictionLast,\\n            _support\\n        );\\n    }\\n\\n    /**\\n     * @dev Conviction formula: a^t * y(0) + x * (1 - a^t) / (1 - a)\\n     * Solidity implementation: y = (2^128 * a^t * y0 + x * D * (2^128 - 2^128 * a^t) / (D - aD) + 2^127) / 2^128\\n     * @param _timePassed Number of blocks since last conviction record\\n     * @param _lastConv Last conviction record\\n     * @param _oldAmount Amount of tokens staked until now\\n     * @return Current conviction\\n     */\\n    function calculateConviction(\\n        uint256 _timePassed,\\n        uint256 _lastConv,\\n        uint256 _oldAmount\\n    ) public view returns (uint256) {\\n        uint256 t = uint256(_timePassed);\\n        // atTWO_128 = 2^128 * a^t\\n        uint256 atTWO_128 = _pow((decay << 128).div(D), t);\\n        // solium-disable-previous-line\\n        // conviction = (atTWO_128 * _lastConv + _oldAmount * D * (2^128 - atTWO_128) / (D - aD) + 2^127) / 2^128\\n        return\\n            (\\n                atTWO_128.mul(_lastConv).add(\\n                    _oldAmount.mul(D).mul(TWO_128.sub(atTWO_128)).div(D - decay)\\n                )\\n            )\\n                .add(TWO_127) >> 128;\\n    }\\n\\n    /**\\n     * @dev Formula: \\u03c1 * totalStaked / (1 - a) / (\\u03b2 - minVotesToPass / total)**2\\n     * For the Solidity implementation we amplify \\u03c1 and \\u03b2 and simplify the formula:\\n     * weight = \\u03c1 * D\\n     * maxRatio = \\u03b2 * D\\n     * decay = a * D\\n     * threshold = weight * totalStaked * D ** 2 * funds ** 2 / (D - decay) / (maxRatio * funds - minVotesToPass * D) ** 2\\n     * @return _threshold Threshold a proposal's conviction should surpass in order to be able to\\n     * executed it.\\n     */\\n    function calculateThreshold() public view returns (uint256 _threshold) {\\n        uint256 funds = quartz.totalStaked();\\n        require(\\n            maxRatio.mul(funds) > minVotesToPass.mul(D),\\n            ERROR_AMOUNT_OVER_MAX_RATIO\\n        );\\n        // denom = maxRatio * 2 ** 64 / D  - minVotesToPass * 2 ** 64 / funds\\n        uint256 denom =\\n            (maxRatio << 64).div(D).sub((minVotesToPass << 64).div(funds));\\n        // _threshold = (weight * 2 ** 128 / D) / (denom ** 2 / 2 ** 64) * totalStaked * D / 2 ** 128\\n        _threshold =\\n            ((weight << 128).div(D).div(denom.mul(denom) >> 64))\\n                .mul(D)\\n                .div(D.sub(decay))\\n                .mul(_totalVotes()) >>\\n            64;\\n    }\\n\\n    function _totalVotes() internal view returns (uint256) {\\n        uint256 minTotalVotes =\\n            (quartz.totalStaked().mul(minThresholdStakePercentage)).div(\\n                ONE_HUNDRED_PERCENT\\n            );\\n        return totalVotes < minTotalVotes ? minTotalVotes : totalVotes;\\n    }\\n\\n    /**\\n     * @dev Withdraw required votes to move delegates\\n     */\\n    function withdrawRequiredVotes(\\n        address _from,\\n        uint256 _amount,\\n        bool force\\n    ) external onlyQuartz {\\n        uint256 inactiveWithdrawn = _withdrawInactiveVotes(_amount, _from);\\n        if (inactiveWithdrawn < _amount) {\\n            require(force, ERROR_NOT_ENOUGH_INACTIVE_VOTES);\\n            uint256 activeWithdrawn =\\n                _withdrawActiveVotes(_amount.sub(inactiveWithdrawn), _from);\\n            require(\\n                inactiveWithdrawn.add(activeWithdrawn) >= _amount,\\n                ERROR_NO_ENOUGH_VOTES\\n            );\\n        }\\n    }\\n\\n    /**\\n     * Multiply _a by _b / 2^128.  Parameter _a should be less than or equal to\\n     * 2^128 and parameter _b should be less than 2^128.\\n     * @param _a left argument\\n     * @param _b right argument\\n     * @return _result _a * _b / 2^128\\n     */\\n    function _mul(uint256 _a, uint256 _b)\\n        internal\\n        pure\\n        returns (uint256 _result)\\n    {\\n        require(_a <= TWO_128, \\\"_a should be less than or equal to 2^128\\\");\\n        require(_b < TWO_128, \\\"_b should be less than 2^128\\\");\\n        return _a.mul(_b).add(TWO_127) >> 128;\\n    }\\n\\n    /**\\n     * Calculate (_a / 2^128)^_b * 2^128.  Parameter _a should be less than 2^128.\\n     *\\n     * @param _a left argument\\n     * @param _b right argument\\n     * @return _result (_a / 2^128)^_b * 2^128\\n     */\\n    function _pow(uint256 _a, uint256 _b)\\n        internal\\n        pure\\n        returns (uint256 _result)\\n    {\\n        require(_a < TWO_128, \\\"_a should be less than 2^128\\\");\\n        uint256 a = _a;\\n        uint256 b = _b;\\n        _result = TWO_128;\\n        while (b > 0) {\\n            if (b & 1 == 0) {\\n                a = _mul(a, a);\\n                b >>= 1;\\n            } else {\\n                _result = _mul(_result, a);\\n                b -= 1;\\n            }\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x64d356c90fd0aedc4a2a57e3055d173a9940747f5ee59fc2f5c9ad7ad209f263\"},\"contracts/interfaces/IQuartz.sol\":{\"content\":\"pragma solidity 0.7.3;\\n\\ninterface IQuartz {\\n    function moveVotesToGovernor(address user, uint256 amount) external;\\n\\n    function moveVotesFromGovernor(address user, uint256 amount) external;\\n\\n    function getCurrentVotes(address account) external view returns (uint256);\\n\\n    function totalStaked() external view returns (uint256);\\n}\\n\",\"keccak256\":\"0x83abedd07b8fb2cc17ea3eb0a0c30ad622176fef1fcc0d932e395bf550bff2e4\"}},\"version\":1}",
+  "bytecode": "0x60a06040523480156200001157600080fd5b5060405162003660380380620036608339810160408190526200003491620005de565b6200006f7f9d4f140430c9045e12b5a104aa9e641c09b980a26ab8e12a32a2f3d155229ae36000805160206200364083398151915262000428565b620000aa7fbf05b9322505d747ab5880dfb677dc4864381e9fc3a25ccfa184a3a53d02f4b26000805160206200364083398151915262000428565b620000e57f3e317d8f3de745777f176274dda437b0b9bbbe0704f48e9be1821136c177b9336000805160206200364083398151915262000428565b6200010060008051602062003640833981519152336200047a565b606086901b6001600160601b0319166080526200012b6001806200048a602090811b620015ea17901c565b60085560038590556004849055600583905560068290556040805160608101909152602480825282151591906200361c6020830139906200018a5760405162461bcd60e51b81526004016200018191906200063d565b60405180910390fd5b5060078190556200019a620005b6565b604051806080016040528060018152602001600081526020016000815260200160008152509050620001cb620005b6565b6040518060800160405280600281526020016000815260200160008152602001600081525090506040518060800160405280838152602001828152602001600160028111156200021757fe5b815260006020918201819052600190819052600a8252825180517fbbc70db1b6c7afd11e79c0fb0051300458f1a3acb8ee9789d9b6b26c61ad9bc7908155818401517fbbc70db1b6c7afd11e79c0fb0051300458f1a3acb8ee9789d9b6b26c61ad9bc8556040828101517fbbc70db1b6c7afd11e79c0fb0051300458f1a3acb8ee9789d9b6b26c61ad9bc9556060928301517fbbc70db1b6c7afd11e79c0fb0051300458f1a3acb8ee9789d9b6b26c61ad9bca558585015180517fbbc70db1b6c7afd11e79c0fb0051300458f1a3acb8ee9789d9b6b26c61ad9bcb55948501517fbbc70db1b6c7afd11e79c0fb0051300458f1a3acb8ee9789d9b6b26c61ad9bcc55848101517fbbc70db1b6c7afd11e79c0fb0051300458f1a3acb8ee9789d9b6b26c61ad9bcd5593909101517fbbc70db1b6c7afd11e79c0fb0051300458f1a3acb8ee9789d9b6b26c61ad9bce55918301517fbbc70db1b6c7afd11e79c0fb0051300458f1a3acb8ee9789d9b6b26c61ad9bcf80549192909160ff191690836002811115620003a357fe5b021790555060609190910151600890910180546001600160a01b0390921661010002610100600160a81b0319909216919091179055600280556040516001906000907f1ae6f721faa65aa5050175f30956a86dac475b9493b7f5719fd4ecee9beadec7906200041290620006ca565b60405180910390a3505050505050505062000703565b600082815260208190526040808220600201549051839285917fbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff9190a460009182526020829052604090912060020155565b620004868282620004bb565b5050565b600082820183811015620004b25760405162461bcd60e51b8152600401620001819062000693565b90505b92915050565b600082815260208181526040909120620004e09183906200160f62000534821b17901c565b156200048657620004f06200054b565b6001600160a01b0316816001600160a01b0316837f2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d60405160405180910390a45050565b6000620004b2836001600160a01b0384166200054f565b3390565b60006200055d83836200059e565b6200059557508154600181810184556000848152602080822090930184905584548482528286019093526040902091909155620004b5565b506000620004b5565b60009081526001919091016020526040902054151590565b6040518060800160405280600081526020016000815260200160008152602001600081525090565b60008060008060008060c08789031215620005f7578182fd5b86516001600160a01b03811681146200060e578283fd5b6020880151604089015160608a015160808b015160a0909b0151939c929b509099909850965090945092505050565b6000602080835283518082850152825b818110156200066b578581018301518582016040015282016200064d565b818111156200067d5783604083870101525b50601f01601f1916929092016040019392505050565b6020808252601b908201527f536166654d6174683a206164646974696f6e206f766572666c6f770000000000604082015260600190565b60408082526010908201526f10589cdd185a5b881c1c9bdc1bdcd85b60821b606082015260806020820181905260009082015260a00190565b60805160601c612edd6200073f600039806107555280610c355280610ec95280610fe4528061171a52806119ed5280611def5250612edd6000f3fe608060405234801561001057600080fd5b506004361061025e5760003560e01c80639010d07c11610146578063c7f758a8116100c3578063dd0081c711610087578063dd0081c7146104b3578063e085f498146104bb578063e0a8f6f5146104ce578063e0f7a175146104e1578063eeabf67e146104f4578063fe5b3e3b146104fc5761025e565b8063c7f758a81461044f578063ca15c87314610472578063cba7f62314610485578063d547741f14610498578063db2d878c146104ab5761025e565b8063a217fddf1161010a578063a217fddf14610411578063a2216c6714610419578063a3a3d20d1461042c578063c0d22e941461043f578063c1f72c84146104475761025e565b80639010d07c146103ae57806391d14854146103ce57806397a33a06146103ee578063984dfead14610401578063a1aab33f146104095761025e565b8063346db8cb116101df57806354fac919116101a357806354fac9191461035b57806375b238fc1461036357806376365af71461036b5780637dc49c2b14610373578063865a7607146103865780638af07b10146103a65761025e565b8063346db8cb146103055780633482eef11461031857806336568abe1461032b578063406244d81461033e5780634f629fbb146103535761025e565b80631522eb43116102265780631522eb43146102ae5780631bc28ea0146102b6578063248a9ca3146102be5780632f2ff15d146102d157806333132a50146102e45761025e565b80630c0512e9146102635780630d15fd77146102815780630d61b519146102895780630eb3813a1461029e5780630f529ba2146102a6575b600080fd5b61026b61050f565b6040516102789190612a64565b60405180910390f35b61026b610515565b61029c6102973660046127e8565b61051b565b005b61026b610750565b61026b6108f5565b61026b6108fc565b61026b610901565b61026b6102cc3660046127e8565b610907565b61029c6102df366004612800565b61091f565b6102f76102f2366004612800565b610967565b604051610278929190612dc2565b61026b610313366004612912565b6109b6565b61029c6103263660046128e7565b610a37565b61029c610339366004612800565b610a48565b610346610a8a565b6040516102789190612e0b565b61026b610a8f565b61026b610ab3565b61026b610ab9565b61026b610add565b61029c6103813660046128e7565b610ae3565b610399610394366004612793565b610b66565b6040516102789190612a15565b61026b610bd2565b6103c16103bc36600461282b565b610bf6565b60405161027891906129e8565b6103e16103dc366004612800565b610c17565b6040516102789190612a59565b61029c6103fc3660046128c5565b610c2f565b61026b610cd6565b61026b610cdc565b61026b610ce2565b61029c6104273660046128c5565b610ce7565b61029c61043a36600461293d565b610db9565b6103c1610ec7565b61026b610eeb565b61046261045d3660046127e8565b610efd565b6040516102789493929190612d7a565b61026b6104803660046127e8565b610f9d565b61029c6104933660046127ad565b610fb4565b61029c6104a6366004612800565b611101565b61026b61113b565b61026b611141565b61029c6104c936600461284c565b61114d565b61029c6104dc3660046127e8565b611391565b61026b6104ef366004612793565b61158e565b61026b6115a9565b61026b61050a366004612800565b6115cd565b60085481565b60095481565b80600181148061054957506000818152600a602052604090206008015461010090046001600160a01b031615155b6040518060400160405280601a8152602001600080516020612e21833981519152815250906105945760405162461bcd60e51b815260040161058b9190612a6d565b60405180910390fd5b506000600a600084815260200190815260200160002090506001831415604051806060016040528060228152602001612e6560229139906105e85760405162461bcd60e51b815260040161058b9190612a6d565b506001600882015460ff1660028111156105fe57fe5b146040518060400160405280601681526020017551475f50524f504f53414c5f4e4f545f41435449564560501b8152509061064c5760405162461bcd60e51b815260040161058b9190612a6d565b50600181015481906004820190610664908390611624565b610672818260010154611624565b806002015482600201541180156106a2575061068c610750565b6002808301549084015461069f9161166f565b10155b6040518060400160405280601a81526020017f51475f494e53554646494349454e545f434f4e56494354494f4e000000000000815250906106f65760405162461bcd60e51b815260040161058b9190612a6d565b5060088301805460ff19166002908117909155830154600684015460405187927f3842d9e8746c3c1b0c5e717a88df9c9ae97f2f8c0e01e42dce160aafdb3840e99261074192612dc2565b60405180910390a25050505050565b6000807f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663817b1cd26040518163ffffffff1660e01b815260040160206040518083038186803b1580156107ac57600080fd5b505afa1580156107c0573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906107e491906128ad565b6007549091506107f79062989680611697565b6004546108049083611697565b116040518060400160405280601881526020017f51475f414d4f554e545f4f5645525f4d41585f524154494f0000000000000000815250906108595760405162461bcd60e51b815260040161058b9190612a6d565b5060075460009061088a906108719060401b846116d1565b6004546108849060401b629896806116d1565b9061166f565b905060406108ec610899611703565b6108e66108b46003546298968061166f90919063ffffffff16565b6108e0629896806108e660406108ca8a80611697565b600554911c906108e09060801b629896806116d1565b906116d1565b90611697565b901c9250505090565b6298968081565b600181565b60025481565b6000818152602081905260409020600201545b919050565b60008281526020819052604090206002015461093d906103dc6117c4565b6109595760405162461bcd60e51b815260040161058b90612af0565b61096382826117c8565b5050565b6000918252600a602090815260408084208054855260018084528286206001600160a01b0395909516808752948452828620546004909201548652835281852093855292909152909120549091565b600354600090849082906109da906109d49060801b629896806116d1565b83611831565b90506080610a2b6001607f1b610a25610a1b60035462989680036108e0610a0e88600160801b61166f90919063ffffffff16565b6108e68c62989680611697565b610a25868b611697565b906115ea565b901c9695505050505050565b610a438383338461189f565b505050565b610a506117c4565b6001600160a01b0316816001600160a01b031614610a805760405162461bcd60e51b815260040161058b90612d2b565b6109638282611c82565b600a81565b7f9d4f140430c9045e12b5a104aa9e641c09b980a26ab8e12a32a2f3d155229ae381565b60035481565b7fa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c2177581565b60045481565b826001811480610b1157506000818152600a602052604090206008015461010090046001600160a01b031615155b6040518060400160405280601a8152602001600080516020612e2183398151915281525090610b535760405162461bcd60e51b815260040161058b9190612a6d565b50610b6084843385611ceb565b50505050565b6001600160a01b0381166000908152600c6020908152604091829020805483518184028101840190945280845260609392830182828015610bc657602002820191906000526020600020905b815481526020019060010190808311610bb2575b50505050509050919050565b7f3e317d8f3de745777f176274dda437b0b9bbbe0704f48e9be1821136c177b93381565b6000828152602081905260408120610c0e90836120de565b90505b92915050565b6000828152602081905260408120610c0e90836120ea565b610963827f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663b4b5ea57336040518263ffffffff1660e01b8152600401610c7f91906129e8565b60206040518083038186803b158015610c9757600080fd5b505afa158015610cab573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190610ccf91906128ad565b338461189f565b60075481565b60055481565b600081565b816001811480610d1557506000818152600a602052604090206008015461010090046001600160a01b031615155b6040518060400160405280601a8152602001600080516020612e2183398151915281525090610d575760405162461bcd60e51b815260040161058b9190612a6d565b50610a438383610d8d576000858152600a6020908152604080832060040154835260018252808320338452909152902054610db2565b6000858152600a60209081526040808320548352600182528083203384529091529020545b3385611ceb565b7f9d4f140430c9045e12b5a104aa9e641c09b980a26ab8e12a32a2f3d155229ae3610de48133610c17565b6040518060400160405280600e81526020016d1451d7d055551217d1905253115160921b81525090610e295760405162461bcd60e51b815260040161058b9190612a6d565b506003869055600485905560058490556006839055604080516060810190915260248082528315159190612e41602083013990610e795760405162461bcd60e51b815260040161058b9190612a6d565b5060078290556040517fcb996c649d5c95396ab560168433227e404018962201abf9c3ef6fae6665d6c090610eb79088908890889088908890612de8565b60405180910390a1505050505050565b7f000000000000000000000000000000000000000000000000000000000000000081565b6000610ef86000336120ff565b905090565b610f056126ca565b610f0d6126ca565b50506000908152600a602090815260409182902060088101548351608080820186528354825260018401548286015260028401548287015260038401546060808401919091528651918201875260048501548252600585015495820195909552600684015495810195909552600790920154928401929092529260ff82169161010090046001600160a01b031690565b6000818152602081905260408120610c1190612278565b60408051808201909152600e81526d28a3afa7a7262cafa8aaa0a92a2d60911b6020820152336001600160a01b037f000000000000000000000000000000000000000000000000000000000000000016146110225760405162461bcd60e51b815260040161058b9190612a6d565b50600061102f83856120ff565b905082811015610b605760408051808201909152601c81527f51475f4e4f545f454e4f5547485f494e4143544956455f564f5445530000000060208201528261108b5760405162461bcd60e51b815260040161058b9190612a6d565b5060006110a161109b858461166f565b86612283565b9050836110ae83836115ea565b10156040518060400160405280601281526020017151475f4e4f5f454e4f5547485f564f54455360701b815250906110f95760405162461bcd60e51b815260040161058b9190612a6d565b505050505050565b60008281526020819052604090206002015461111f906103dc6117c4565b610a805760405162461bcd60e51b815260040161058b90612c2c565b60065481565b670de0b6b3a764000081565b7fbf05b9322505d747ab5880dfb677dc4864381e9fc3a25ccfa184a3a53d02f4b26111788133610c17565b6040518060400160405280600e81526020016d1451d7d055551217d1905253115160921b815250906111bd5760405162461bcd60e51b815260040161058b9190612a6d565b506111c66126ca565b60405180608001604052806111e760016002546115ea90919063ffffffff16565b81526020016000815260200160008152602001600081525090506112096126ca565b6040518060800160405280611229600280546115ea90919063ffffffff16565b815260200160008152602001600081526020016000815250905060405180608001604052808381526020018281526020016001600281111561126757fe5b815233602091820152600880546000908152600a8352604090819020845180518255808501516001808401919091558184015160028085019190915560609283015160038501558787015180516004860155968701516005850155868501516006850155959091015160078301559185015192810180549194909260ff19909216919084908111156112f557fe5b021790555060609190910151600890910180546001600160a01b0390921661010002610100600160a81b031990921691909117905560028054611337916115ea565b60025560085460405133907f1ae6f721faa65aa5050175f30956a86dac475b9493b7f5719fd4ecee9beadec7906113719089908990612a80565b60405180910390a36008546113879060016115ea565b6008555050505050565b8060018114806113bf57506000818152600a602052604090206008015461010090046001600160a01b031615155b6040518060400160405280601a8152602001600080516020612e21833981519152815250906114015760405162461bcd60e51b815260040161058b9190612a6d565b506000828152600a602052604081209061143b7f3e317d8f3de745777f176274dda437b0b9bbbe0704f48e9be1821136c177b93333610c17565b600883015490915061010090046001600160a01b031633148061145b5750805b6040518060400160405280601781526020017f51475f53454e4445525f43414e4e4f545f43414e43454c000000000000000000815250906114af5760405162461bcd60e51b815260040161058b9190612a6d565b506001841415604051806060016040528060218152602001612e8760219139906114ec5760405162461bcd60e51b815260040161058b9190612a6d565b506001600883015460ff16600281111561150257fe5b146040518060400160405280601681526020017551475f50524f504f53414c5f4e4f545f41435449564560501b815250906115505760405162461bcd60e51b815260040161058b9190612a6d565b5060088201805460ff1916905560405184907f416e669c63d9a3a5e36ee7cc7e2104b8db28ccd286aa18966e98fa230c73b08c90600090a250505050565b6001600160a01b03166000908152600b602052604090205490565b7fbf05b9322505d747ab5880dfb677dc4864381e9fc3a25ccfa184a3a53d02f4b281565b600160209081526000928352604080842090915290825290205481565b600082820183811015610c0e5760405162461bcd60e51b815260040161058b90612b3f565b6000610c0e836001600160a01b038416612402565b6003820154439081101561163457fe5b80836003015414156116465750610963565b600061165d846003015483038560020154856109b6565b60038501929092555060028301555050565b6000828211156116915760405162461bcd60e51b815260040161058b90612bbe565b50900390565b6000826116a657506000610c11565b828202828482816116b357fe5b0414610c0e5760405162461bcd60e51b815260040161058b90612cb3565b60008082116116f25760405162461bcd60e51b815260040161058b90612bf5565b8183816116fb57fe5b049392505050565b6000806117a9670de0b6b3a76400006108e06006547f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663817b1cd26040518163ffffffff1660e01b815260040160206040518083038186803b15801561177157600080fd5b505afa158015611785573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906108e691906128ad565b905080600954106117bc576009546117be565b805b91505090565b3390565b60008281526020819052604090206117e0908261160f565b15610963576117ed6117c4565b6001600160a01b0316816001600160a01b0316837f2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d60405160405180910390a45050565b6000600160801b83106118565760405162461bcd60e51b815260040161058b90612c7c565b50600160801b82825b8015611897576001811661188157611877828361244c565b915060011c611892565b61188b838361244c565b9250600019015b61185f565b505092915050565b8360018114806118cd57506000818152600a602052604090206008015461010090046001600160a01b031615155b6040518060400160405280601a8152602001600080516020612e218339815191528152509061190f5760405162461bcd60e51b815260040161058b9190612a6d565b506000858152600a60209081526040918290208251808401909352601983527851475f414d4f554e545f43414e5f4e4f545f42455f5a45524f60381b9183019190915290856119715760405162461bcd60e51b815260040161058b9190612a6d565b506001600882015460ff16600281111561198757fe5b146040518060400160405280601681526020017551475f50524f504f53414c5f4e4f545f41435449564560501b815250906119d55760405162461bcd60e51b815260040161058b9190612a6d565b506040516370cbf7df60e11b81526001600160a01b037f0000000000000000000000000000000000000000000000000000000000000000169063e197efbe90611a2490879089906004016129fc565b600060405180830381600087803b158015611a3e57600080fd5b505af1158015611a52573d6000803e3d6000fd5b5050505060008315611ae257600482015460009081526001602090815260408083206001600160a01b0389168452825291829020548251808401909352601983527f51475f414c52454144595f4e454741544956455f564f544544000000000000009183019190915215611ad95760405162461bcd60e51b815260040161058b9190612a6d565b50819050611b61565b815460009081526001602090815260408083206001600160a01b0389168452825291829020548251808401909352601983527f51475f414c52454144595f504f5349544956455f564f544544000000000000009183019190915215611b5a5760405162461bcd60e51b815260040161058b9190612a6d565b5050600481015b6001810154611b7081886115ea565b60018084019190915582546000908152602091825260408082206001600160a01b038a1683529092522054611ba590886115ea565b825460009081526001602090815260408083206001600160a01b038b168452825280832093909355600b90522054611bdd90886115ea565b6001600160a01b0387166000908152600b6020526040902055600954611c0390886115ea565b6009556003820154611c1a57436003830155611c24565b611c248282611624565b611c2e88876124b2565b87866001600160a01b03167f28cea0d56dedda49e7c76d1b09c6b93cd6ba2a192505566e997f3ea3bfbb7bd089856002015489604051611c7093929190612dd0565b60405180910390a35050505050505050565b6000828152602081905260409020611c9a9082612578565b1561096357611ca76117c4565b6001600160a01b0316816001600160a01b0316837ff6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b60405160405180910390a45050565b6000848152600a602052604081209082611d085781600401611d0a565b815b805460009081526001602090815260408083206001600160a01b0389168452825291829020548251808401909352601b83527f51475f57495448445241575f4d4f52455f5448414e5f564f54454400000000009183019190915291925090861115611d885760405162461bcd60e51b815260040161058b9190612a6d565b5060408051808201909152601981527851475f414d4f554e545f43414e5f4e4f545f42455f5a45524f60381b602082015285611dd75760405162461bcd60e51b815260040161058b9190612a6d565b50604051633e5df78760e21b81526001600160a01b037f0000000000000000000000000000000000000000000000000000000000000000169063f977de1c90611e2690879089906004016129fc565b600060405180830381600087803b158015611e4057600080fd5b505af1158015611e54573d6000803e3d6000fd5b505050506001810154611e67818761166f565b60018084019190915582546000908152602091825260408082206001600160a01b03891683529092522054611e9c908761166f565b825460009081526001602090815260408083206001600160a01b038a168452825280832093909355600b90522054611ed4908761166f565b6001600160a01b0386166000908152600b6020526040902055600954611efa908761166f565b600955815460009081526001602090815260408083206001600160a01b0389168452909152902054612066576001600160a01b0385166000908152600d602090815260408083208a8452909152812054611f5590600161166f565b6001600160a01b0387166000818152600d602090815260408083208d84528252808320839055928252600c90529081205491925090611f9590600161166f565b6001600160a01b0388166000908152600c602052604081208054929350909183908110611fbe57fe5b9060005260206000200154905080600c60008a6001600160a01b03166001600160a01b031681526020019081526020016000208481548110611ffc57fe5b6000918252602090912001556120138360016115ea565b6001600160a01b0389166000818152600d60209081526040808320868452825280832094909455918152600c9091522080548061204c57fe5b600190038181906000526020600020016000905590555050505b6001600884015460ff16600281111561207b57fe5b141561208b5761208b8282611624565b86856001600160a01b03167fe8a4e6fa29f09a999f31547b42451f9b1d35b9b7d8a1a4e12a8d36929314011e888560020154886040516120cd93929190612dd0565b60405180910390a350505050505050565b6000610c0e838361258d565b6000610c0e836001600160a01b0384166125d2565b6001600160a01b0381166000908152600c602090815260408083208054825181850281018501909352808352849360609392919083018282801561216257602002820191906000526020600020905b81548152602001906001019080831161214e575b505050505090505b805182108015612181575084158061218157508483105b1561189757600081838151811061219457fe5b6020908102919091018101516000818152600a90925260409091209091506001600882015460ff1660028111156121c757fe5b1461226b57600481015460009081526001602081815260408084206001600160a01b038b168086529083528185205486548652938352818520908552909152822054612212916115ea565b9050801561226957815460009081526001602090815260408083206001600160a01b038b16845290915290205461225c90849083908a90612254576000612257565b60015b611ceb565b61226686826115ea565b95505b505b600184019350505061216a565b6000610c11826125ea565b6001600160a01b0381166000908152600c60209081526040808320805482518185028101850190935280835284936060939291908301828280156122e657602002820191906000526020600020905b8154815260200190600101908083116122d2575b505050505090505b8051821080156122fd57508483105b1561189757600081838151811061231057fe5b6020908102919091018101516000818152600a90925260409091209091506001600882015460ff16600281111561234357fe5b14156123f55760006123a4612358898861166f565b600484015460009081526001602081815260408084206001600160a01b038e1680865290835281852054895486529383528185209085529091529091205461239f916115ea565b6125ee565b905080156123f357815460009081526001602090815260408083206001600160a01b038b1684529091529020546123e690849083908a90612254576000612257565b6123f086826115ea565b95505b505b60018401935050506122ee565b600061240e83836125d2565b61244457508154600181810184556000848152602080822090930184905584548482528286019093526040902091909155610c11565b506000610c11565b6000600160801b8311156124725760405162461bcd60e51b815260040161058b90612b76565b600160801b82106124955760405162461bcd60e51b815260040161058b90612cf4565b60806124a96001607f1b610a258686611697565b901c9392505050565b6001600160a01b0381166000908152600c60209081526040808320600d835281842086855290925290912054610a4357805460408051808201909152601881527f51475f4d41585f50524f504f53414c535f524541434845440000000000000000602082015290600a116125395760405162461bcd60e51b815260040161058b9190612a6d565b5080546001810182556000828152602080822090920185905582546001600160a01b0385168252600d8352604080832087845290935291902055505050565b6000610c0e836001600160a01b038416612604565b815460009082106125b05760405162461bcd60e51b815260040161058b90612aae565b8260000182815481106125bf57fe5b9060005260206000200154905092915050565b60009081526001919091016020526040902054151590565b5490565b60008183106125fd5781610c0e565b5090919050565b600081815260018301602052604081205480156126c0578354600019808301919081019060009087908390811061263757fe5b906000526020600020015490508087600001848154811061265457fe5b60009182526020808320909101929092558281526001898101909252604090209084019055865487908061268457fe5b60019003818190600052602060002001600090559055866001016000878152602001908152602001600020600090556001945050505050610c11565b6000915050610c11565b6040518060800160405280600081526020016000815260200160008152602001600081525090565b80356001600160a01b038116811461091a57600080fd5b8035801515811461091a57600080fd5b600082601f830112612729578081fd5b813567ffffffffffffffff8082111561273e57fe5b604051601f8301601f19168101602001828111828210171561275c57fe5b60405282815292508284830160200186101561277757600080fd5b8260208601602083013760006020848301015250505092915050565b6000602082840312156127a4578081fd5b610c0e826126f2565b6000806000606084860312156127c1578182fd5b6127ca846126f2565b9250602084013591506127df60408501612709565b90509250925092565b6000602082840312156127f9578081fd5b5035919050565b60008060408385031215612812578182fd5b82359150612822602084016126f2565b90509250929050565b6000806040838503121561283d578182fd5b50508035926020909101359150565b6000806040838503121561285e578182fd5b823567ffffffffffffffff80821115612875578384fd5b61288186838701612719565b93506020850135915080821115612896578283fd5b506128a385828601612719565b9150509250929050565b6000602082840312156128be578081fd5b5051919050565b600080604083850312156128d7578182fd5b8235915061282260208401612709565b6000806000606084860312156128fb578283fd5b83359250602084013591506127df60408501612709565b600080600060608486031215612926578283fd5b505081359360208301359350604090920135919050565b600080600080600060a08688031215612954578081fd5b505083359560208501359550604085013594606081013594506080013592509050565b60008151808452815b8181101561299c57602081850181015186830182015201612980565b818111156129ad5782602083870101525b50601f01601f19169290920160200192915050565b805182526020810151602083015260408101516040830152606081015160608301525050565b6001600160a01b0391909116815260200190565b6001600160a01b03929092168252602082015260400190565b6020808252825182820181905260009190848201906040850190845b81811015612a4d57835183529284019291840191600101612a31565b50909695505050505050565b901515815260200190565b90815260200190565b600060208252610c0e6020830184612977565b600060408252612a936040830185612977565b8281036020840152612aa58185612977565b95945050505050565b60208082526022908201527f456e756d657261626c655365743a20696e646578206f7574206f6620626f756e604082015261647360f01b606082015260800190565b6020808252602f908201527f416363657373436f6e74726f6c3a2073656e646572206d75737420626520616e60408201526e0818591b5a5b881d1bc819dc985b9d608a1b606082015260800190565b6020808252601b908201527f536166654d6174683a206164646974696f6e206f766572666c6f770000000000604082015260600190565b60208082526028908201527f5f612073686f756c64206265206c657373207468616e206f7220657175616c206040820152670e8de4064bc6264760c31b606082015260800190565b6020808252601e908201527f536166654d6174683a207375627472616374696f6e206f766572666c6f770000604082015260600190565b6020808252601a908201527f536166654d6174683a206469766973696f6e206279207a65726f000000000000604082015260600190565b60208082526030908201527f416363657373436f6e74726f6c3a2073656e646572206d75737420626520616e60408201526f2061646d696e20746f207265766f6b6560801b606082015260800190565b6020808252601c908201527f5f612073686f756c64206265206c657373207468616e20325e31323800000000604082015260600190565b60208082526021908201527f536166654d6174683a206d756c7469706c69636174696f6e206f766572666c6f6040820152607760f81b606082015260800190565b6020808252601c908201527f5f622073686f756c64206265206c657373207468616e20325e31323800000000604082015260600190565b6020808252602f908201527f416363657373436f6e74726f6c3a2063616e206f6e6c792072656e6f756e636560408201526e103937b632b9903337b91039b2b63360891b606082015260800190565b6101408101612d8982876129c2565b612d9660808301866129c2565b60038410612da057fe5b6101008201939093526001600160a01b03919091166101209091015292915050565b918252602082015260400190565b92835260208301919091521515604082015260600190565b948552602085019390935260408401919091526060830152608082015260a00190565b67ffffffffffffffff9190911681526020019056fe51475f50524f504f53414c5f444f45535f4e4f545f455849535400000000000051475f4d494e5f564f5445535f544f5f504153535f43414e5f4e4f545f42455f5a45524f51475f43414e4e4f545f455845435554455f4142535441494e5f50524f504f53414c51475f43414e4e4f545f43414e43454c5f4142535441494e5f50524f504f53414ca2646970667358221220ed71aa49f28b1ef44bb8b8f39f9331acc30cc00209a02e08e2ad4a2a74d1f9b064736f6c6343000703003351475f4d494e5f564f5445535f544f5f504153535f43414e5f4e4f545f42455f5a45524fa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b506004361061025e5760003560e01c80639010d07c11610146578063c7f758a8116100c3578063dd0081c711610087578063dd0081c7146104b3578063e085f498146104bb578063e0a8f6f5146104ce578063e0f7a175146104e1578063eeabf67e146104f4578063fe5b3e3b146104fc5761025e565b8063c7f758a81461044f578063ca15c87314610472578063cba7f62314610485578063d547741f14610498578063db2d878c146104ab5761025e565b8063a217fddf1161010a578063a217fddf14610411578063a2216c6714610419578063a3a3d20d1461042c578063c0d22e941461043f578063c1f72c84146104475761025e565b80639010d07c146103ae57806391d14854146103ce57806397a33a06146103ee578063984dfead14610401578063a1aab33f146104095761025e565b8063346db8cb116101df57806354fac919116101a357806354fac9191461035b57806375b238fc1461036357806376365af71461036b5780637dc49c2b14610373578063865a7607146103865780638af07b10146103a65761025e565b8063346db8cb146103055780633482eef11461031857806336568abe1461032b578063406244d81461033e5780634f629fbb146103535761025e565b80631522eb43116102265780631522eb43146102ae5780631bc28ea0146102b6578063248a9ca3146102be5780632f2ff15d146102d157806333132a50146102e45761025e565b80630c0512e9146102635780630d15fd77146102815780630d61b519146102895780630eb3813a1461029e5780630f529ba2146102a6575b600080fd5b61026b61050f565b6040516102789190612a64565b60405180910390f35b61026b610515565b61029c6102973660046127e8565b61051b565b005b61026b610750565b61026b6108f5565b61026b6108fc565b61026b610901565b61026b6102cc3660046127e8565b610907565b61029c6102df366004612800565b61091f565b6102f76102f2366004612800565b610967565b604051610278929190612dc2565b61026b610313366004612912565b6109b6565b61029c6103263660046128e7565b610a37565b61029c610339366004612800565b610a48565b610346610a8a565b6040516102789190612e0b565b61026b610a8f565b61026b610ab3565b61026b610ab9565b61026b610add565b61029c6103813660046128e7565b610ae3565b610399610394366004612793565b610b66565b6040516102789190612a15565b61026b610bd2565b6103c16103bc36600461282b565b610bf6565b60405161027891906129e8565b6103e16103dc366004612800565b610c17565b6040516102789190612a59565b61029c6103fc3660046128c5565b610c2f565b61026b610cd6565b61026b610cdc565b61026b610ce2565b61029c6104273660046128c5565b610ce7565b61029c61043a36600461293d565b610db9565b6103c1610ec7565b61026b610eeb565b61046261045d3660046127e8565b610efd565b6040516102789493929190612d7a565b61026b6104803660046127e8565b610f9d565b61029c6104933660046127ad565b610fb4565b61029c6104a6366004612800565b611101565b61026b61113b565b61026b611141565b61029c6104c936600461284c565b61114d565b61029c6104dc3660046127e8565b611391565b61026b6104ef366004612793565b61158e565b61026b6115a9565b61026b61050a366004612800565b6115cd565b60085481565b60095481565b80600181148061054957506000818152600a602052604090206008015461010090046001600160a01b031615155b6040518060400160405280601a8152602001600080516020612e21833981519152815250906105945760405162461bcd60e51b815260040161058b9190612a6d565b60405180910390fd5b506000600a600084815260200190815260200160002090506001831415604051806060016040528060228152602001612e6560229139906105e85760405162461bcd60e51b815260040161058b9190612a6d565b506001600882015460ff1660028111156105fe57fe5b146040518060400160405280601681526020017551475f50524f504f53414c5f4e4f545f41435449564560501b8152509061064c5760405162461bcd60e51b815260040161058b9190612a6d565b50600181015481906004820190610664908390611624565b610672818260010154611624565b806002015482600201541180156106a2575061068c610750565b6002808301549084015461069f9161166f565b10155b6040518060400160405280601a81526020017f51475f494e53554646494349454e545f434f4e56494354494f4e000000000000815250906106f65760405162461bcd60e51b815260040161058b9190612a6d565b5060088301805460ff19166002908117909155830154600684015460405187927f3842d9e8746c3c1b0c5e717a88df9c9ae97f2f8c0e01e42dce160aafdb3840e99261074192612dc2565b60405180910390a25050505050565b6000807f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663817b1cd26040518163ffffffff1660e01b815260040160206040518083038186803b1580156107ac57600080fd5b505afa1580156107c0573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906107e491906128ad565b6007549091506107f79062989680611697565b6004546108049083611697565b116040518060400160405280601881526020017f51475f414d4f554e545f4f5645525f4d41585f524154494f0000000000000000815250906108595760405162461bcd60e51b815260040161058b9190612a6d565b5060075460009061088a906108719060401b846116d1565b6004546108849060401b629896806116d1565b9061166f565b905060406108ec610899611703565b6108e66108b46003546298968061166f90919063ffffffff16565b6108e0629896806108e660406108ca8a80611697565b600554911c906108e09060801b629896806116d1565b906116d1565b90611697565b901c9250505090565b6298968081565b600181565b60025481565b6000818152602081905260409020600201545b919050565b60008281526020819052604090206002015461093d906103dc6117c4565b6109595760405162461bcd60e51b815260040161058b90612af0565b61096382826117c8565b5050565b6000918252600a602090815260408084208054855260018084528286206001600160a01b0395909516808752948452828620546004909201548652835281852093855292909152909120549091565b600354600090849082906109da906109d49060801b629896806116d1565b83611831565b90506080610a2b6001607f1b610a25610a1b60035462989680036108e0610a0e88600160801b61166f90919063ffffffff16565b6108e68c62989680611697565b610a25868b611697565b906115ea565b901c9695505050505050565b610a438383338461189f565b505050565b610a506117c4565b6001600160a01b0316816001600160a01b031614610a805760405162461bcd60e51b815260040161058b90612d2b565b6109638282611c82565b600a81565b7f9d4f140430c9045e12b5a104aa9e641c09b980a26ab8e12a32a2f3d155229ae381565b60035481565b7fa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c2177581565b60045481565b826001811480610b1157506000818152600a602052604090206008015461010090046001600160a01b031615155b6040518060400160405280601a8152602001600080516020612e2183398151915281525090610b535760405162461bcd60e51b815260040161058b9190612a6d565b50610b6084843385611ceb565b50505050565b6001600160a01b0381166000908152600c6020908152604091829020805483518184028101840190945280845260609392830182828015610bc657602002820191906000526020600020905b815481526020019060010190808311610bb2575b50505050509050919050565b7f3e317d8f3de745777f176274dda437b0b9bbbe0704f48e9be1821136c177b93381565b6000828152602081905260408120610c0e90836120de565b90505b92915050565b6000828152602081905260408120610c0e90836120ea565b610963827f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663b4b5ea57336040518263ffffffff1660e01b8152600401610c7f91906129e8565b60206040518083038186803b158015610c9757600080fd5b505afa158015610cab573d6000803e3d6000fd5b505050506040513d601f19601f82011682018060405250810190610ccf91906128ad565b338461189f565b60075481565b60055481565b600081565b816001811480610d1557506000818152600a602052604090206008015461010090046001600160a01b031615155b6040518060400160405280601a8152602001600080516020612e2183398151915281525090610d575760405162461bcd60e51b815260040161058b9190612a6d565b50610a438383610d8d576000858152600a6020908152604080832060040154835260018252808320338452909152902054610db2565b6000858152600a60209081526040808320548352600182528083203384529091529020545b3385611ceb565b7f9d4f140430c9045e12b5a104aa9e641c09b980a26ab8e12a32a2f3d155229ae3610de48133610c17565b6040518060400160405280600e81526020016d1451d7d055551217d1905253115160921b81525090610e295760405162461bcd60e51b815260040161058b9190612a6d565b506003869055600485905560058490556006839055604080516060810190915260248082528315159190612e41602083013990610e795760405162461bcd60e51b815260040161058b9190612a6d565b5060078290556040517fcb996c649d5c95396ab560168433227e404018962201abf9c3ef6fae6665d6c090610eb79088908890889088908890612de8565b60405180910390a1505050505050565b7f000000000000000000000000000000000000000000000000000000000000000081565b6000610ef86000336120ff565b905090565b610f056126ca565b610f0d6126ca565b50506000908152600a602090815260409182902060088101548351608080820186528354825260018401548286015260028401548287015260038401546060808401919091528651918201875260048501548252600585015495820195909552600684015495810195909552600790920154928401929092529260ff82169161010090046001600160a01b031690565b6000818152602081905260408120610c1190612278565b60408051808201909152600e81526d28a3afa7a7262cafa8aaa0a92a2d60911b6020820152336001600160a01b037f000000000000000000000000000000000000000000000000000000000000000016146110225760405162461bcd60e51b815260040161058b9190612a6d565b50600061102f83856120ff565b905082811015610b605760408051808201909152601c81527f51475f4e4f545f454e4f5547485f494e4143544956455f564f5445530000000060208201528261108b5760405162461bcd60e51b815260040161058b9190612a6d565b5060006110a161109b858461166f565b86612283565b9050836110ae83836115ea565b10156040518060400160405280601281526020017151475f4e4f5f454e4f5547485f564f54455360701b815250906110f95760405162461bcd60e51b815260040161058b9190612a6d565b505050505050565b60008281526020819052604090206002015461111f906103dc6117c4565b610a805760405162461bcd60e51b815260040161058b90612c2c565b60065481565b670de0b6b3a764000081565b7fbf05b9322505d747ab5880dfb677dc4864381e9fc3a25ccfa184a3a53d02f4b26111788133610c17565b6040518060400160405280600e81526020016d1451d7d055551217d1905253115160921b815250906111bd5760405162461bcd60e51b815260040161058b9190612a6d565b506111c66126ca565b60405180608001604052806111e760016002546115ea90919063ffffffff16565b81526020016000815260200160008152602001600081525090506112096126ca565b6040518060800160405280611229600280546115ea90919063ffffffff16565b815260200160008152602001600081526020016000815250905060405180608001604052808381526020018281526020016001600281111561126757fe5b815233602091820152600880546000908152600a8352604090819020845180518255808501516001808401919091558184015160028085019190915560609283015160038501558787015180516004860155968701516005850155868501516006850155959091015160078301559185015192810180549194909260ff19909216919084908111156112f557fe5b021790555060609190910151600890910180546001600160a01b0390921661010002610100600160a81b031990921691909117905560028054611337916115ea565b60025560085460405133907f1ae6f721faa65aa5050175f30956a86dac475b9493b7f5719fd4ecee9beadec7906113719089908990612a80565b60405180910390a36008546113879060016115ea565b6008555050505050565b8060018114806113bf57506000818152600a602052604090206008015461010090046001600160a01b031615155b6040518060400160405280601a8152602001600080516020612e21833981519152815250906114015760405162461bcd60e51b815260040161058b9190612a6d565b506000828152600a602052604081209061143b7f3e317d8f3de745777f176274dda437b0b9bbbe0704f48e9be1821136c177b93333610c17565b600883015490915061010090046001600160a01b031633148061145b5750805b6040518060400160405280601781526020017f51475f53454e4445525f43414e4e4f545f43414e43454c000000000000000000815250906114af5760405162461bcd60e51b815260040161058b9190612a6d565b506001841415604051806060016040528060218152602001612e8760219139906114ec5760405162461bcd60e51b815260040161058b9190612a6d565b506001600883015460ff16600281111561150257fe5b146040518060400160405280601681526020017551475f50524f504f53414c5f4e4f545f41435449564560501b815250906115505760405162461bcd60e51b815260040161058b9190612a6d565b5060088201805460ff1916905560405184907f416e669c63d9a3a5e36ee7cc7e2104b8db28ccd286aa18966e98fa230c73b08c90600090a250505050565b6001600160a01b03166000908152600b602052604090205490565b7fbf05b9322505d747ab5880dfb677dc4864381e9fc3a25ccfa184a3a53d02f4b281565b600160209081526000928352604080842090915290825290205481565b600082820183811015610c0e5760405162461bcd60e51b815260040161058b90612b3f565b6000610c0e836001600160a01b038416612402565b6003820154439081101561163457fe5b80836003015414156116465750610963565b600061165d846003015483038560020154856109b6565b60038501929092555060028301555050565b6000828211156116915760405162461bcd60e51b815260040161058b90612bbe565b50900390565b6000826116a657506000610c11565b828202828482816116b357fe5b0414610c0e5760405162461bcd60e51b815260040161058b90612cb3565b60008082116116f25760405162461bcd60e51b815260040161058b90612bf5565b8183816116fb57fe5b049392505050565b6000806117a9670de0b6b3a76400006108e06006547f00000000000000000000000000000000000000000000000000000000000000006001600160a01b031663817b1cd26040518163ffffffff1660e01b815260040160206040518083038186803b15801561177157600080fd5b505afa158015611785573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906108e691906128ad565b905080600954106117bc576009546117be565b805b91505090565b3390565b60008281526020819052604090206117e0908261160f565b15610963576117ed6117c4565b6001600160a01b0316816001600160a01b0316837f2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d60405160405180910390a45050565b6000600160801b83106118565760405162461bcd60e51b815260040161058b90612c7c565b50600160801b82825b8015611897576001811661188157611877828361244c565b915060011c611892565b61188b838361244c565b9250600019015b61185f565b505092915050565b8360018114806118cd57506000818152600a602052604090206008015461010090046001600160a01b031615155b6040518060400160405280601a8152602001600080516020612e218339815191528152509061190f5760405162461bcd60e51b815260040161058b9190612a6d565b506000858152600a60209081526040918290208251808401909352601983527851475f414d4f554e545f43414e5f4e4f545f42455f5a45524f60381b9183019190915290856119715760405162461bcd60e51b815260040161058b9190612a6d565b506001600882015460ff16600281111561198757fe5b146040518060400160405280601681526020017551475f50524f504f53414c5f4e4f545f41435449564560501b815250906119d55760405162461bcd60e51b815260040161058b9190612a6d565b506040516370cbf7df60e11b81526001600160a01b037f0000000000000000000000000000000000000000000000000000000000000000169063e197efbe90611a2490879089906004016129fc565b600060405180830381600087803b158015611a3e57600080fd5b505af1158015611a52573d6000803e3d6000fd5b5050505060008315611ae257600482015460009081526001602090815260408083206001600160a01b0389168452825291829020548251808401909352601983527f51475f414c52454144595f4e454741544956455f564f544544000000000000009183019190915215611ad95760405162461bcd60e51b815260040161058b9190612a6d565b50819050611b61565b815460009081526001602090815260408083206001600160a01b0389168452825291829020548251808401909352601983527f51475f414c52454144595f504f5349544956455f564f544544000000000000009183019190915215611b5a5760405162461bcd60e51b815260040161058b9190612a6d565b5050600481015b6001810154611b7081886115ea565b60018084019190915582546000908152602091825260408082206001600160a01b038a1683529092522054611ba590886115ea565b825460009081526001602090815260408083206001600160a01b038b168452825280832093909355600b90522054611bdd90886115ea565b6001600160a01b0387166000908152600b6020526040902055600954611c0390886115ea565b6009556003820154611c1a57436003830155611c24565b611c248282611624565b611c2e88876124b2565b87866001600160a01b03167f28cea0d56dedda49e7c76d1b09c6b93cd6ba2a192505566e997f3ea3bfbb7bd089856002015489604051611c7093929190612dd0565b60405180910390a35050505050505050565b6000828152602081905260409020611c9a9082612578565b1561096357611ca76117c4565b6001600160a01b0316816001600160a01b0316837ff6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b60405160405180910390a45050565b6000848152600a602052604081209082611d085781600401611d0a565b815b805460009081526001602090815260408083206001600160a01b0389168452825291829020548251808401909352601b83527f51475f57495448445241575f4d4f52455f5448414e5f564f54454400000000009183019190915291925090861115611d885760405162461bcd60e51b815260040161058b9190612a6d565b5060408051808201909152601981527851475f414d4f554e545f43414e5f4e4f545f42455f5a45524f60381b602082015285611dd75760405162461bcd60e51b815260040161058b9190612a6d565b50604051633e5df78760e21b81526001600160a01b037f0000000000000000000000000000000000000000000000000000000000000000169063f977de1c90611e2690879089906004016129fc565b600060405180830381600087803b158015611e4057600080fd5b505af1158015611e54573d6000803e3d6000fd5b505050506001810154611e67818761166f565b60018084019190915582546000908152602091825260408082206001600160a01b03891683529092522054611e9c908761166f565b825460009081526001602090815260408083206001600160a01b038a168452825280832093909355600b90522054611ed4908761166f565b6001600160a01b0386166000908152600b6020526040902055600954611efa908761166f565b600955815460009081526001602090815260408083206001600160a01b0389168452909152902054612066576001600160a01b0385166000908152600d602090815260408083208a8452909152812054611f5590600161166f565b6001600160a01b0387166000818152600d602090815260408083208d84528252808320839055928252600c90529081205491925090611f9590600161166f565b6001600160a01b0388166000908152600c602052604081208054929350909183908110611fbe57fe5b9060005260206000200154905080600c60008a6001600160a01b03166001600160a01b031681526020019081526020016000208481548110611ffc57fe5b6000918252602090912001556120138360016115ea565b6001600160a01b0389166000818152600d60209081526040808320868452825280832094909455918152600c9091522080548061204c57fe5b600190038181906000526020600020016000905590555050505b6001600884015460ff16600281111561207b57fe5b141561208b5761208b8282611624565b86856001600160a01b03167fe8a4e6fa29f09a999f31547b42451f9b1d35b9b7d8a1a4e12a8d36929314011e888560020154886040516120cd93929190612dd0565b60405180910390a350505050505050565b6000610c0e838361258d565b6000610c0e836001600160a01b0384166125d2565b6001600160a01b0381166000908152600c602090815260408083208054825181850281018501909352808352849360609392919083018282801561216257602002820191906000526020600020905b81548152602001906001019080831161214e575b505050505090505b805182108015612181575084158061218157508483105b1561189757600081838151811061219457fe5b6020908102919091018101516000818152600a90925260409091209091506001600882015460ff1660028111156121c757fe5b1461226b57600481015460009081526001602081815260408084206001600160a01b038b168086529083528185205486548652938352818520908552909152822054612212916115ea565b9050801561226957815460009081526001602090815260408083206001600160a01b038b16845290915290205461225c90849083908a90612254576000612257565b60015b611ceb565b61226686826115ea565b95505b505b600184019350505061216a565b6000610c11826125ea565b6001600160a01b0381166000908152600c60209081526040808320805482518185028101850190935280835284936060939291908301828280156122e657602002820191906000526020600020905b8154815260200190600101908083116122d2575b505050505090505b8051821080156122fd57508483105b1561189757600081838151811061231057fe5b6020908102919091018101516000818152600a90925260409091209091506001600882015460ff16600281111561234357fe5b14156123f55760006123a4612358898861166f565b600484015460009081526001602081815260408084206001600160a01b038e1680865290835281852054895486529383528185209085529091529091205461239f916115ea565b6125ee565b905080156123f357815460009081526001602090815260408083206001600160a01b038b1684529091529020546123e690849083908a90612254576000612257565b6123f086826115ea565b95505b505b60018401935050506122ee565b600061240e83836125d2565b61244457508154600181810184556000848152602080822090930184905584548482528286019093526040902091909155610c11565b506000610c11565b6000600160801b8311156124725760405162461bcd60e51b815260040161058b90612b76565b600160801b82106124955760405162461bcd60e51b815260040161058b90612cf4565b60806124a96001607f1b610a258686611697565b901c9392505050565b6001600160a01b0381166000908152600c60209081526040808320600d835281842086855290925290912054610a4357805460408051808201909152601881527f51475f4d41585f50524f504f53414c535f524541434845440000000000000000602082015290600a116125395760405162461bcd60e51b815260040161058b9190612a6d565b5080546001810182556000828152602080822090920185905582546001600160a01b0385168252600d8352604080832087845290935291902055505050565b6000610c0e836001600160a01b038416612604565b815460009082106125b05760405162461bcd60e51b815260040161058b90612aae565b8260000182815481106125bf57fe5b9060005260206000200154905092915050565b60009081526001919091016020526040902054151590565b5490565b60008183106125fd5781610c0e565b5090919050565b600081815260018301602052604081205480156126c0578354600019808301919081019060009087908390811061263757fe5b906000526020600020015490508087600001848154811061265457fe5b60009182526020808320909101929092558281526001898101909252604090209084019055865487908061268457fe5b60019003818190600052602060002001600090559055866001016000878152602001908152602001600020600090556001945050505050610c11565b6000915050610c11565b6040518060800160405280600081526020016000815260200160008152602001600081525090565b80356001600160a01b038116811461091a57600080fd5b8035801515811461091a57600080fd5b600082601f830112612729578081fd5b813567ffffffffffffffff8082111561273e57fe5b604051601f8301601f19168101602001828111828210171561275c57fe5b60405282815292508284830160200186101561277757600080fd5b8260208601602083013760006020848301015250505092915050565b6000602082840312156127a4578081fd5b610c0e826126f2565b6000806000606084860312156127c1578182fd5b6127ca846126f2565b9250602084013591506127df60408501612709565b90509250925092565b6000602082840312156127f9578081fd5b5035919050565b60008060408385031215612812578182fd5b82359150612822602084016126f2565b90509250929050565b6000806040838503121561283d578182fd5b50508035926020909101359150565b6000806040838503121561285e578182fd5b823567ffffffffffffffff80821115612875578384fd5b61288186838701612719565b93506020850135915080821115612896578283fd5b506128a385828601612719565b9150509250929050565b6000602082840312156128be578081fd5b5051919050565b600080604083850312156128d7578182fd5b8235915061282260208401612709565b6000806000606084860312156128fb578283fd5b83359250602084013591506127df60408501612709565b600080600060608486031215612926578283fd5b505081359360208301359350604090920135919050565b600080600080600060a08688031215612954578081fd5b505083359560208501359550604085013594606081013594506080013592509050565b60008151808452815b8181101561299c57602081850181015186830182015201612980565b818111156129ad5782602083870101525b50601f01601f19169290920160200192915050565b805182526020810151602083015260408101516040830152606081015160608301525050565b6001600160a01b0391909116815260200190565b6001600160a01b03929092168252602082015260400190565b6020808252825182820181905260009190848201906040850190845b81811015612a4d57835183529284019291840191600101612a31565b50909695505050505050565b901515815260200190565b90815260200190565b600060208252610c0e6020830184612977565b600060408252612a936040830185612977565b8281036020840152612aa58185612977565b95945050505050565b60208082526022908201527f456e756d657261626c655365743a20696e646578206f7574206f6620626f756e604082015261647360f01b606082015260800190565b6020808252602f908201527f416363657373436f6e74726f6c3a2073656e646572206d75737420626520616e60408201526e0818591b5a5b881d1bc819dc985b9d608a1b606082015260800190565b6020808252601b908201527f536166654d6174683a206164646974696f6e206f766572666c6f770000000000604082015260600190565b60208082526028908201527f5f612073686f756c64206265206c657373207468616e206f7220657175616c206040820152670e8de4064bc6264760c31b606082015260800190565b6020808252601e908201527f536166654d6174683a207375627472616374696f6e206f766572666c6f770000604082015260600190565b6020808252601a908201527f536166654d6174683a206469766973696f6e206279207a65726f000000000000604082015260600190565b60208082526030908201527f416363657373436f6e74726f6c3a2073656e646572206d75737420626520616e60408201526f2061646d696e20746f207265766f6b6560801b606082015260800190565b6020808252601c908201527f5f612073686f756c64206265206c657373207468616e20325e31323800000000604082015260600190565b60208082526021908201527f536166654d6174683a206d756c7469706c69636174696f6e206f766572666c6f6040820152607760f81b606082015260800190565b6020808252601c908201527f5f622073686f756c64206265206c657373207468616e20325e31323800000000604082015260600190565b6020808252602f908201527f416363657373436f6e74726f6c3a2063616e206f6e6c792072656e6f756e636560408201526e103937b632b9903337b91039b2b63360891b606082015260800190565b6101408101612d8982876129c2565b612d9660808301866129c2565b60038410612da057fe5b6101008201939093526001600160a01b03919091166101209091015292915050565b918252602082015260400190565b92835260208301919091521515604082015260600190565b948552602085019390935260408401919091526060830152608082015260a00190565b67ffffffffffffffff9190911681526020019056fe51475f50524f504f53414c5f444f45535f4e4f545f455849535400000000000051475f4d494e5f564f5445535f544f5f504153535f43414e5f4e4f545f42455f5a45524f51475f43414e4e4f545f455845435554455f4142535441494e5f50524f504f53414c51475f43414e4e4f545f43414e43454c5f4142535441494e5f50524f504f53414ca2646970667358221220ed71aa49f28b1ef44bb8b8f39f9331acc30cc00209a02e08e2ad4a2a74d1f9b064736f6c63430007030033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "addProposal(string,bytes)": {
+        "params": {
+          "_link": "IPFS or HTTP link with proposal's description",
+          "_title": "Title of the proposal"
+        }
+      },
+      "calculateConviction(uint256,uint256,uint256)": {
+        "details": "Conviction formula: a^t * y(0) + x * (1 - a^t) / (1 - a) Solidity implementation: y = (2^128 * a^t * y0 + x * D * (2^128 - 2^128 * a^t) / (D - aD) + 2^127) / 2^128",
+        "params": {
+          "_lastConv": "Last conviction record",
+          "_oldAmount": "Amount of tokens staked until now",
+          "_timePassed": "Number of blocks since last conviction record"
+        },
+        "returns": {
+          "_0": "Current conviction"
+        }
+      },
+      "calculateThreshold()": {
+        "details": "Formula: ρ * totalStaked / (1 - a) / (β - minVotesToPass / total)**2 For the Solidity implementation we amplify ρ and β and simplify the formula: weight = ρ * D maxRatio = β * D decay = a * D threshold = weight * totalStaked * D ** 2 * funds ** 2 / (D - decay) / (maxRatio * funds - minVotesToPass * D) ** 2",
+        "returns": {
+          "_threshold": "Threshold a proposal's conviction should surpass in order to be able to executed it."
+        }
+      },
+      "cancelProposal(uint256)": {
+        "params": {
+          "_proposalId": "Proposal id"
+        }
+      },
+      "castAllVotes(uint256,bool)": {
+        "params": {
+          "_proposalId": "Proposal id",
+          "_support": "Positive or negative"
+        }
+      },
+      "castVotes(uint256,uint256,bool)": {
+        "params": {
+          "_amount": "Amount of votes to cast",
+          "_proposalId": "Proposal id",
+          "_support": "Positive or negative"
+        }
+      },
+      "executeProposal(uint256)": {
+        "params": {
+          "_proposalId": "Proposal id"
+        }
+      },
+      "getProposal(uint256)": {
+        "details": "Get proposal details",
+        "params": {
+          "_proposalId": "Proposal id"
+        },
+        "returns": {
+          "negativeVotes": "Negative votes info",
+          "positiveVotes": "Positive votes info",
+          "proposalStatus": "ProposalStatus defining the state of the proposal",
+          "submitter": "Submitter of the proposal"
+        }
+      },
+      "getProposalUserVotes(uint256,address)": {
+        "params": {
+          "_proposalId": "Proposal id",
+          "_voter": "Voter address"
+        },
+        "returns": {
+          "_0": "Positive user votes",
+          "_1": "Negative user votes"
+        }
+      },
+      "getRoleAdmin(bytes32)": {
+        "details": "Returns the admin role that controls `role`. See {grantRole} and {revokeRole}. To change a role's admin, use {_setRoleAdmin}."
+      },
+      "getRoleMember(bytes32,uint256)": {
+        "details": "Returns one of the accounts that have `role`. `index` must be a value between 0 and {getRoleMemberCount}, non-inclusive. Role bearers are not sorted in any particular way, and their ordering may change at any point. WARNING: When using {getRoleMember} and {getRoleMemberCount}, make sure you perform all queries on the same block. See the following https://forum.openzeppelin.com/t/iterating-over-elements-on-enumerableset-in-openzeppelin-contracts/2296[forum post] for more information."
+      },
+      "getRoleMemberCount(bytes32)": {
+        "details": "Returns the number of accounts that have `role`. Can be used together with {getRoleMember} to enumerate all bearers of a role."
+      },
+      "getTotalUserVotes(address)": {
+        "params": {
+          "_voter": "Voter address"
+        },
+        "returns": {
+          "_0": "Total user votes"
+        }
+      },
+      "getVoterCastedProposals(address)": {
+        "params": {
+          "_voter": "Voter address"
+        },
+        "returns": {
+          "_0": "Voter proposals"
+        }
+      },
+      "grantRole(bytes32,address)": {
+        "details": "Grants `role` to `account`. If `account` had not been already granted `role`, emits a {RoleGranted} event. Requirements: - the caller must have ``role``'s admin role."
+      },
+      "hasRole(bytes32,address)": {
+        "details": "Returns `true` if `account` has been granted `role`."
+      },
+      "renounceRole(bytes32,address)": {
+        "details": "Revokes `role` from the calling account. Roles are often managed via {grantRole} and {revokeRole}: this function's purpose is to provide a mechanism for accounts to lose their privileges if they are compromised (such as when a trusted device is misplaced). If the calling account had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must be `account`."
+      },
+      "revokeRole(bytes32,address)": {
+        "details": "Revokes `role` from `account`. If `account` had been granted `role`, emits a {RoleRevoked} event. Requirements: - the caller must have ``role``'s admin role."
+      },
+      "setConvictionCalculationSettings(uint256,uint256,uint256,uint256,uint256)": {
+        "params": {
+          "_decay": "The rate at which conviction is accrued or lost from a proposal",
+          "_maxRatio": "Proposal threshold parameter",
+          "_minThresholdStakePercentage": "The minimum percent of stake token max supply that is used for calculating conviction",
+          "_minVotesToPass": "The minimum votes to be passed",
+          "_weight": "Proposal threshold parameter"
+        }
+      },
+      "withdrawAllVotesFromProposal(uint256,bool)": {
+        "params": {
+          "_proposalId": "Proposal id",
+          "_support": "Positive or negative"
+        }
+      },
+      "withdrawRequiredVotes(address,uint256,bool)": {
+        "details": "Withdraw required votes to move delegates"
+      },
+      "withdrawVotes(uint256,uint256,bool)": {
+        "params": {
+          "_amount": "Amount of votes to withdraw",
+          "_proposalId": "Proposal id",
+          "_support": "Positive or negative"
+        }
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "addProposal(string,bytes)": {
+        "notice": "Add proposal"
+      },
+      "cancelProposal(uint256)": {
+        "notice": "Cancel proposal #`_proposalId`"
+      },
+      "castAllVotes(uint256,bool)": {
+        "notice": "Cast all available votes to proposal"
+      },
+      "castVotes(uint256,uint256,bool)": {
+        "notice": "Cast votes on proposal"
+      },
+      "executeProposal(uint256)": {
+        "notice": "Execute proposal #`_proposalId`"
+      },
+      "getProposalUserVotes(uint256,address)": {
+        "notice": "Get stake of voter `_voter` on proposal #`_proposalId`"
+      },
+      "getTotalUserVotes(address)": {
+        "notice": "Get the total votes of voter `_voter` on all proposals"
+      },
+      "getVoterCastedProposals(address)": {
+        "notice": "Get all proposal ID's voter `_voter` has currently voted"
+      },
+      "setConvictionCalculationSettings(uint256,uint256,uint256,uint256,uint256)": {
+        "notice": "Update the conviction voting parameters"
+      },
+      "withdrawAllInactiveVotes()": {
+        "notice": "Withdraw all votes from executed or cancelled proposal"
+      },
+      "withdrawAllVotesFromProposal(uint256,bool)": {
+        "notice": "Withdraw all votes from proposal"
+      },
+      "withdrawVotes(uint256,uint256,bool)": {
+        "notice": "Withdraw votes from proposal"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 22,
+        "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+        "label": "_roles",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_mapping(t_bytes32,t_struct(RoleData)18_storage)"
+      },
+      {
+        "astId": 3126,
+        "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+        "label": "userVotes",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_uint256,t_mapping(t_address,t_uint256))"
+      },
+      {
+        "astId": 3128,
+        "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+        "label": "lastVoteId",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 3132,
+        "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+        "label": "decay",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 3134,
+        "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+        "label": "maxRatio",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 3136,
+        "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+        "label": "weight",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 3138,
+        "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+        "label": "minThresholdStakePercentage",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 3140,
+        "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+        "label": "minVotesToPass",
+        "offset": 0,
+        "slot": "7",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 3142,
+        "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+        "label": "proposalCounter",
+        "offset": 0,
+        "slot": "8",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 3144,
+        "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+        "label": "totalVotes",
+        "offset": 0,
+        "slot": "9",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 3148,
+        "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+        "label": "proposals",
+        "offset": 0,
+        "slot": "10",
+        "type": "t_mapping(t_uint256,t_struct(Proposal)3120_storage)"
+      },
+      {
+        "astId": 3152,
+        "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+        "label": "totalUserVotes",
+        "offset": 0,
+        "slot": "11",
+        "type": "t_mapping(t_address,t_uint256)"
+      },
+      {
+        "astId": 3157,
+        "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+        "label": "voterCastedProposals",
+        "offset": 0,
+        "slot": "12",
+        "type": "t_mapping(t_address,t_array(t_uint256)dyn_storage)"
+      },
+      {
+        "astId": 3163,
+        "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+        "label": "userVotedProposalIds",
+        "offset": 0,
+        "slot": "13",
+        "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_array(t_bytes32)dyn_storage": {
+        "base": "t_bytes32",
+        "encoding": "dynamic_array",
+        "label": "bytes32[]",
+        "numberOfBytes": "32"
+      },
+      "t_array(t_uint256)dyn_storage": {
+        "base": "t_uint256",
+        "encoding": "dynamic_array",
+        "label": "uint256[]",
+        "numberOfBytes": "32"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_enum(ProposalStatus)3102": {
+        "encoding": "inplace",
+        "label": "enum QuartzGovernor.ProposalStatus",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_address,t_array(t_uint256)dyn_storage)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => uint256[])",
+        "numberOfBytes": "32",
+        "value": "t_array(t_uint256)dyn_storage"
+      },
+      "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => mapping(uint256 => uint256))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_uint256,t_uint256)"
+      },
+      "t_mapping(t_address,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_mapping(t_bytes32,t_struct(RoleData)18_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct AccessControl.RoleData)",
+        "numberOfBytes": "32",
+        "value": "t_struct(RoleData)18_storage"
+      },
+      "t_mapping(t_bytes32,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_mapping(t_uint256,t_mapping(t_address,t_uint256))": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => mapping(address => uint256))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_address,t_uint256)"
+      },
+      "t_mapping(t_uint256,t_struct(Proposal)3120_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct QuartzGovernor.Proposal)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Proposal)3120_storage"
+      },
+      "t_mapping(t_uint256,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_struct(AddressSet)1996_storage": {
+        "encoding": "inplace",
+        "label": "struct EnumerableSet.AddressSet",
+        "members": [
+          {
+            "astId": 1995,
+            "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+            "label": "_inner",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_struct(Set)1731_storage"
+          }
+        ],
+        "numberOfBytes": "64"
+      },
+      "t_struct(Proposal)3120_storage": {
+        "encoding": "inplace",
+        "label": "struct QuartzGovernor.Proposal",
+        "members": [
+          {
+            "astId": 3113,
+            "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+            "label": "positiveVotes",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_struct(Vote)3111_storage"
+          },
+          {
+            "astId": 3115,
+            "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+            "label": "negativeVotes",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_struct(Vote)3111_storage"
+          },
+          {
+            "astId": 3117,
+            "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+            "label": "proposalStatus",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_enum(ProposalStatus)3102"
+          },
+          {
+            "astId": 3119,
+            "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+            "label": "submitter",
+            "offset": 1,
+            "slot": "8",
+            "type": "t_address"
+          }
+        ],
+        "numberOfBytes": "288"
+      },
+      "t_struct(RoleData)18_storage": {
+        "encoding": "inplace",
+        "label": "struct AccessControl.RoleData",
+        "members": [
+          {
+            "astId": 15,
+            "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+            "label": "members",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_struct(AddressSet)1996_storage"
+          },
+          {
+            "astId": 17,
+            "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+            "label": "adminRole",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_bytes32"
+          }
+        ],
+        "numberOfBytes": "96"
+      },
+      "t_struct(Set)1731_storage": {
+        "encoding": "inplace",
+        "label": "struct EnumerableSet.Set",
+        "members": [
+          {
+            "astId": 1726,
+            "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+            "label": "_values",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_array(t_bytes32)dyn_storage"
+          },
+          {
+            "astId": 1730,
+            "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+            "label": "_indexes",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_bytes32,t_uint256)"
+          }
+        ],
+        "numberOfBytes": "64"
+      },
+      "t_struct(Vote)3111_storage": {
+        "encoding": "inplace",
+        "label": "struct QuartzGovernor.Vote",
+        "members": [
+          {
+            "astId": 3104,
+            "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+            "label": "id",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 3106,
+            "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+            "label": "totalVotes",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 3108,
+            "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+            "label": "convictionLast",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 3110,
+            "contract": "contracts/QuartzGovernor.sol:QuartzGovernor",
+            "label": "blockLast",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256"
+          }
+        ],
+        "numberOfBytes": "128"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}

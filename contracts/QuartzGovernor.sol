@@ -19,9 +19,9 @@ contract QuartzGovernor is AccessControl {
 
     uint256 public constant D = 10000000;
     uint256 public constant ONE_HUNDRED_PERCENT = 1e18;
-    uint256 private constant TWO_128 = 0x100000000000000000000000000000000; // 2^128
-    uint256 private constant TWO_127 = 0x80000000000000000000000000000000; // 2^127
-    uint256 private constant TWO_64 = 0x10000000000000000; // 2^64
+    uint256 private constant TWO_128 = 1 << 128; // 2 ^ 128
+    uint256 private constant TWO_127 = 1 << 127; // 2^127
+    uint256 private constant TWO_64 = 1 << 64; // 2^64
     uint256 public constant ABSTAIN_PROPOSAL_ID = 1;
     uint64 public constant MAX_STAKED_PROPOSALS = 10;
 
@@ -175,6 +175,7 @@ contract QuartzGovernor is AccessControl {
         _setupRole(ADMIN_ROLE, msg.sender);
 
         quartz = _quartz;
+        require(address(_quartz) != address(0));
         proposalCounter = ABSTAIN_PROPOSAL_ID.add(1); // First proposal should be #2, #1 is reserved for abstain proposal, #0 is not used for better UX.
         decay = _decay;
         maxRatio = _maxRatio;

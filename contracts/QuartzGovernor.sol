@@ -5,9 +5,11 @@ import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./interfaces/IQuartz.sol";
+import "./libraries/SafeMath64.sol";
 
 contract QuartzGovernor is AccessControl {
     using SafeMath for uint256;
+    using SafeMath64 for uint64;
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant UPDATE_SETTINGS_ROLE =
@@ -58,6 +60,8 @@ contract QuartzGovernor is AccessControl {
         "QG_MIN_VOTES_TO_PASS_CAN_NOT_BE_ZERO";
     string private constant ERROR_PROPOSAL_THRESHOLD_CAN_NOT_BE_ZERO =
         "QG_PROPOSAL_THRESHOLD_CAN_NOT_BE_ZERO";
+    string private constant ERROR_PROPOSAL_ACTIVE_PERIOD_CAN_NOT_BE_ZERO =
+        "QG_PROPOSAL_ACTIVE_PERIOD_CAN_NOT_BE_ZERO";
 
     enum ProposalStatus {Cancelled, Active, Executed}
 
@@ -73,6 +77,7 @@ contract QuartzGovernor is AccessControl {
         Vote negativeVotes;
         ProposalStatus proposalStatus;
         address submitter;
+        uint64 expiration;
     }
 
     mapping(uint256 => mapping(address => uint256)) public userVotes;
@@ -87,6 +92,7 @@ contract QuartzGovernor is AccessControl {
     uint256 public proposalCounter;
     uint256 public totalVotes;
     uint256 public proposalThreshold;
+    uint64 public proposalActivePeriod;
 
     mapping(uint256 => Proposal) internal proposals;
     mapping(uint256 => uint256) internal stakedForProposal;
@@ -103,13 +109,15 @@ contract QuartzGovernor is AccessControl {
         uint256 weight,
         uint256 minThresholdStakePercentage,
         uint256 minVotesToPass,
-        uint256 proposalThreshold
+        uint256 proposalThreshold,
+        uint64 proposalActivePeriod
     );
     event ProposalAdded(
         address indexed entity,
         uint256 indexed id,
         string title,
-        bytes link
+        bytes link,
+        uint64 expiration
     );
     event VoteCasted(
         address indexed entity,
@@ -158,7 +166,8 @@ contract QuartzGovernor is AccessControl {
         uint256 _weight,
         uint256 _minThresholdStakePercentage,
         uint256 _minVotesToPass,
-        uint256 _proposalThreshold
+        uint256 _proposalThreshold,
+        uint64 _proposalActivePeriod
     ) {
         _setRoleAdmin(UPDATE_SETTINGS_ROLE, ADMIN_ROLE);
         _setRoleAdmin(CANCEL_PROPOSAL_ROLE, ADMIN_ROLE);
@@ -177,6 +186,11 @@ contract QuartzGovernor is AccessControl {
             ERROR_PROPOSAL_THRESHOLD_CAN_NOT_BE_ZERO
         );
         proposalThreshold = _proposalThreshold;
+        require(
+            _proposalActivePeriod > 0,
+            ERROR_PROPOSAL_ACTIVE_PERIOD_CAN_NOT_BE_ZERO
+        );
+        proposalActivePeriod = _proposalActivePeriod;
 
         Vote memory abstainVote1 =
             Vote({id: 1, totalVotes: 0, convictionLast: 0, blockLast: 0});
@@ -187,7 +201,8 @@ contract QuartzGovernor is AccessControl {
             positiveVotes: abstainVote1,
             negativeVotes: abstainVote2,
             proposalStatus: ProposalStatus.Active,
-            submitter: address(0)
+            submitter: address(0),
+            expiration: 0
         });
 
         lastVoteId = 2;
@@ -196,7 +211,8 @@ contract QuartzGovernor is AccessControl {
             address(0),
             ABSTAIN_PROPOSAL_ID,
             "Abstain proposal",
-            ""
+            "",
+            0
         );
     }
 
@@ -208,6 +224,8 @@ contract QuartzGovernor is AccessControl {
      * @param _minThresholdStakePercentage The minimum percent of stake token max supply that is used for calculating
         conviction
      * @param _minVotesToPass The minimum votes to be passed
+     * @param _proposalThreshold Vote rep which will be staked to create proposal
+     * @param _proposalActivePeriod Proposal active period
      */
     function setConvictionCalculationSettings(
         uint256 _decay,
@@ -215,7 +233,8 @@ contract QuartzGovernor is AccessControl {
         uint256 _weight,
         uint256 _minThresholdStakePercentage,
         uint256 _minVotesToPass,
-        uint256 _proposalThreshold
+        uint256 _proposalThreshold,
+        uint64 _proposalActivePeriod
     ) public auth(UPDATE_SETTINGS_ROLE) {
         decay = _decay;
         maxRatio = _maxRatio;
@@ -229,6 +248,11 @@ contract QuartzGovernor is AccessControl {
             ERROR_PROPOSAL_THRESHOLD_CAN_NOT_BE_ZERO
         );
         proposalThreshold = _proposalThreshold;
+        require(
+            _proposalActivePeriod > 0,
+            ERROR_PROPOSAL_ACTIVE_PERIOD_CAN_NOT_BE_ZERO
+        );
+        proposalActivePeriod = _proposalActivePeriod;
 
         emit ConvictionSettingsChanged(
             _decay,
@@ -236,7 +260,8 @@ contract QuartzGovernor is AccessControl {
             _weight,
             _minThresholdStakePercentage,
             _minVotesToPass,
-            _proposalThreshold
+            _proposalThreshold,
+            _proposalActivePeriod
         );
     }
 
@@ -261,11 +286,13 @@ contract QuartzGovernor is AccessControl {
                 blockLast: 0
             });
 
+        uint64 expiration = uint64(block.timestamp).add(proposalActivePeriod);
         proposals[proposalCounter] = Proposal({
             positiveVotes: emptyVote1,
             negativeVotes: emptyVote2,
             proposalStatus: ProposalStatus.Active,
-            submitter: msg.sender
+            submitter: msg.sender,
+            expiration: expiration
         });
 
         lastVoteId = lastVoteId.add(2);
@@ -276,7 +303,13 @@ contract QuartzGovernor is AccessControl {
         userProposalIds[msg.sender][proposalCounter] = userProposals[msg.sender]
             .length;
 
-        emit ProposalAdded(msg.sender, proposalCounter, _title, _link);
+        emit ProposalAdded(
+            msg.sender,
+            proposalCounter,
+            _title,
+            _link,
+            expiration
+        );
         proposalCounter = proposalCounter.add(1);
     }
 
@@ -527,13 +560,6 @@ contract QuartzGovernor is AccessControl {
     {
         Proposal storage proposal = proposals[_proposalId];
 
-        bool senderHasPermission = hasRole(CANCEL_PROPOSAL_ROLE, msg.sender);
-        require(
-            proposal.submitter == msg.sender ||
-                senderHasPermission ||
-                msg.sender == address(quartz),
-            ERROR_SENDER_CANNOT_CANCEL
-        );
         require(
             _proposalId != ABSTAIN_PROPOSAL_ID,
             ERROR_CANNOT_CANCEL_ABSTAIN_PROPOSAL
@@ -542,6 +568,17 @@ contract QuartzGovernor is AccessControl {
             proposal.proposalStatus == ProposalStatus.Active,
             ERROR_PROPOSAL_NOT_ACTIVE
         );
+
+        if (proposal.expiration > uint64(block.timestamp)) {
+            bool senderHasPermission =
+                hasRole(CANCEL_PROPOSAL_ROLE, msg.sender);
+            require(
+                proposal.submitter == msg.sender ||
+                    senderHasPermission ||
+                    msg.sender == address(quartz),
+                ERROR_SENDER_CANNOT_CANCEL
+            );
+        }
 
         proposal.proposalStatus = ProposalStatus.Cancelled;
         quartz.moveVotesFromGovernor(
@@ -578,6 +615,7 @@ contract QuartzGovernor is AccessControl {
             Vote memory negativeVotes,
             ProposalStatus proposalStatus,
             address submitter,
+            uint64 expiration,
             uint256 staked
         )
     {
@@ -587,6 +625,7 @@ contract QuartzGovernor is AccessControl {
             proposal.negativeVotes,
             proposal.proposalStatus,
             proposal.submitter,
+            proposal.expiration,
             stakedForProposal[_proposalId]
         );
     }

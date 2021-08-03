@@ -20,6 +20,8 @@ const deployGovernor = async function ({ deployments, getNamedAccounts }) {
       config.weight,
       config.minThresholdStakePercentage,
       config.minVotesToPass,
+      config.proposalThreshold,
+      config.proposalActivePeriod,
     ],
     log: true,
   });

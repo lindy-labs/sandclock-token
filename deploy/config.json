@@ -3,5 +3,7 @@
   "maxRatio": 1000000,
   "weight": 2500,
   "minThresholdStakePercentage": "200000000000000000",
-  "minVotesToPass": "100000000000000000000"
+  "minVotesToPass": "100000000000000000000",
+  "proposalThreshold": "100000000000000000000000",
+  "proposalActivePeriod": "2592000"
 }

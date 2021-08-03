@@ -3,7 +3,7 @@ const { expect } = require('chai');
 const { BigNumber } = require('ethers');
 const { utils } = require('ethers');
 const { time, constants } = require('@openzeppelin/test-helpers');
-const { getCurrentBlock } = require('./utils');
+const { getCurrentBlock, getCurrentTime } = require('./utils');
 
 describe('QuartzGovernor', () => {
   let accounts;
@@ -21,6 +21,7 @@ describe('QuartzGovernor', () => {
   let updateSettingsRole;
   let cancelProposalsRole;
   let proposalThreshold = totalSupply.div(BigNumber.from('1000')); // 0.1% of total supply
+  let proposalActivePeriod = 2592000;
 
   beforeEach(async () => {
     accounts = await ethers.getSigners();
@@ -39,6 +40,7 @@ describe('QuartzGovernor', () => {
       minThresholdStakePercentage,
       minVotesToPass,
       proposalThreshold,
+      proposalActivePeriod,
     );
     await quartz.setGovernor(governor.address);
     await governor.grantRole(
@@ -82,6 +84,10 @@ describe('QuartzGovernor', () => {
       expect(await governor.proposalThreshold()).equal(proposalThreshold);
     });
 
+    it('Check proposalActivePeriod', async () => {
+      expect(await governor.proposalActivePeriod()).equal(proposalActivePeriod);
+    });
+
     it('Check proposalCounter', async () => {
       expect(await governor.proposalCounter()).equal('2');
     });
@@ -95,6 +101,7 @@ describe('QuartzGovernor', () => {
       expect(proposal.proposalStatus).equal(1);
       expect(proposal.submitter).equal(constants.ZERO_ADDRESS);
       expect(proposal.staked).equal(0);
+      expect(proposal.expiration).equal(0);
       const positiveVotes = proposal.positiveVotes;
       const negativeVotes = proposal.negativeVotes;
       expect(positiveVotes.id).equal(1);
@@ -113,7 +120,7 @@ describe('QuartzGovernor', () => {
       await expect(
         governor
           .connect(accounts[1])
-          .setConvictionCalculationSettings(1, 1, 1, 1, 1, 1),
+          .setConvictionCalculationSettings(1, 1, 1, 1, 1, 1, 1),
       ).to.be.revertedWith('QG_AUTH_FAILED');
     });
 
@@ -121,7 +128,7 @@ describe('QuartzGovernor', () => {
       await expect(
         governor
           .connect(updateSettingsRole)
-          .setConvictionCalculationSettings(1, 1, 1, 1, 0, 1),
+          .setConvictionCalculationSettings(1, 1, 1, 1, 0, 1, 1),
       ).to.be.revertedWith('QG_MIN_VOTES_TO_PASS_CAN_NOT_BE_ZERO');
     });
 
@@ -129,8 +136,16 @@ describe('QuartzGovernor', () => {
       await expect(
         governor
           .connect(updateSettingsRole)
-          .setConvictionCalculationSettings(1, 1, 1, 1, 1, 0),
+          .setConvictionCalculationSettings(1, 1, 1, 1, 1, 0, 1),
       ).to.be.revertedWith('QG_PROPOSAL_THRESHOLD_CAN_NOT_BE_ZERO');
+    });
+
+    it('Revert to update settings if proposalActivePeriod is zero', async () => {
+      await expect(
+        governor
+          .connect(updateSettingsRole)
+          .setConvictionCalculationSettings(1, 1, 1, 1, 1, 1, 0),
+      ).to.be.revertedWith('QG_PROPOSAL_ACTIVE_PERIOD_CAN_NOT_BE_ZERO');
     });
 
     it('Should update settings', async () => {
@@ -140,6 +155,7 @@ describe('QuartzGovernor', () => {
       let newMinThresholdStakePercentage = BigNumber.from('10');
       let newMinVotesToPass = BigNumber.from('11');
       let newProposalThreshold = totalSupply.div(BigNumber.from('10000'));
+      let newProposalActivePeriod = 25920000;
       const tx = await governor
         .connect(updateSettingsRole)
         .setConvictionCalculationSettings(
@@ -149,6 +165,7 @@ describe('QuartzGovernor', () => {
           newMinThresholdStakePercentage,
           newMinVotesToPass,
           newProposalThreshold,
+          newProposalActivePeriod,
         );
       expect(tx)
         .to.emit(governor, 'ConvictionSettingsChanged')
@@ -159,6 +176,7 @@ describe('QuartzGovernor', () => {
           newMinThresholdStakePercentage,
           newMinVotesToPass,
           newProposalThreshold,
+          newProposalActivePeriod,
         );
       expect(await governor.decay()).equal(newDecay);
       expect(await governor.maxRatio()).equal(newMaxRatio);
@@ -168,6 +186,9 @@ describe('QuartzGovernor', () => {
       );
       expect(await governor.minVotesToPass()).equal(newMinVotesToPass);
       expect(await governor.proposalThreshold()).equal(newProposalThreshold);
+      expect(await governor.proposalActivePeriod()).equal(
+        newProposalActivePeriod,
+      );
     });
   });
 
@@ -192,6 +213,7 @@ describe('QuartzGovernor', () => {
       const tx = await governor
         .connect(proposalSubmitter)
         .addProposal(proposalTitle, proposalLink);
+      let currentTime = (await getCurrentTime()).toNumber();
       expect(await quartz.getCurrentVotes(proposalSubmitter.address)).equal(0);
       expect(await quartz.getCurrentVotes(governor.address)).equal(
         proposalThreshold,
@@ -205,6 +227,7 @@ describe('QuartzGovernor', () => {
       expect(proposal.proposalStatus).equal(1);
       expect(proposal.submitter).equal(proposalSubmitter.address);
       expect(proposal.staked).equal(proposalThreshold);
+      expect(proposal.expiration).equal(currentTime + proposalActivePeriod);
       const positiveVotes = proposal.positiveVotes;
       const negativeVotes = proposal.negativeVotes;
       expect(positiveVotes.id).equal(3);
@@ -232,24 +255,30 @@ describe('QuartzGovernor', () => {
         .addProposal(proposalTitle, proposalLink);
     });
 
-    it('Revert to cancel to non-exist proposal', async () => {
+    it('Revert to cancel non-exist proposal', async () => {
       await expect(
         governor.connect(cancelProposalsRole).cancelProposal('3'),
       ).to.be.revertedWith('QG_PROPOSAL_DOES_NOT_EXIST');
     });
 
-    it('Revert to cancel to abstain proposal', async () => {
+    it('Revert to cancel abstain proposal', async () => {
       await expect(
         governor.connect(cancelProposalsRole).cancelProposal('1'),
       ).to.be.revertedWith('QG_CANNOT_CANCEL_ABSTAIN_PROPOSAL');
     });
 
-    it('Revert to cancel to inactive proposal', async () => {
+    it('Revert to cancel inactive proposal', async () => {
       await governor.connect(cancelProposalsRole).cancelProposal('2');
 
       await expect(
         governor.connect(cancelProposalsRole).cancelProposal('2'),
       ).to.be.revertedWith('QG_PROPOSAL_NOT_ACTIVE');
+    });
+
+    it('Revert to cancel without permission', async () => {
+      await expect(
+        governor.connect(accounts[8]).cancelProposal('2'),
+      ).to.be.revertedWith('QG_SENDER_CANNOT_CANCEL');
     });
 
     it('Proposal submitter can cancel', async () => {
@@ -270,6 +299,21 @@ describe('QuartzGovernor', () => {
       const tx = await governor
         .connect(cancelProposalsRole)
         .cancelProposal('2');
+      expect(tx).to.emit(governor, 'ProposalCancelled').withArgs(2);
+      expect(await governor.lastVoteId()).equal(4);
+
+      const proposal = await governor.getProposal('2');
+      expect(proposal.proposalStatus).equal(0);
+      expect(proposal.staked).equal(0);
+      expect(await quartz.getCurrentVotes(proposalSubmitter.address)).equal(
+        proposalThreshold,
+      );
+      expect(await quartz.getCurrentVotes(governor.address)).equal(0);
+    });
+
+    it('Anyone can cancel after expiration', async () => {
+      await time.increase(proposalActivePeriod + 1);
+      const tx = await governor.connect(accounts[8]).cancelProposal('2');
       expect(tx).to.emit(governor, 'ProposalCancelled').withArgs(2);
       expect(await governor.lastVoteId()).equal(4);
 

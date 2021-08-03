@@ -7,9 +7,10 @@ const deployQuartz = async function ({ deployments, getNamedAccounts }) {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
+  const minStakePeriod = 3600 * 24 * 30;
   await deploy('Quartz', {
     from: deployer,
-    args: [],
+    args: [minStakePeriod],
     log: true,
   });
 };

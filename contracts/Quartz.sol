@@ -57,14 +57,16 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
     mapping(address => address) public delegates;
     mapping(address => mapping(uint32 => Checkpoint)) public checkpoints;
     mapping(address => uint32) public numCheckpoints;
+    uint64 public minStakePeriod;
     uint64 public stakeLength;
     // All stakes infos
     mapping(uint64 => StakeInfo) public stakes;
     // Total staked amount
     uint256 public totalStaked;
 
-    constructor() {
+    constructor(uint64 _minStakePeriod) {
         _mint(msg.sender, 100000000 * 1e18);
+        minStakePeriod = _minStakePeriod;
     }
 
     function setGovernor(IQuartzGovernor _governor) external onlyOwner {
@@ -86,6 +88,10 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
             "QUARTZ: Beneficiary cannot be 0x0"
         );
         require(_amount > 0, "QUARTZ: Amount must be greater than zero");
+        require(
+            _period >= minStakePeriod,
+            "QUARTZ: Period must be greater than minimum"
+        );
 
         _transfer(msg.sender, address(this), _amount);
 
@@ -282,5 +288,9 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
 
     function _getBlockTimestamp() private view returns (uint64) {
         return uint64(block.timestamp);
+    }
+
+    function setMinStakePeriod(uint64 _minStakePeriod) external onlyOwner {
+        minStakePeriod = _minStakePeriod;
     }
 }

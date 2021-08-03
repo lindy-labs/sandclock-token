@@ -14,13 +14,14 @@ describe('Quartz', () => {
   const name = 'Sandclock';
   const symbol = 'QUARTZ';
   const decimals = 18;
+  const minStakePeriod = 100;
 
   beforeEach(async () => {
     accounts = await ethers.getSigners();
     owner = accounts[0];
 
     const Quartz = await ethers.getContractFactory('Quartz');
-    quartz = await Quartz.deploy();
+    quartz = await Quartz.deploy(minStakePeriod);
   });
 
   describe('Quartz tokenomics', () => {
@@ -56,6 +57,10 @@ describe('Quartz', () => {
       expect(await quartz.stakeLength()).equal('0');
     });
 
+    it('Check minStakePeriod', async () => {
+      expect(await quartz.minStakePeriod()).equal(minStakePeriod);
+    });
+
     it('Check total staked', async () => {
       expect(await quartz.totalStaked()).equal('0');
     });
@@ -78,6 +83,19 @@ describe('Quartz', () => {
       expect(await quartz.governor()).to.equal(constants.ZERO_ADDRESS);
       await quartz.connect(owner).setGovernor(governor);
       expect(await quartz.governor()).to.equal(governor);
+    });
+  });
+
+  describe('setMinStakePeriod', () => {
+    it('Revert to set minStakePeriod by non-owner', async () => {
+      await expect(
+        quartz.connect(accounts[1]).setMinStakePeriod(50),
+      ).to.be.revertedWith('Ownable: caller is not the owner');
+    });
+
+    it('Should set minStakePeriod by owner', async () => {
+      await quartz.connect(owner).setMinStakePeriod(50);
+      expect(await quartz.minStakePeriod()).to.equal(50);
     });
   });
 
@@ -109,6 +127,12 @@ describe('Quartz', () => {
       await expect(
         quartz.connect(accounts[3]).stake(amount, beneficiary.address, period),
       ).to.be.revertedWith('ERC20: transfer amount exceeds balance');
+    });
+
+    it('Revert to stake with less period than minimum', async () => {
+      await expect(
+        quartz.connect(sender).stake('1', beneficiary.address, 50),
+      ).to.be.revertedWith('QUARTZ: Period must be greater than minimum');
     });
 
     it('Stake for single beneficiary', async () => {

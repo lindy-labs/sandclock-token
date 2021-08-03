@@ -195,14 +195,17 @@ describe('QuartzGovernor', () => {
   describe('addProposal', () => {
     const proposalTitle = 'Test Title';
     const proposalLink = utils.toUtf8Bytes('Test Link');
+    const proposalDescription = 'Test Description';
 
     it('Revert to add proposal with less threshold', async () => {
       await expect(
-        governor.connect(accounts[1]).addProposal(proposalTitle, proposalLink),
+        governor
+          .connect(accounts[1])
+          .addProposal(proposalTitle, proposalLink, proposalDescription),
       ).to.be.revertedWith('QG_NOT_ENOUGH_INACTIVE_VOTES');
     });
 
-    it('Should create new proposal', async () => {
+    it.only('Should create new proposal', async () => {
       await quartz
         .connect(owner)
         .stake(proposalThreshold, proposalSubmitter.address, '1');
@@ -212,7 +215,7 @@ describe('QuartzGovernor', () => {
       );
       const tx = await governor
         .connect(proposalSubmitter)
-        .addProposal(proposalTitle, proposalLink);
+        .addProposal(proposalTitle, proposalLink, proposalDescription);
       let currentTime = (await getCurrentTime()).toNumber();
       expect(await quartz.getCurrentVotes(proposalSubmitter.address)).equal(0);
       expect(await quartz.getCurrentVotes(governor.address)).equal(
@@ -220,7 +223,14 @@ describe('QuartzGovernor', () => {
       );
       // expect(tx)
       //   .to.emit(governor, 'ProposalAdded')
-      //   .withArgs(proposalSubmitter.address, 2, proposalTitle, proposalLink);
+      //   .withArgs(
+      //     proposalSubmitter.address,
+      //     2,
+      //     proposalTitle,
+      //     proposalLink,
+      //     proposalDescription,
+      //     currentTime + proposalActivePeriod,
+      //   );
       expect(await governor.lastVoteId()).equal(4);
 
       const proposal = await governor.getProposal('2');
@@ -245,6 +255,7 @@ describe('QuartzGovernor', () => {
   describe('cancelProposal', () => {
     const proposalTitle = 'Test Title';
     const proposalLink = utils.toUtf8Bytes('Test Link');
+    const proposalDescription = 'Test Description';
 
     beforeEach(async () => {
       await quartz
@@ -252,7 +263,7 @@ describe('QuartzGovernor', () => {
         .stake(proposalThreshold, proposalSubmitter.address, '1');
       await governor
         .connect(proposalSubmitter)
-        .addProposal(proposalTitle, proposalLink);
+        .addProposal(proposalTitle, proposalLink, proposalDescription);
     });
 
     it('Revert to cancel non-exist proposal', async () => {
@@ -330,6 +341,7 @@ describe('QuartzGovernor', () => {
   describe('executeProposal', () => {
     const proposalTitle = 'Test Title';
     const proposalLink = utils.toUtf8Bytes('Test Link');
+    const proposalDescription = 'Test Description';
 
     beforeEach(async () => {
       await quartz
@@ -337,7 +349,7 @@ describe('QuartzGovernor', () => {
         .stake(proposalThreshold, proposalSubmitter.address, '1');
       await governor
         .connect(proposalSubmitter)
-        .addProposal(proposalTitle, proposalLink);
+        .addProposal(proposalTitle, proposalLink, proposalDescription);
     });
 
     it('Revert to execute to non-exist proposal', async () => {
@@ -436,6 +448,7 @@ describe('QuartzGovernor', () => {
   describe('castVotes', () => {
     const proposalTitle = 'Test Title';
     const proposalLink = utils.toUtf8Bytes('Test Link');
+    const proposalDescription = 'Test Description';
     const amount = BigNumber.from('1000').mul(decimalsUnit);
     const votesToCast = BigNumber.from('10').mul(decimalsUnit);
     const period = BigNumber.from('3600');
@@ -452,7 +465,7 @@ describe('QuartzGovernor', () => {
         );
       await governor
         .connect(proposalSubmitter)
-        .addProposal(proposalTitle, proposalLink);
+        .addProposal(proposalTitle, proposalLink, proposalDescription);
 
       sender = accounts[2];
       beneficiary = accounts[6];
@@ -507,7 +520,7 @@ describe('QuartzGovernor', () => {
       await governor.connect(beneficiary).castVotes('2', votesToCast, true);
       await governor
         .connect(proposalSubmitter)
-        .addProposal(proposalTitle, proposalLink);
+        .addProposal(proposalTitle, proposalLink, proposalDescription);
       await expect(
         governor
           .connect(beneficiary)
@@ -611,10 +624,10 @@ describe('QuartzGovernor', () => {
       const votesToCast2 = BigNumber.from('500').mul(decimalsUnit);
       await governor
         .connect(proposalSubmitter)
-        .addProposal(proposalTitle, proposalLink);
+        .addProposal(proposalTitle, proposalLink, proposalDescription);
       await governor
         .connect(proposalSubmitter)
-        .addProposal(proposalTitle, proposalLink);
+        .addProposal(proposalTitle, proposalLink, proposalDescription);
       await governor.connect(beneficiary).castVotes('2', votesToCast, true);
       await governor.connect(beneficiary).castVotes('4', votesToCast2, true);
       governor.connect(cancelProposalsRole).cancelProposal('2');
@@ -646,6 +659,7 @@ describe('QuartzGovernor', () => {
   describe('withdrawVotes', () => {
     const proposalTitle = 'Test Title';
     const proposalLink = utils.toUtf8Bytes('Test Link');
+    const proposalDescription = 'Test Description';
     const amount = BigNumber.from('1000').mul(decimalsUnit);
     const votesToCast = BigNumber.from('10').mul(decimalsUnit);
     const votesToWithdraw = BigNumber.from('8').mul(decimalsUnit);
@@ -663,7 +677,7 @@ describe('QuartzGovernor', () => {
         );
       await governor
         .connect(proposalSubmitter)
-        .addProposal(proposalTitle, proposalLink);
+        .addProposal(proposalTitle, proposalLink, proposalDescription);
 
       sender = accounts[2];
       beneficiary = accounts[6];
@@ -787,6 +801,7 @@ describe('QuartzGovernor', () => {
   describe('withdrawAllInactiveVotes', () => {
     const proposalTitle = 'Test Title';
     const proposalLink = utils.toUtf8Bytes('Test Link');
+    const proposalDescription = 'Test Description';
     const amount = BigNumber.from('1000').mul(decimalsUnit);
     let votesToCasts;
     let votesToCasts1;
@@ -809,7 +824,7 @@ describe('QuartzGovernor', () => {
       for (let i = 0; i < proposalCount; i += 1) {
         await governor
           .connect(proposalSubmitter)
-          .addProposal(proposalTitle, proposalLink);
+          .addProposal(proposalTitle, proposalLink, proposalDescription);
         votesToCasts.push(
           BigNumber.from((10 + i * 2).toString()).mul(decimalsUnit),
         );
@@ -885,6 +900,7 @@ describe('QuartzGovernor', () => {
   describe('withdrawRequiredVotes', () => {
     const proposalTitle = 'Test Title';
     const proposalLink = utils.toUtf8Bytes('Test Link');
+    const proposalDescription = 'Test Description';
     const amount = BigNumber.from('400').mul(decimalsUnit);
     const amount2 = BigNumber.from('600').mul(decimalsUnit);
     let votesToCasts;
@@ -908,7 +924,7 @@ describe('QuartzGovernor', () => {
       for (let i = 0; i < proposalCount; i += 1) {
         await governor
           .connect(proposalSubmitter)
-          .addProposal(proposalTitle, proposalLink);
+          .addProposal(proposalTitle, proposalLink, proposalDescription);
         votesToCasts.push(
           BigNumber.from((10 + i * 2).toString()).mul(decimalsUnit),
         );
@@ -940,10 +956,10 @@ describe('QuartzGovernor', () => {
       const votesToCast2 = BigNumber.from('500').mul(decimalsUnit);
       await governor
         .connect(proposalSubmitter)
-        .addProposal(proposalTitle, proposalLink);
+        .addProposal(proposalTitle, proposalLink, proposalDescription);
       await governor
         .connect(proposalSubmitter)
-        .addProposal(proposalTitle, proposalLink);
+        .addProposal(proposalTitle, proposalLink, proposalDescription);
       await governor.connect(beneficiary).castVotes('2', votesToCast, true);
       await governor.connect(beneficiary).castVotes('4', votesToCast2, true);
       governor.connect(cancelProposalsRole).cancelProposal('4');
@@ -975,17 +991,17 @@ describe('QuartzGovernor', () => {
       const votesToCast2 = BigNumber.from('500').mul(decimalsUnit);
       await governor
         .connect(proposalSubmitter)
-        .addProposal(proposalTitle, proposalLink);
+        .addProposal(proposalTitle, proposalLink, proposalDescription);
       await governor
         .connect(proposalSubmitter)
-        .addProposal(proposalTitle, proposalLink);
+        .addProposal(proposalTitle, proposalLink, proposalDescription);
 
       await quartz
         .connect(owner)
         .stake(proposalThreshold, beneficiary.address, period);
       await governor
         .connect(beneficiary)
-        .addProposal(proposalTitle, proposalLink);
+        .addProposal(proposalTitle, proposalLink, proposalDescription);
 
       await governor.connect(beneficiary).castVotes('2', votesToCast, true);
       await governor.connect(beneficiary).castVotes('4', votesToCast2, true);

@@ -117,6 +117,7 @@ contract QuartzGovernor is AccessControl {
         uint256 indexed id,
         string title,
         bytes link,
+        string description,
         uint64 expiration
     );
     event VoteCasted(
@@ -212,6 +213,7 @@ contract QuartzGovernor is AccessControl {
             ABSTAIN_PROPOSAL_ID,
             "Abstain proposal",
             "",
+            "",
             0
         );
     }
@@ -269,8 +271,13 @@ contract QuartzGovernor is AccessControl {
      * @notice Add proposal
      * @param _title Title of the proposal
      * @param _link IPFS or HTTP link with proposal's description
+     * @param _description Succinct description about proposal
      */
-    function addProposal(string memory _title, bytes memory _link) external {
+    function addProposal(
+        string memory _title,
+        bytes memory _link,
+        string memory _description
+    ) external {
         Vote memory emptyVote1 =
             Vote({
                 id: lastVoteId.add(1),
@@ -308,6 +315,7 @@ contract QuartzGovernor is AccessControl {
             proposalCounter,
             _title,
             _link,
+            _description,
             expiration
         );
         proposalCounter = proposalCounter.add(1);

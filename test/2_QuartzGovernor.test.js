@@ -10,6 +10,7 @@ describe('QuartzGovernor', () => {
   let quartz;
   let owner;
   let governor;
+  let proposalSubmitter;
   let decimalsUnit = BigNumber.from('10').pow(new BigNumber.from('18'));
   let totalSupply = BigNumber.from('100000000').mul(decimalsUnit);
   let decay = BigNumber.from('9999799');
@@ -18,14 +19,14 @@ describe('QuartzGovernor', () => {
   let minThresholdStakePercentage = BigNumber.from('5');
   let minVotesToPass = BigNumber.from('10000000000000000000');
   let updateSettingsRole;
-  let createProposalsRole;
   let cancelProposalsRole;
+  let proposalThreshold = totalSupply.div(BigNumber.from('1000')); // 0.1% of total supply
 
   beforeEach(async () => {
     accounts = await ethers.getSigners();
     updateSettingsRole = accounts[0];
     owner = accounts[0];
-    createProposalsRole = accounts[3];
+    proposalSubmitter = accounts[3];
     cancelProposalsRole = accounts[4];
     const Quartz = await ethers.getContractFactory('Quartz');
     quartz = await Quartz.deploy();
@@ -37,15 +38,12 @@ describe('QuartzGovernor', () => {
       weight,
       minThresholdStakePercentage,
       minVotesToPass,
+      proposalThreshold,
     );
     await quartz.setGovernor(governor.address);
     await governor.grantRole(
       utils.keccak256(utils.toUtf8Bytes('UPDATE_SETTINGS_ROLE')),
       updateSettingsRole.address,
-    );
-    await governor.grantRole(
-      utils.keccak256(utils.toUtf8Bytes('CREATE_PROPOSALS_ROLE')),
-      createProposalsRole.address,
     );
     await governor.grantRole(
       utils.keccak256(utils.toUtf8Bytes('CANCEL_PROPOSAL_ROLE')),
@@ -80,6 +78,10 @@ describe('QuartzGovernor', () => {
       expect(await governor.minVotesToPass()).equal(minVotesToPass);
     });
 
+    it('Check proposalThreshold', async () => {
+      expect(await governor.proposalThreshold()).equal(proposalThreshold);
+    });
+
     it('Check proposalCounter', async () => {
       expect(await governor.proposalCounter()).equal('2');
     });
@@ -92,6 +94,7 @@ describe('QuartzGovernor', () => {
       const proposal = await governor.getProposal('1');
       expect(proposal.proposalStatus).equal(1);
       expect(proposal.submitter).equal(constants.ZERO_ADDRESS);
+      expect(proposal.staked).equal(0);
       const positiveVotes = proposal.positiveVotes;
       const negativeVotes = proposal.negativeVotes;
       expect(positiveVotes.id).equal(1);
@@ -110,7 +113,7 @@ describe('QuartzGovernor', () => {
       await expect(
         governor
           .connect(accounts[1])
-          .setConvictionCalculationSettings(1, 1, 1, 1, 1),
+          .setConvictionCalculationSettings(1, 1, 1, 1, 1, 1),
       ).to.be.revertedWith('QG_AUTH_FAILED');
     });
 
@@ -118,8 +121,16 @@ describe('QuartzGovernor', () => {
       await expect(
         governor
           .connect(updateSettingsRole)
-          .setConvictionCalculationSettings(1, 1, 1, 1, 0),
+          .setConvictionCalculationSettings(1, 1, 1, 1, 0, 1),
       ).to.be.revertedWith('QG_MIN_VOTES_TO_PASS_CAN_NOT_BE_ZERO');
+    });
+
+    it('Revert to update settings if proposalThreshold is zero', async () => {
+      await expect(
+        governor
+          .connect(updateSettingsRole)
+          .setConvictionCalculationSettings(1, 1, 1, 1, 1, 0),
+      ).to.be.revertedWith('QG_PROPOSAL_THRESHOLD_CAN_NOT_BE_ZERO');
     });
 
     it('Should update settings', async () => {
@@ -128,6 +139,7 @@ describe('QuartzGovernor', () => {
       let newWeight = BigNumber.from('9');
       let newMinThresholdStakePercentage = BigNumber.from('10');
       let newMinVotesToPass = BigNumber.from('11');
+      let newProposalThreshold = totalSupply.div(BigNumber.from('10000'));
       const tx = await governor
         .connect(updateSettingsRole)
         .setConvictionCalculationSettings(
@@ -136,6 +148,7 @@ describe('QuartzGovernor', () => {
           newWeight,
           newMinThresholdStakePercentage,
           newMinVotesToPass,
+          newProposalThreshold,
         );
       expect(tx)
         .to.emit(governor, 'ConvictionSettingsChanged')
@@ -145,6 +158,7 @@ describe('QuartzGovernor', () => {
           newWeight,
           newMinThresholdStakePercentage,
           newMinVotesToPass,
+          newProposalThreshold,
         );
       expect(await governor.decay()).equal(newDecay);
       expect(await governor.maxRatio()).equal(newMaxRatio);
@@ -153,6 +167,7 @@ describe('QuartzGovernor', () => {
         newMinThresholdStakePercentage,
       );
       expect(await governor.minVotesToPass()).equal(newMinVotesToPass);
+      expect(await governor.proposalThreshold()).equal(newProposalThreshold);
     });
   });
 
@@ -160,24 +175,36 @@ describe('QuartzGovernor', () => {
     const proposalTitle = 'Test Title';
     const proposalLink = utils.toUtf8Bytes('Test Link');
 
-    it('Revert to add proposal without role', async () => {
+    it('Revert to add proposal with less threshold', async () => {
       await expect(
         governor.connect(accounts[1]).addProposal(proposalTitle, proposalLink),
-      ).to.be.revertedWith('QG_AUTH_FAILED');
+      ).to.be.revertedWith('QG_NOT_ENOUGH_INACTIVE_VOTES');
     });
 
     it('Should create new proposal', async () => {
+      await quartz
+        .connect(owner)
+        .stake(proposalThreshold, proposalSubmitter.address, '1');
+
+      expect(await quartz.getCurrentVotes(proposalSubmitter.address)).equal(
+        proposalThreshold,
+      );
       const tx = await governor
-        .connect(createProposalsRole)
+        .connect(proposalSubmitter)
         .addProposal(proposalTitle, proposalLink);
+      expect(await quartz.getCurrentVotes(proposalSubmitter.address)).equal(0);
+      expect(await quartz.getCurrentVotes(governor.address)).equal(
+        proposalThreshold,
+      );
       // expect(tx)
       //   .to.emit(governor, 'ProposalAdded')
-      //   .withArgs(createProposalsRole.address, 2, proposalTitle, proposalLink);
+      //   .withArgs(proposalSubmitter.address, 2, proposalTitle, proposalLink);
       expect(await governor.lastVoteId()).equal(4);
 
       const proposal = await governor.getProposal('2');
       expect(proposal.proposalStatus).equal(1);
-      expect(proposal.submitter).equal(createProposalsRole.address);
+      expect(proposal.submitter).equal(proposalSubmitter.address);
+      expect(proposal.staked).equal(proposalThreshold);
       const positiveVotes = proposal.positiveVotes;
       const negativeVotes = proposal.negativeVotes;
       expect(positiveVotes.id).equal(3);
@@ -197,8 +224,11 @@ describe('QuartzGovernor', () => {
     const proposalLink = utils.toUtf8Bytes('Test Link');
 
     beforeEach(async () => {
+      await quartz
+        .connect(owner)
+        .stake(proposalThreshold, proposalSubmitter.address, '1');
       await governor
-        .connect(createProposalsRole)
+        .connect(proposalSubmitter)
         .addProposal(proposalTitle, proposalLink);
     });
 
@@ -223,14 +253,17 @@ describe('QuartzGovernor', () => {
     });
 
     it('Proposal submitter can cancel', async () => {
-      const tx = await governor
-        .connect(createProposalsRole)
-        .cancelProposal('2');
+      const tx = await governor.connect(proposalSubmitter).cancelProposal('2');
       expect(tx).to.emit(governor, 'ProposalCancelled').withArgs(2);
       expect(await governor.lastVoteId()).equal(4);
 
       const proposal = await governor.getProposal('2');
       expect(proposal.proposalStatus).equal(0);
+      expect(proposal.staked).equal(0);
+      expect(await quartz.getCurrentVotes(proposalSubmitter.address)).equal(
+        proposalThreshold,
+      );
+      expect(await quartz.getCurrentVotes(governor.address)).equal(0);
     });
 
     it('User with cancellable role can cancel', async () => {
@@ -242,6 +275,11 @@ describe('QuartzGovernor', () => {
 
       const proposal = await governor.getProposal('2');
       expect(proposal.proposalStatus).equal(0);
+      expect(proposal.staked).equal(0);
+      expect(await quartz.getCurrentVotes(proposalSubmitter.address)).equal(
+        proposalThreshold,
+      );
+      expect(await quartz.getCurrentVotes(governor.address)).equal(0);
     });
   });
 
@@ -250,8 +288,11 @@ describe('QuartzGovernor', () => {
     const proposalLink = utils.toUtf8Bytes('Test Link');
 
     beforeEach(async () => {
+      await quartz
+        .connect(owner)
+        .stake(proposalThreshold, proposalSubmitter.address, '1');
       await governor
-        .connect(createProposalsRole)
+        .connect(proposalSubmitter)
         .addProposal(proposalTitle, proposalLink);
     });
 
@@ -281,7 +322,7 @@ describe('QuartzGovernor', () => {
       const period = BigNumber.from('3600');
       let sender = accounts[2];
       let beneficiary = accounts[6];
-      await quartz.connect(owner).transfer(sender.address, totalSupply);
+      await quartz.connect(owner).transfer(sender.address, amount);
       await quartz.connect(sender).stake(amount, beneficiary.address, period);
       await governor.connect(beneficiary).castVotes('2', votesToCast, false);
       await time.advanceBlock();
@@ -297,7 +338,9 @@ describe('QuartzGovernor', () => {
       let sender = accounts[2];
       let beneficiary = accounts[6];
       let beneficiary1 = accounts[7];
-      await quartz.connect(owner).transfer(sender.address, totalSupply);
+      await quartz
+        .connect(owner)
+        .transfer(sender.address, amount.mul(BigNumber.from('2')));
       await quartz.connect(sender).stake(amount, beneficiary.address, period);
       await quartz.connect(sender).stake(amount, beneficiary1.address, period);
       await governor.connect(beneficiary).castVotes('2', votesToCast, true);
@@ -316,7 +359,7 @@ describe('QuartzGovernor', () => {
       const period = BigNumber.from('3600');
       let sender = accounts[2];
       let beneficiary = accounts[6];
-      await quartz.connect(owner).transfer(sender.address, totalSupply);
+      await quartz.connect(owner).transfer(sender.address, amount);
       await quartz.connect(sender).stake(amount, beneficiary.address, period);
       await governor.connect(beneficiary).castVotes('2', votesToCast, true);
       const userVotes = await governor.getProposalUserVotes(
@@ -338,6 +381,11 @@ describe('QuartzGovernor', () => {
         .withArgs('2', conviction, '0');
       const proposal = await governor.getProposal('2');
       expect(proposal.proposalStatus).equal(2);
+      expect(proposal.staked).equal(0);
+      expect(await quartz.getCurrentVotes(proposalSubmitter.address)).equal(
+        proposalThreshold,
+      );
+      expect(await quartz.getCurrentVotes(governor.address)).equal(votesToCast);
     });
   });
 
@@ -351,13 +399,25 @@ describe('QuartzGovernor', () => {
     let beneficiary;
 
     beforeEach(async () => {
+      await quartz
+        .connect(owner)
+        .stake(
+          proposalThreshold.mul(BigNumber.from('3')),
+          proposalSubmitter.address,
+          '1',
+        );
       await governor
-        .connect(createProposalsRole)
+        .connect(proposalSubmitter)
         .addProposal(proposalTitle, proposalLink);
 
       sender = accounts[2];
       beneficiary = accounts[6];
-      await quartz.connect(owner).transfer(sender.address, totalSupply);
+      await quartz
+        .connect(owner)
+        .transfer(
+          sender.address,
+          totalSupply.sub(proposalThreshold.mul(BigNumber.from('3'))),
+        );
       await quartz.connect(sender).stake(amount, beneficiary.address, period);
     });
 
@@ -402,7 +462,7 @@ describe('QuartzGovernor', () => {
     it('Revert to vote to bigger amounts than available votes', async () => {
       await governor.connect(beneficiary).castVotes('2', votesToCast, true);
       await governor
-        .connect(createProposalsRole)
+        .connect(proposalSubmitter)
         .addProposal(proposalTitle, proposalLink);
       await expect(
         governor
@@ -506,10 +566,10 @@ describe('QuartzGovernor', () => {
       const votesToCast1 = BigNumber.from('700').mul(decimalsUnit);
       const votesToCast2 = BigNumber.from('500').mul(decimalsUnit);
       await governor
-        .connect(createProposalsRole)
+        .connect(proposalSubmitter)
         .addProposal(proposalTitle, proposalLink);
       await governor
-        .connect(createProposalsRole)
+        .connect(proposalSubmitter)
         .addProposal(proposalTitle, proposalLink);
       await governor.connect(beneficiary).castVotes('2', votesToCast, true);
       await governor.connect(beneficiary).castVotes('4', votesToCast2, true);
@@ -550,13 +610,25 @@ describe('QuartzGovernor', () => {
     let beneficiary;
 
     beforeEach(async () => {
+      await quartz
+        .connect(owner)
+        .stake(
+          proposalThreshold.mul(BigNumber.from('3')),
+          proposalSubmitter.address,
+          '1',
+        );
       await governor
-        .connect(createProposalsRole)
+        .connect(proposalSubmitter)
         .addProposal(proposalTitle, proposalLink);
 
       sender = accounts[2];
       beneficiary = accounts[6];
-      await quartz.connect(owner).transfer(sender.address, totalSupply);
+      await quartz
+        .connect(owner)
+        .transfer(
+          sender.address,
+          totalSupply.sub(proposalThreshold.mul(BigNumber.from('3'))),
+        );
       await quartz.connect(sender).stake(amount, beneficiary.address, period);
     });
 
@@ -605,7 +677,7 @@ describe('QuartzGovernor', () => {
         .withdrawVotes('2', votesToWithdraw, true);
 
       expect(tx)
-        .to.emit(governor, 'VotesWithdrawn')
+        .to.emit(governor, 'VoteWithdrawn')
         .withArgs(beneficiary.address, '2', votesToWithdraw, conviction, true);
       const currentBlock = await getCurrentBlock();
       expect(await governor.userVotes(3, beneficiary.address)).equal(
@@ -645,7 +717,7 @@ describe('QuartzGovernor', () => {
         .withdrawAllVotesFromProposal('2', true);
 
       expect(tx)
-        .to.emit(governor, 'VotesWithdrawn')
+        .to.emit(governor, 'VoteWithdrawn')
         .withArgs(beneficiary.address, '2', votesToCast, conviction, true);
       const currentBlock = await getCurrentBlock();
       expect(await governor.userVotes(3, beneficiary.address)).equal('0');
@@ -674,7 +746,6 @@ describe('QuartzGovernor', () => {
     const amount = BigNumber.from('1000').mul(decimalsUnit);
     let votesToCasts;
     let votesToCasts1;
-    const votesToWithdraw = BigNumber.from('8').mul(decimalsUnit);
     const period = BigNumber.from('3600');
     let proposalCount = 5;
     let sender;
@@ -684,9 +755,16 @@ describe('QuartzGovernor', () => {
     beforeEach(async () => {
       votesToCasts = [];
       votesToCasts1 = [];
+      await quartz
+        .connect(owner)
+        .stake(
+          proposalThreshold.mul(BigNumber.from(proposalCount.toString())),
+          proposalSubmitter.address,
+          '1',
+        );
       for (let i = 0; i < proposalCount; i += 1) {
         await governor
-          .connect(createProposalsRole)
+          .connect(proposalSubmitter)
           .addProposal(proposalTitle, proposalLink);
         votesToCasts.push(
           BigNumber.from((10 + i * 2).toString()).mul(decimalsUnit),
@@ -699,7 +777,14 @@ describe('QuartzGovernor', () => {
       sender = accounts[2];
       beneficiary = accounts[6];
       beneficiary1 = accounts[7];
-      await quartz.connect(owner).transfer(sender.address, totalSupply);
+      await quartz
+        .connect(owner)
+        .transfer(
+          sender.address,
+          totalSupply.sub(
+            proposalThreshold.mul(BigNumber.from(proposalCount.toString())),
+          ),
+        );
       await quartz.connect(sender).stake(amount, beneficiary.address, period);
       await quartz.connect(sender).stake(amount, beneficiary1.address, period);
     });
@@ -756,21 +841,29 @@ describe('QuartzGovernor', () => {
   describe('withdrawRequiredVotes', () => {
     const proposalTitle = 'Test Title';
     const proposalLink = utils.toUtf8Bytes('Test Link');
-    const amount = BigNumber.from('1000').mul(decimalsUnit);
+    const amount = BigNumber.from('400').mul(decimalsUnit);
+    const amount2 = BigNumber.from('600').mul(decimalsUnit);
     let votesToCasts;
     let votesToCasts1;
-    const votesToWithdraw = BigNumber.from('8').mul(decimalsUnit);
     const period = BigNumber.from('3600');
     let proposalCount = 5;
     let sender;
+    let sender2;
     let beneficiary;
 
     beforeEach(async () => {
       votesToCasts = [];
       votesToCasts1 = [];
+      await quartz
+        .connect(owner)
+        .stake(
+          proposalThreshold.mul(BigNumber.from((proposalCount + 2).toString())),
+          proposalSubmitter.address,
+          '1',
+        );
       for (let i = 0; i < proposalCount; i += 1) {
         await governor
-          .connect(createProposalsRole)
+          .connect(proposalSubmitter)
           .addProposal(proposalTitle, proposalLink);
         votesToCasts.push(
           BigNumber.from((10 + i * 2).toString()).mul(decimalsUnit),
@@ -781,11 +874,13 @@ describe('QuartzGovernor', () => {
       }
 
       sender = accounts[2];
+      sender2 = accounts[5];
       beneficiary = accounts[6];
       beneficiary1 = accounts[7];
-      await quartz.connect(owner).transfer(sender.address, totalSupply);
+      await quartz.connect(owner).transfer(sender.address, amount);
       await quartz.connect(sender).stake(amount, beneficiary.address, period);
-      // await quartz.connect(sender).stake(amount, beneficiary1.address, period);
+      await quartz.connect(owner).transfer(sender2.address, amount2);
+      await quartz.connect(sender2).stake(amount2, beneficiary.address, period);
     });
 
     it('Revert to if caller is not QUARTZ token', async () => {
@@ -798,13 +893,12 @@ describe('QuartzGovernor', () => {
 
     it('Should withdraw required votes by QUARTZ token', async () => {
       const votesToCast = BigNumber.from('400').mul(decimalsUnit);
-      const votesToCast1 = BigNumber.from('700').mul(decimalsUnit);
       const votesToCast2 = BigNumber.from('500').mul(decimalsUnit);
       await governor
-        .connect(createProposalsRole)
+        .connect(proposalSubmitter)
         .addProposal(proposalTitle, proposalLink);
       await governor
-        .connect(createProposalsRole)
+        .connect(proposalSubmitter)
         .addProposal(proposalTitle, proposalLink);
       await governor.connect(beneficiary).castVotes('2', votesToCast, true);
       await governor.connect(beneficiary).castVotes('4', votesToCast2, true);
@@ -822,13 +916,61 @@ describe('QuartzGovernor', () => {
       expect(await governor.totalVotes()).equal(votesToCast.add(votesToCast2));
 
       await time.increase(period.toString());
-      await quartz.connect(sender).unstake('0');
+      await quartz.connect(sender).unstake('1');
+      await quartz.connect(sender2).unstake('2');
 
       expect(await governor.userVotes(3, beneficiary.address)).equal('0');
       expect(await governor.userVotes(5, beneficiary.address)).equal('0');
       expect(await governor.userVotes(7, beneficiary.address)).equal('0');
       expect(await governor.getTotalUserVotes(beneficiary.address)).equal('0');
       expect(await governor.totalVotes()).equal('0');
+    });
+
+    it('Should cancel proposals if necessary', async () => {
+      const votesToCast = BigNumber.from('400').mul(decimalsUnit);
+      const votesToCast2 = BigNumber.from('500').mul(decimalsUnit);
+      await governor
+        .connect(proposalSubmitter)
+        .addProposal(proposalTitle, proposalLink);
+      await governor
+        .connect(proposalSubmitter)
+        .addProposal(proposalTitle, proposalLink);
+
+      await quartz
+        .connect(owner)
+        .stake(proposalThreshold, beneficiary.address, period);
+      await governor
+        .connect(beneficiary)
+        .addProposal(proposalTitle, proposalLink);
+
+      await governor.connect(beneficiary).castVotes('2', votesToCast, true);
+      await governor.connect(beneficiary).castVotes('4', votesToCast2, true);
+      governor.connect(cancelProposalsRole).cancelProposal('4');
+
+      expect(await governor.userVotes(3, beneficiary.address)).equal(
+        votesToCast,
+      );
+      expect(await governor.userVotes(7, beneficiary.address)).equal(
+        votesToCast2,
+      );
+      expect(await governor.getTotalUserVotes(beneficiary.address)).equal(
+        votesToCast.add(votesToCast2),
+      );
+      expect(await governor.totalVotes()).equal(votesToCast.add(votesToCast2));
+
+      await time.increase(period.toString());
+      await quartz.connect(owner).unstake('3');
+
+      expect(await governor.userVotes(3, beneficiary.address)).equal('0');
+      expect(await governor.userVotes(5, beneficiary.address)).equal('0');
+      expect(await governor.userVotes(7, beneficiary.address)).equal('0');
+      expect(await governor.getTotalUserVotes(beneficiary.address)).equal('0');
+      expect(await governor.totalVotes()).equal('0');
+
+      const proposal = await governor.getProposal('9');
+      expect(proposal.proposalStatus).equal(0);
+      expect(proposal.submitter).equal(beneficiary.address);
+      expect(proposal.staked).equal(0);
     });
   });
 });

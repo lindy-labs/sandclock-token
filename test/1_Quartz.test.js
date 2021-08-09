@@ -14,13 +14,14 @@ describe('Quartz', () => {
   const name = 'Sandclock';
   const symbol = 'QUARTZ';
   const decimals = 18;
+  const minStakePeriod = 100;
 
   beforeEach(async () => {
     accounts = await ethers.getSigners();
     owner = accounts[0];
 
     const Quartz = await ethers.getContractFactory('Quartz');
-    quartz = await Quartz.deploy(totalSupply);
+    quartz = await Quartz.deploy(minStakePeriod);
   });
 
   describe('Quartz tokenomics', () => {
@@ -56,6 +57,10 @@ describe('Quartz', () => {
       expect(await quartz.stakeLength()).equal('0');
     });
 
+    it('Check minStakePeriod', async () => {
+      expect(await quartz.minStakePeriod()).equal(minStakePeriod);
+    });
+
     it('Check total staked', async () => {
       expect(await quartz.totalStaked()).equal('0');
     });
@@ -78,6 +83,19 @@ describe('Quartz', () => {
       expect(await quartz.governor()).to.equal(constants.ZERO_ADDRESS);
       await quartz.connect(owner).setGovernor(governor);
       expect(await quartz.governor()).to.equal(governor);
+    });
+  });
+
+  describe('setMinStakePeriod', () => {
+    it('Revert to set minStakePeriod by non-owner', async () => {
+      await expect(
+        quartz.connect(accounts[1]).setMinStakePeriod(50),
+      ).to.be.revertedWith('Ownable: caller is not the owner');
+    });
+
+    it('Should set minStakePeriod by owner', async () => {
+      await quartz.connect(owner).setMinStakePeriod(50);
+      expect(await quartz.minStakePeriod()).to.equal(50);
     });
   });
 
@@ -111,16 +129,16 @@ describe('Quartz', () => {
       ).to.be.revertedWith('ERC20: transfer amount exceeds balance');
     });
 
+    it('Revert to stake with less period than minimum', async () => {
+      await expect(
+        quartz.connect(sender).stake('1', beneficiary.address, 50),
+      ).to.be.revertedWith('QUARTZ: Period must be greater than minimum');
+    });
+
     it('Stake for single beneficiary', async () => {
       expect(await quartz.delegates(beneficiary.address)).equal(
         constants.ZERO_ADDRESS,
       );
-      expect(
-        await quartz.getPriorVotes(
-          beneficiary.address,
-          BigNumber.from(await getCurrentBlock()).sub(BigNumber.from('1')),
-        ),
-      ).equal('0');
 
       expect(await quartz.numCheckpoints(beneficiary.address)).equal(0);
       const tx = await quartz
@@ -143,14 +161,7 @@ describe('Quartz', () => {
       );
       expect(await quartz.totalStaked()).equal(amount);
       expect(await quartz.stakeLength()).equal('1');
-      expect(await quartz.getOwnerStakeIdsLength(sender.address)).equal('1');
-      expect(await quartz.getBeneficiaryIdsLength(sender.address)).equal('0');
-      expect(await quartz.getOwnerStakeIdsLength(beneficiary.address)).equal(
-        '0',
-      );
-      expect(await quartz.getBeneficiaryIdsLength(beneficiary.address)).equal(
-        '1',
-      );
+
       const stakeInfo = await quartz.stakes(0);
       expect(stakeInfo.owner).equal(sender.address);
       expect(stakeInfo.beneficiary).equal(beneficiary.address);
@@ -177,24 +188,6 @@ describe('Quartz', () => {
       expect(checkpoints.fromBlock).equal(currentBlock);
       expect(checkpoints.votes).equal(amount);
       expect(await quartz.numCheckpoints(beneficiary.address)).equal(1);
-      await time.advanceBlock();
-      await time.advanceBlock();
-      await time.advanceBlock();
-      expect(
-        await quartz.getPriorVotes(
-          beneficiary.address,
-          currentBlock.sub(BigNumber.from('1')),
-        ),
-      ).equal('0');
-      expect(
-        await quartz.getPriorVotes(beneficiary.address, currentBlock),
-      ).equal(amount);
-      expect(
-        await quartz.getPriorVotes(
-          beneficiary.address,
-          currentBlock.add(BigNumber.from('1')),
-        ),
-      ).equal(amount);
     });
 
     it('Stake for single beneficiary 2 times', async () => {
@@ -229,14 +222,7 @@ describe('Quartz', () => {
       );
       expect(await quartz.totalStaked()).equal(amount.add(amount2));
       expect(await quartz.stakeLength()).equal('2');
-      expect(await quartz.getOwnerStakeIdsLength(sender.address)).equal('2');
-      expect(await quartz.getBeneficiaryIdsLength(sender.address)).equal('0');
-      expect(await quartz.getOwnerStakeIdsLength(beneficiary.address)).equal(
-        '0',
-      );
-      expect(await quartz.getBeneficiaryIdsLength(beneficiary.address)).equal(
-        '2',
-      );
+
       const stakeInfo = await quartz.stakes(1);
       expect(stakeInfo.owner).equal(sender.address);
       expect(stakeInfo.beneficiary).equal(beneficiary.address);
@@ -261,18 +247,6 @@ describe('Quartz', () => {
       expect(checkpoints2.fromBlock).equal(currentBlock2);
       expect(checkpoints2.votes).equal(amount.add(amount2));
       expect(await quartz.numCheckpoints(beneficiary.address)).equal(2);
-      await time.advanceBlock();
-      await time.advanceBlock();
-      await time.advanceBlock();
-      expect(
-        await quartz.getPriorVotes(beneficiary.address, currentBlock.sub('1')),
-      ).equal('0');
-      expect(
-        await quartz.getPriorVotes(beneficiary.address, currentBlock.add('1')),
-      ).equal(amount);
-      expect(
-        await quartz.getPriorVotes(beneficiary.address, currentBlock2),
-      ).equal(amount.add(amount2));
     });
 
     it('Stake for two beneficiaries', async () => {
@@ -308,17 +282,7 @@ describe('Quartz', () => {
       );
       expect(await quartz.totalStaked()).equal(amount.add(amount2));
       expect(await quartz.stakeLength()).equal('2');
-      expect(await quartz.getOwnerStakeIdsLength(sender.address)).equal('2');
-      expect(await quartz.getBeneficiaryIdsLength(sender.address)).equal('0');
-      expect(await quartz.getOwnerStakeIdsLength(beneficiary.address)).equal(
-        '0',
-      );
-      expect(await quartz.getBeneficiaryIdsLength(beneficiary.address)).equal(
-        '1',
-      );
-      expect(await quartz.getBeneficiaryIdsLength(beneficiary2.address)).equal(
-        '1',
-      );
+
       let stakeInfo = await quartz.stakes(0);
       expect(stakeInfo.owner).equal(sender.address);
       expect(stakeInfo.beneficiary).equal(beneficiary.address);
@@ -354,22 +318,6 @@ describe('Quartz', () => {
       expect(checkpoints2.votes).equal(amount2);
       expect(await quartz.numCheckpoints(beneficiary.address)).equal(1);
       expect(await quartz.numCheckpoints(beneficiary2.address)).equal(1);
-
-      await time.advanceBlock();
-      await time.advanceBlock();
-      await time.advanceBlock();
-      expect(
-        await quartz.getPriorVotes(beneficiary.address, currentBlock.add('1')),
-      ).equal(amount);
-      expect(
-        await quartz.getPriorVotes(beneficiary2.address, currentBlock.add('1')),
-      ).equal('0');
-      expect(
-        await quartz.getPriorVotes(beneficiary.address, currentBlock2),
-      ).equal(amount);
-      expect(
-        await quartz.getPriorVotes(beneficiary2.address, currentBlock2),
-      ).equal(amount2);
     });
 
     it('Stake for it self', async () => {
@@ -398,14 +346,7 @@ describe('Quartz', () => {
       );
       expect(await quartz.totalStaked()).equal(amount);
       expect(await quartz.stakeLength()).equal('1');
-      expect(await quartz.getOwnerStakeIdsLength(sender.address)).equal('1');
-      expect(await quartz.getBeneficiaryIdsLength(sender.address)).equal('1');
-      expect(await quartz.getOwnerStakeIdsLength(beneficiary.address)).equal(
-        '1',
-      );
-      expect(await quartz.getBeneficiaryIdsLength(beneficiary.address)).equal(
-        '1',
-      );
+
       const stakeInfo = await quartz.stakes(0);
       expect(stakeInfo.owner).equal(sender.address);
       expect(stakeInfo.beneficiary).equal(beneficiary.address);
@@ -432,24 +373,6 @@ describe('Quartz', () => {
       expect(checkpoints.fromBlock).equal(currentBlock);
       expect(checkpoints.votes).equal(amount);
       expect(await quartz.numCheckpoints(beneficiary.address)).equal(1);
-      await time.advanceBlock();
-      await time.advanceBlock();
-      await time.advanceBlock();
-      expect(
-        await quartz.getPriorVotes(
-          beneficiary.address,
-          currentBlock.sub(BigNumber.from('1')),
-        ),
-      ).equal('0');
-      expect(
-        await quartz.getPriorVotes(beneficiary.address, currentBlock),
-      ).equal(amount);
-      expect(
-        await quartz.getPriorVotes(
-          beneficiary.address,
-          currentBlock.add(BigNumber.from('1')),
-        ),
-      ).equal(amount);
     });
 
     it('Stake for beneficiary who has delegatee', async () => {
@@ -479,14 +402,7 @@ describe('Quartz', () => {
       );
       expect(await quartz.totalStaked()).equal(amount);
       expect(await quartz.stakeLength()).equal('1');
-      expect(await quartz.getOwnerStakeIdsLength(sender.address)).equal('1');
-      expect(await quartz.getBeneficiaryIdsLength(sender.address)).equal('0');
-      expect(await quartz.getOwnerStakeIdsLength(beneficiary.address)).equal(
-        '0',
-      );
-      expect(await quartz.getBeneficiaryIdsLength(beneficiary.address)).equal(
-        '1',
-      );
+
       const stakeInfo = await quartz.stakes(0);
       expect(stakeInfo.owner).equal(sender.address);
       expect(stakeInfo.beneficiary).equal(beneficiary.address);
@@ -506,24 +422,6 @@ describe('Quartz', () => {
       expect(checkpoints.fromBlock).equal(currentBlock);
       expect(checkpoints.votes).equal(amount);
       expect(await quartz.numCheckpoints(delegatee.address)).equal(1);
-      await time.advanceBlock();
-      await time.advanceBlock();
-      await time.advanceBlock();
-      expect(
-        await quartz.getPriorVotes(
-          delegatee.address,
-          currentBlock.sub(BigNumber.from('1')),
-        ),
-      ).equal('0');
-      expect(await quartz.getPriorVotes(delegatee.address, currentBlock)).equal(
-        amount,
-      );
-      expect(
-        await quartz.getPriorVotes(
-          delegatee.address,
-          currentBlock.add(BigNumber.from('1')),
-        ),
-      ).equal(amount);
     });
   });
 
@@ -586,14 +484,7 @@ describe('Quartz', () => {
       expect(await quartz.balanceOf(sender.address)).equal(totalSupply);
       expect(await quartz.totalStaked()).equal('0');
       expect(await quartz.stakeLength()).equal('1');
-      expect(await quartz.getOwnerStakeIdsLength(sender.address)).equal('1');
-      expect(await quartz.getBeneficiaryIdsLength(sender.address)).equal('0');
-      expect(await quartz.getOwnerStakeIdsLength(beneficiary.address)).equal(
-        '0',
-      );
-      expect(await quartz.getBeneficiaryIdsLength(beneficiary.address)).equal(
-        '1',
-      );
+
       const stakeInfo = await quartz.stakes(0);
       expect(stakeInfo.owner).equal(sender.address);
       expect(stakeInfo.beneficiary).equal(beneficiary.address);
@@ -614,24 +505,6 @@ describe('Quartz', () => {
       expect(checkpoints.fromBlock).equal(unstakedBlock);
       expect(checkpoints.votes).equal('0');
       expect(await quartz.numCheckpoints(beneficiary.address)).equal(2);
-      await time.advanceBlock();
-      await time.advanceBlock();
-      await time.advanceBlock();
-      expect(
-        await quartz.getPriorVotes(
-          beneficiary.address,
-          currentBlock.sub(BigNumber.from('1')),
-        ),
-      ).equal('0');
-      expect(
-        await quartz.getPriorVotes(beneficiary.address, currentBlock),
-      ).equal(amount);
-      expect(
-        await quartz.getPriorVotes(
-          beneficiary.address,
-          unstakedBlock.add(BigNumber.from('1')),
-        ),
-      ).equal('0');
     });
   });
 
@@ -731,19 +604,6 @@ describe('Quartz', () => {
       expect(checkpoints.fromBlock).equal(delegateBlock);
       expect(checkpoints.votes).equal(amount);
       expect(await quartz.numCheckpoints(delegatee.address)).equal(1);
-      await time.advanceBlock();
-      expect(
-        await quartz.getPriorVotes(beneficiary.address, currentBlock),
-      ).equal(amount);
-      expect(
-        await quartz.getPriorVotes(beneficiary.address, delegateBlock),
-      ).equal('0');
-      expect(await quartz.getPriorVotes(delegatee.address, currentBlock)).equal(
-        '0',
-      );
-      expect(
-        await quartz.getPriorVotes(delegatee.address, delegateBlock),
-      ).equal(amount);
       expect(await quartz.getCurrentVotes(beneficiary.address)).equal(0);
       expect(await quartz.getCurrentVotes(delegatee.address)).equal(amount);
     });
@@ -767,58 +627,8 @@ describe('Quartz', () => {
       expect(checkpoints.fromBlock).equal(currentBlock);
       expect(checkpoints.votes).equal('0');
       expect(await quartz.numCheckpoints(delegatee.address)).equal(2);
-      await time.advanceBlock();
-      expect(
-        await quartz.getPriorVotes(delegatee.address, delegateBlock),
-      ).equal(amount);
-      expect(await quartz.getPriorVotes(delegatee.address, currentBlock)).equal(
-        '0',
-      );
       expect(await quartz.getCurrentVotes(beneficiary.address)).equal(0);
       expect(await quartz.getCurrentVotes(delegatee.address)).equal(0);
-    });
-  });
-
-  describe('getPriorVotes', () => {
-    const amount = BigNumber.from('1000').mul(decimalsUnit);
-    const period = BigNumber.from('3600');
-    let sender;
-    let beneficiary;
-
-    beforeEach(async () => {
-      sender = accounts[1];
-      beneficiary = accounts[2];
-      await quartz.connect(owner).transfer(sender.address, totalSupply);
-    });
-
-    it('getPriorVotes after stake', async () => {
-      let amount2 = BigNumber.from('100').mul(decimalsUnit);
-      let period2 = BigNumber.from('360');
-      let waitTime = BigNumber.from('100');
-      let amount3 = BigNumber.from('110').mul(decimalsUnit);
-      let period3 = BigNumber.from('380');
-      await quartz.connect(sender).stake(amount, beneficiary.address, period);
-      const currentBlock0 = await getCurrentBlock();
-
-      await time.increase(waitTime.toString());
-      await quartz.connect(sender).stake(amount2, beneficiary.address, period2);
-      const currentBlock1 = await getCurrentBlock();
-      await time.increase(waitTime.toString());
-      await quartz.connect(sender).stake(amount3, beneficiary.address, period3);
-      const currentBlock2 = await getCurrentBlock();
-
-      await time.advanceBlock();
-      await time.advanceBlock();
-      await time.advanceBlock();
-      expect(
-        await quartz.getPriorVotes(beneficiary.address, currentBlock1),
-      ).equal(amount.add(amount2));
-      expect(
-        await quartz.getPriorVotes(beneficiary.address, currentBlock1.add('1')),
-      ).equal(amount.add(amount2));
-      expect(
-        await quartz.getPriorVotes(beneficiary.address, currentBlock1.sub('1')),
-      ).equal(amount);
     });
   });
 });
@@ -838,7 +648,7 @@ describe('QuartzL1', () => {
     owner = accounts[0];
 
     const Quartz = await ethers.getContractFactory('QuartzL1');
-    quartz = await Quartz.deploy(totalSupply);
+    quartz = await Quartz.deploy();
   });
 
   describe('Quartz tokenomics', () => {

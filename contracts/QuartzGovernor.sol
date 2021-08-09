@@ -5,23 +5,23 @@ import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./interfaces/IQuartz.sol";
+import "./libraries/SafeMath64.sol";
 
 contract QuartzGovernor is AccessControl {
     using SafeMath for uint256;
+    using SafeMath64 for uint64;
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant UPDATE_SETTINGS_ROLE =
         keccak256("UPDATE_SETTINGS_ROLE");
-    bytes32 public constant CREATE_PROPOSALS_ROLE =
-        keccak256("CREATE_PROPOSALS_ROLE");
     bytes32 public constant CANCEL_PROPOSAL_ROLE =
         keccak256("CANCEL_PROPOSAL_ROLE");
 
     uint256 public constant D = 10000000;
     uint256 public constant ONE_HUNDRED_PERCENT = 1e18;
-    uint256 private constant TWO_128 = 0x100000000000000000000000000000000; // 2^128
-    uint256 private constant TWO_127 = 0x80000000000000000000000000000000; // 2^127
-    uint256 private constant TWO_64 = 0x10000000000000000; // 2^64
+    uint256 private constant TWO_128 = 1 << 128; // 2 ^ 128
+    uint256 private constant TWO_127 = 1 << 127; // 2^127
+    uint256 private constant TWO_64 = 1 << 64; // 2^64
     uint256 public constant ABSTAIN_PROPOSAL_ID = 1;
     uint64 public constant MAX_STAKED_PROPOSALS = 10;
 
@@ -31,8 +31,8 @@ contract QuartzGovernor is AccessControl {
         "QG_PROPOSAL_NOT_ACTIVE";
     string private constant ERROR_CANNOT_EXECUTE_ABSTAIN_PROPOSAL =
         "QG_CANNOT_EXECUTE_ABSTAIN_PROPOSAL";
-    string private constant ERROR_INSUFFICIENT_CONVICION =
-        "QG_INSUFFICIENT_CONVICION";
+    string private constant ERROR_INSUFFICIENT_CONVICTION =
+        "QG_INSUFFICIENT_CONVICTION";
     string private constant ERROR_SENDER_CANNOT_CANCEL =
         "QG_SENDER_CANNOT_CANCEL";
     string private constant ERROR_CANNOT_CANCEL_ABSTAIN_PROPOSAL =
@@ -53,16 +53,17 @@ contract QuartzGovernor is AccessControl {
         "QG_WITHDRAW_MORE_THAN_VOTED";
     string private constant ERROR_ONLY_QUARTZ = "QG_ONLY_QUARTZ";
     string private constant ERROR_AUTH_FAILED = "QG_AUTH_FAILED";
-    string private constant ERROR_NO_ENOUGH_INACTIVE_VOTES =
-        "QG_NO_ENOUGH_INACTIVE_VOTES";
+    string private constant ERROR_NOT_ENOUGH_INACTIVE_VOTES =
+        "QG_NOT_ENOUGH_INACTIVE_VOTES";
+    string private constant ERROR_NO_ENOUGH_VOTES = "QG_NO_ENOUGH_VOTES";
     string private constant ERROR_MIN_VOTES_TO_PASS_CAN_NOT_BE_ZERO =
         "QG_MIN_VOTES_TO_PASS_CAN_NOT_BE_ZERO";
+    string private constant ERROR_PROPOSAL_THRESHOLD_CAN_NOT_BE_ZERO =
+        "QG_PROPOSAL_THRESHOLD_CAN_NOT_BE_ZERO";
+    string private constant ERROR_PROPOSAL_ACTIVE_PERIOD_CAN_NOT_BE_ZERO =
+        "QG_PROPOSAL_ACTIVE_PERIOD_CAN_NOT_BE_ZERO";
 
-    enum ProposalStatus {
-        Cancelled, // A vote that has been cancelled
-        Active, // A vote that has been reported to Agreements
-        Executed // A vote that has been executed
-    }
+    enum ProposalStatus {Cancelled, Active, Executed}
 
     struct Vote {
         uint256 id;
@@ -76,6 +77,7 @@ contract QuartzGovernor is AccessControl {
         Vote negativeVotes;
         ProposalStatus proposalStatus;
         address submitter;
+        uint64 expiration;
     }
 
     mapping(uint256 => mapping(address => uint256)) public userVotes;
@@ -89,25 +91,34 @@ contract QuartzGovernor is AccessControl {
     uint256 public minVotesToPass;
     uint256 public proposalCounter;
     uint256 public totalVotes;
+    uint256 public proposalThreshold;
+    uint64 public proposalActivePeriod;
 
     mapping(uint256 => Proposal) internal proposals;
+    mapping(uint256 => uint256) internal stakedForProposal;
     mapping(address => uint256) internal totalUserVotes;
     mapping(address => uint256[]) internal voterCastedProposals;
     mapping(address => mapping(uint256 => uint256))
         internal userVotedProposalIds;
+    mapping(address => uint256[]) internal userProposals;
+    mapping(address => mapping(uint256 => uint256)) internal userProposalIds;
 
     event ConvictionSettingsChanged(
         uint256 decay,
         uint256 maxRatio,
         uint256 weight,
         uint256 minThresholdStakePercentage,
-        uint256 minVotesToPass
+        uint256 minVotesToPass,
+        uint256 proposalThreshold,
+        uint64 proposalActivePeriod
     );
     event ProposalAdded(
         address indexed entity,
         uint256 indexed id,
         string title,
-        bytes link
+        bytes link,
+        string description,
+        uint64 expiration
     );
     event VoteCasted(
         address indexed entity,
@@ -116,8 +127,8 @@ contract QuartzGovernor is AccessControl {
         uint256 conviction,
         bool support
     );
-    event VotesWithdrawn(
-        address entity,
+    event VoteWithdrawn(
+        address indexed entity,
         uint256 indexed id,
         uint256 amount,
         uint256 conviction,
@@ -137,7 +148,8 @@ contract QuartzGovernor is AccessControl {
 
     modifier proposalExists(uint256 _proposalId) {
         require(
-            _proposalId == 1 || proposals[_proposalId].submitter != address(0),
+            _proposalId == ABSTAIN_PROPOSAL_ID ||
+                proposals[_proposalId].submitter != address(0),
             ERROR_PROPOSAL_DOES_NOT_EXIST
         );
         _;
@@ -154,21 +166,33 @@ contract QuartzGovernor is AccessControl {
         uint256 _maxRatio,
         uint256 _weight,
         uint256 _minThresholdStakePercentage,
-        uint256 _minVotesToPass
+        uint256 _minVotesToPass,
+        uint256 _proposalThreshold,
+        uint64 _proposalActivePeriod
     ) {
         _setRoleAdmin(UPDATE_SETTINGS_ROLE, ADMIN_ROLE);
-        _setRoleAdmin(CREATE_PROPOSALS_ROLE, ADMIN_ROLE);
         _setRoleAdmin(CANCEL_PROPOSAL_ROLE, ADMIN_ROLE);
         _setupRole(ADMIN_ROLE, msg.sender);
 
         quartz = _quartz;
-        proposalCounter = 2; // First proposal should be #2, #1 is reserved for abstain proposal, #0 is not used for better UX.
+        require(address(_quartz) != address(0));
+        proposalCounter = ABSTAIN_PROPOSAL_ID.add(1); // First proposal should be #2, #1 is reserved for abstain proposal, #0 is not used for better UX.
         decay = _decay;
         maxRatio = _maxRatio;
         weight = _weight;
         minThresholdStakePercentage = _minThresholdStakePercentage;
         require(_minVotesToPass > 0, ERROR_MIN_VOTES_TO_PASS_CAN_NOT_BE_ZERO);
         minVotesToPass = _minVotesToPass;
+        require(
+            _proposalThreshold > 0,
+            ERROR_PROPOSAL_THRESHOLD_CAN_NOT_BE_ZERO
+        );
+        proposalThreshold = _proposalThreshold;
+        require(
+            _proposalActivePeriod > 0,
+            ERROR_PROPOSAL_ACTIVE_PERIOD_CAN_NOT_BE_ZERO
+        );
+        proposalActivePeriod = _proposalActivePeriod;
 
         Vote memory abstainVote1 =
             Vote({id: 1, totalVotes: 0, convictionLast: 0, blockLast: 0});
@@ -179,7 +203,8 @@ contract QuartzGovernor is AccessControl {
             positiveVotes: abstainVote1,
             negativeVotes: abstainVote2,
             proposalStatus: ProposalStatus.Active,
-            submitter: address(0)
+            submitter: address(0),
+            expiration: 0
         });
 
         lastVoteId = 2;
@@ -188,7 +213,9 @@ contract QuartzGovernor is AccessControl {
             address(0),
             ABSTAIN_PROPOSAL_ID,
             "Abstain proposal",
-            ""
+            "",
+            "",
+            0
         );
     }
 
@@ -200,13 +227,17 @@ contract QuartzGovernor is AccessControl {
      * @param _minThresholdStakePercentage The minimum percent of stake token max supply that is used for calculating
         conviction
      * @param _minVotesToPass The minimum votes to be passed
+     * @param _proposalThreshold Vote rep which will be staked to create proposal
+     * @param _proposalActivePeriod Proposal active period
      */
     function setConvictionCalculationSettings(
         uint256 _decay,
         uint256 _maxRatio,
         uint256 _weight,
         uint256 _minThresholdStakePercentage,
-        uint256 _minVotesToPass
+        uint256 _minVotesToPass,
+        uint256 _proposalThreshold,
+        uint64 _proposalActivePeriod
     ) public auth(UPDATE_SETTINGS_ROLE) {
         decay = _decay;
         maxRatio = _maxRatio;
@@ -215,13 +246,25 @@ contract QuartzGovernor is AccessControl {
 
         require(_minVotesToPass > 0, ERROR_MIN_VOTES_TO_PASS_CAN_NOT_BE_ZERO);
         minVotesToPass = _minVotesToPass;
+        require(
+            _proposalThreshold > 0,
+            ERROR_PROPOSAL_THRESHOLD_CAN_NOT_BE_ZERO
+        );
+        proposalThreshold = _proposalThreshold;
+        require(
+            _proposalActivePeriod > 0,
+            ERROR_PROPOSAL_ACTIVE_PERIOD_CAN_NOT_BE_ZERO
+        );
+        proposalActivePeriod = _proposalActivePeriod;
 
         emit ConvictionSettingsChanged(
             _decay,
             _maxRatio,
             _weight,
             _minThresholdStakePercentage,
-            _minVotesToPass
+            _minVotesToPass,
+            _proposalThreshold,
+            _proposalActivePeriod
         );
     }
 
@@ -229,11 +272,13 @@ contract QuartzGovernor is AccessControl {
      * @notice Add proposal
      * @param _title Title of the proposal
      * @param _link IPFS or HTTP link with proposal's description
+     * @param _description Succinct description about proposal
      */
-    function addProposal(string memory _title, bytes memory _link)
-        external
-        auth(CREATE_PROPOSALS_ROLE)
-    {
+    function addProposal(
+        string memory _title,
+        bytes memory _link,
+        string memory _description
+    ) external {
         Vote memory emptyVote1 =
             Vote({
                 id: lastVoteId.add(1),
@@ -249,16 +294,31 @@ contract QuartzGovernor is AccessControl {
                 blockLast: 0
             });
 
+        uint64 expiration = uint64(block.timestamp).add(proposalActivePeriod);
         proposals[proposalCounter] = Proposal({
             positiveVotes: emptyVote1,
             negativeVotes: emptyVote2,
             proposalStatus: ProposalStatus.Active,
-            submitter: msg.sender
+            submitter: msg.sender,
+            expiration: expiration
         });
 
         lastVoteId = lastVoteId.add(2);
 
-        emit ProposalAdded(msg.sender, proposalCounter, _title, _link);
+        quartz.moveVotesToGovernor(msg.sender, proposalThreshold);
+        stakedForProposal[proposalCounter] = proposalThreshold;
+        userProposals[msg.sender].push(proposalCounter);
+        userProposalIds[msg.sender][proposalCounter] = userProposals[msg.sender]
+            .length;
+
+        emit ProposalAdded(
+            msg.sender,
+            proposalCounter,
+            _title,
+            _link,
+            _description,
+            expiration
+        );
         proposalCounter = proposalCounter.add(1);
     }
 
@@ -361,13 +421,10 @@ contract QuartzGovernor is AccessControl {
      */
     function _withdrawActiveVotes(uint256 _targetAmount, address _from)
         internal
+        returns (uint256 withdrawnAmount)
     {
-        uint256 i = 0;
-        uint256 withdrawnAmount = 0;
+        uint256 i;
         uint256[] memory voterCastedProposalsCopy = voterCastedProposals[_from];
-
-        // We reset this variable as _withdrawVotesFromProposal can update voterCastedProposals
-        voterCastedProposalsCopy = voterCastedProposals[_from];
 
         while (
             i < voterCastedProposalsCopy.length &&
@@ -376,26 +433,53 @@ contract QuartzGovernor is AccessControl {
             uint256 proposalId = voterCastedProposalsCopy[i];
             Proposal storage proposal = proposals[proposalId];
 
-            // In active proposals, we only subtract the needed amount to reach the target
-            uint256 toWithdraw =
-                Math.min(
-                    _targetAmount.sub(withdrawnAmount),
-                    userVotes[proposal.positiveVotes.id][_from].add(
-                        userVotes[proposal.negativeVotes.id][_from]
-                    )
-                );
-            if (toWithdraw > 0) {
-                _withdrawVotesFromProposal(
-                    proposalId,
-                    toWithdraw,
-                    _from,
-                    userVotes[proposal.positiveVotes.id][_from] > 0
-                        ? true
-                        : false
-                );
-                withdrawnAmount = withdrawnAmount.add(toWithdraw);
+            if (proposal.proposalStatus == ProposalStatus.Active) {
+                // In active proposals, we only subtract the needed amount to reach the target
+                uint256 toWithdraw =
+                    Math.min(
+                        _targetAmount.sub(withdrawnAmount),
+                        userVotes[proposal.positiveVotes.id][_from].add(
+                            userVotes[proposal.negativeVotes.id][_from]
+                        )
+                    );
+                if (toWithdraw > 0) {
+                    _withdrawVotesFromProposal(
+                        proposalId,
+                        toWithdraw,
+                        _from,
+                        userVotes[proposal.positiveVotes.id][_from] > 0
+                            ? true
+                            : false
+                    );
+                    withdrawnAmount = withdrawnAmount.add(toWithdraw);
+                }
             }
             i += 1;
+        }
+    }
+
+    /**
+     * @dev Cancel proposals to force withdraw staked votes.
+     * @param _targetAmount Target at which to stop withdrawing tokens
+     * @param _from Account to withdraw from
+     */
+    function _withdrawStakedFromProposals(uint256 _targetAmount, address _from)
+        internal
+        returns (uint256 withdrawnAmount)
+    {
+        uint256[] storage userProposalsList = userProposals[_from];
+        uint256 i = userProposalsList.length.sub(1);
+
+        while (withdrawnAmount < _targetAmount && i >= 0) {
+            uint256 proposalId = userProposalsList[i];
+            withdrawnAmount = withdrawnAmount.add(
+                stakedForProposal[proposalId]
+            );
+            cancelProposal(userProposalsList[i]);
+            if (i == 0) {
+                break;
+            }
+            i = i.sub(1);
         }
     }
 
@@ -448,11 +532,25 @@ contract QuartzGovernor is AccessControl {
                 positiveVotes.convictionLast.sub(
                     negativeVotes.convictionLast
                 ) >=
-                calculateThreshold(minVotesToPass),
-            ERROR_INSUFFICIENT_CONVICION
+                calculateThreshold(),
+            ERROR_INSUFFICIENT_CONVICTION
         );
 
         proposal.proposalStatus = ProposalStatus.Executed;
+        quartz.moveVotesFromGovernor(
+            proposal.submitter,
+            stakedForProposal[_proposalId]
+        );
+        stakedForProposal[_proposalId] = 0;
+        uint256 proposalIdx = userProposalIds[proposal.submitter][_proposalId];
+        uint256 lastProposalId =
+            userProposals[proposal.submitter][
+                userProposals[proposal.submitter].length.sub(1)
+            ];
+        userProposals[proposal.submitter][proposalIdx.sub(1)] = lastProposalId;
+        userProposalIds[proposal.submitter][_proposalId] = 0;
+        userProposalIds[proposal.submitter][lastProposalId] = proposalIdx;
+        userProposals[proposal.submitter].pop();
 
         emit ProposalExecuted(
             _proposalId,
@@ -466,16 +564,11 @@ contract QuartzGovernor is AccessControl {
      * @param _proposalId Proposal id
      */
     function cancelProposal(uint256 _proposalId)
-        external
+        public
         proposalExists(_proposalId)
     {
         Proposal storage proposal = proposals[_proposalId];
 
-        bool senderHasPermission = hasRole(CANCEL_PROPOSAL_ROLE, msg.sender);
-        require(
-            proposal.submitter == msg.sender || senderHasPermission,
-            ERROR_SENDER_CANNOT_CANCEL
-        );
         require(
             _proposalId != ABSTAIN_PROPOSAL_ID,
             ERROR_CANNOT_CANCEL_ABSTAIN_PROPOSAL
@@ -485,7 +578,32 @@ contract QuartzGovernor is AccessControl {
             ERROR_PROPOSAL_NOT_ACTIVE
         );
 
+        if (proposal.expiration > uint64(block.timestamp)) {
+            bool senderHasPermission =
+                hasRole(CANCEL_PROPOSAL_ROLE, msg.sender);
+            require(
+                proposal.submitter == msg.sender ||
+                    senderHasPermission ||
+                    msg.sender == address(quartz),
+                ERROR_SENDER_CANNOT_CANCEL
+            );
+        }
+
         proposal.proposalStatus = ProposalStatus.Cancelled;
+        quartz.moveVotesFromGovernor(
+            proposal.submitter,
+            stakedForProposal[_proposalId]
+        );
+        stakedForProposal[_proposalId] = 0;
+        uint256 proposalIdx = userProposalIds[proposal.submitter][_proposalId];
+        uint256 lastProposalId =
+            userProposals[proposal.submitter][
+                userProposals[proposal.submitter].length.sub(1)
+            ];
+        userProposals[proposal.submitter][proposalIdx.sub(1)] = lastProposalId;
+        userProposalIds[proposal.submitter][_proposalId] = 0;
+        userProposalIds[proposal.submitter][lastProposalId] = proposalIdx;
+        userProposals[proposal.submitter].pop();
 
         emit ProposalCancelled(_proposalId);
     }
@@ -505,7 +623,9 @@ contract QuartzGovernor is AccessControl {
             Vote memory positiveVotes,
             Vote memory negativeVotes,
             ProposalStatus proposalStatus,
-            address submitter
+            address submitter,
+            uint64 expiration,
+            uint256 staked
         )
     {
         Proposal storage proposal = proposals[_proposalId];
@@ -513,7 +633,9 @@ contract QuartzGovernor is AccessControl {
             proposal.positiveVotes,
             proposal.negativeVotes,
             proposal.proposalStatus,
-            proposal.submitter
+            proposal.submitter,
+            proposal.expiration,
+            stakedForProposal[_proposalId]
         );
     }
 
@@ -600,10 +722,6 @@ contract QuartzGovernor is AccessControl {
             ERROR_PROPOSAL_NOT_ACTIVE
         );
 
-        uint256 availableVotes = quartz.getCurrentVotes(_from);
-        if (_amount > availableVotes) {
-            _withdrawInactiveVotes(_amount.sub(availableVotes), _from);
-        }
         quartz.moveVotesToGovernor(_from, _amount);
 
         Vote storage votes;
@@ -709,7 +827,7 @@ contract QuartzGovernor is AccessControl {
             _calculateAndSetConviction(votes, previousVote);
         }
 
-        emit VotesWithdrawn(
+        emit VoteWithdrawn(
             _from,
             _proposalId,
             _amount,
@@ -746,29 +864,24 @@ contract QuartzGovernor is AccessControl {
     }
 
     /**
-     * @dev Formula: ρ * totalStaked / (1 - a) / (β - requestedAmount / total)**2
+     * @dev Formula: ρ * totalStaked / (1 - a) / (β - minVotesToPass / total)**2
      * For the Solidity implementation we amplify ρ and β and simplify the formula:
      * weight = ρ * D
      * maxRatio = β * D
      * decay = a * D
-     * threshold = weight * totalStaked * D ** 2 * funds ** 2 / (D - decay) / (maxRatio * funds - requestedAmount * D) ** 2
-     * @param _requestedAmount Requested amount of tokens on certain proposal
+     * threshold = weight * totalStaked * D ** 2 * funds ** 2 / (D - decay) / (maxRatio * funds - minVotesToPass * D) ** 2
      * @return _threshold Threshold a proposal's conviction should surpass in order to be able to
      * executed it.
      */
-    function calculateThreshold(uint256 _requestedAmount)
-        public
-        view
-        returns (uint256 _threshold)
-    {
+    function calculateThreshold() public view returns (uint256 _threshold) {
         uint256 funds = quartz.totalStaked();
         require(
-            maxRatio.mul(funds) > _requestedAmount.mul(D),
+            maxRatio.mul(funds) > minVotesToPass.mul(D),
             ERROR_AMOUNT_OVER_MAX_RATIO
         );
-        // denom = maxRatio * 2 ** 64 / D  - requestedAmount * 2 ** 64 / funds
+        // denom = maxRatio * 2 ** 64 / D  - minVotesToPass * 2 ** 64 / funds
         uint256 denom =
-            (maxRatio << 64).div(D).sub((_requestedAmount << 64).div(funds));
+            (maxRatio << 64).div(D).sub((minVotesToPass << 64).div(funds));
         // _threshold = (weight * 2 ** 128 / D) / (denom ** 2 / 2 ** 64) * totalStaked * D / 2 ** 128
         _threshold =
             ((weight << 128).div(D).div(denom.mul(denom) >> 64))
@@ -796,8 +909,21 @@ contract QuartzGovernor is AccessControl {
     ) external onlyQuartz {
         uint256 inactiveWithdrawn = _withdrawInactiveVotes(_amount, _from);
         if (inactiveWithdrawn < _amount) {
-            require(force, ERROR_NO_ENOUGH_INACTIVE_VOTES);
-            _withdrawActiveVotes(_amount, _from);
+            require(force, ERROR_NOT_ENOUGH_INACTIVE_VOTES);
+            uint256 activeWithdrawn =
+                _withdrawActiveVotes(_amount.sub(inactiveWithdrawn), _from);
+            uint256 stakedWithdrawn;
+            if (inactiveWithdrawn.add(activeWithdrawn) < _amount) {
+                stakedWithdrawn = _withdrawStakedFromProposals(
+                    _amount.sub(inactiveWithdrawn).sub(activeWithdrawn),
+                    _from
+                );
+            }
+            require(
+                inactiveWithdrawn.add(activeWithdrawn).add(stakedWithdrawn) >=
+                    _amount,
+                ERROR_NO_ENOUGH_VOTES
+            );
         }
     }
 

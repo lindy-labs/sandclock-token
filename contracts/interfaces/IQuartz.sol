@@ -5,11 +5,6 @@ interface IQuartz {
 
     function moveVotesFromGovernor(address user, uint256 amount) external;
 
-    function getPriorVotes(address account, uint256 blockNumber)
-        external
-        view
-        returns (uint256);
-
     function getCurrentVotes(address account) external view returns (uint256);
 
     function totalStaked() external view returns (uint256);

@@ -51,35 +51,22 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
         uint256 votes;
     }
 
-    bytes32 public constant DOMAIN_TYPEHASH =
-        keccak256(
-            "EIP712Domain(string name,uint256 chainId,address verifyingContract)"
-        );
-
-    bytes32 public constant DELEGATION_TYPEHASH =
-        keccak256("Delegation(address delegatee,uint256 nonce,uint256 expiry)");
-
-    /// @notice A record of states for signing / validating signatures
-    mapping(address => uint256) public nonces;
-
     IQuartzGovernor public governor;
 
     mapping(address => uint256) public userVotesRep;
     mapping(address => address) public delegates;
     mapping(address => mapping(uint32 => Checkpoint)) public checkpoints;
     mapping(address => uint32) public numCheckpoints;
+    uint64 public minStakePeriod;
     uint64 public stakeLength;
     // All stakes infos
     mapping(uint64 => StakeInfo) public stakes;
-    // Stake ids of owner
-    mapping(address => uint64[]) public ownerStakeIds;
-    // Stake ids of beneficiary
-    mapping(address => uint64[]) public beneficiaryIds;
     // Total staked amount
     uint256 public totalStaked;
 
-    constructor(uint256 _totalSupply) {
-        _mint(msg.sender, _totalSupply);
+    constructor(uint64 _minStakePeriod) {
+        _mint(msg.sender, 100000000 * 1e18);
+        minStakePeriod = _minStakePeriod;
     }
 
     function setGovernor(IQuartzGovernor _governor) external onlyOwner {
@@ -101,6 +88,10 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
             "QUARTZ: Beneficiary cannot be 0x0"
         );
         require(_amount > 0, "QUARTZ: Amount must be greater than zero");
+        require(
+            _period >= minStakePeriod,
+            "QUARTZ: Period must be greater than minimum"
+        );
 
         _transfer(msg.sender, address(this), _amount);
 
@@ -117,8 +108,6 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
                 active: true
             });
         stakes[_stakeId] = stakeInfo;
-        ownerStakeIds[_owner].push(_stakeId);
-        beneficiaryIds[_beneficiary].push(_stakeId);
 
         userVotesRep[_beneficiary] = userVotesRep[_beneficiary].add(_amount);
         if (delegates[_beneficiary] == address(0)) {
@@ -204,54 +193,6 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
         uint32 nCheckpoints = numCheckpoints[account];
         return
             nCheckpoints > 0 ? checkpoints[account][nCheckpoints - 1].votes : 0;
-    }
-
-    /**
-     * @notice Determine the prior number of votes for an account as of a block number
-     * @dev Block number must be a finalized block or else this function will revert to prevent misinformation.
-     * @param account The address of the account to check
-     * @param blockNumber The block number to get the vote balance at
-     * @return The number of votes the account had as of the given block
-     */
-    function getPriorVotes(address account, uint256 blockNumber)
-        external
-        view
-        returns (uint256)
-    {
-        require(
-            blockNumber < block.number,
-            "Quartz::getPriorVotes: not yet determined"
-        );
-
-        uint32 nCheckpoints = numCheckpoints[account];
-        if (nCheckpoints == 0) {
-            return 0;
-        }
-
-        // First check most recent balance
-        if (checkpoints[account][nCheckpoints - 1].fromBlock <= blockNumber) {
-            return checkpoints[account][nCheckpoints - 1].votes;
-        }
-
-        // Next check implicit zero balance
-        if (checkpoints[account][0].fromBlock > blockNumber) {
-            return 0;
-        }
-
-        uint32 lower = 0;
-        uint32 upper = nCheckpoints - 1;
-        while (upper > lower) {
-            uint32 center = upper - (upper - lower) / 2; // ceil, avoiding overflow
-            Checkpoint memory cp = checkpoints[account][center];
-            if (cp.fromBlock == blockNumber) {
-                return cp.votes;
-            } else if (cp.fromBlock < blockNumber) {
-                lower = center;
-            } else {
-                upper = center - 1;
-            }
-        }
-        return checkpoints[account][lower].votes;
     }
 
     function _delegate(address delegator, address delegatee) internal {
@@ -349,19 +290,7 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
         return uint64(block.timestamp);
     }
 
-    function getOwnerStakeIdsLength(address user)
-        external
-        view
-        returns (uint256)
-    {
-        return ownerStakeIds[user].length;
-    }
-
-    function getBeneficiaryIdsLength(address user)
-        external
-        view
-        returns (uint256)
-    {
-        return beneficiaryIds[user].length;
+    function setMinStakePeriod(uint64 _minStakePeriod) external onlyOwner {
+        minStakePeriod = _minStakePeriod;
     }
 }

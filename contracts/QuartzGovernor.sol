@@ -470,7 +470,7 @@ contract QuartzGovernor is AccessControl {
         uint256[] storage userProposalsList = userProposals[_from];
         uint256 i = userProposalsList.length.sub(1);
 
-        while (withdrawnAmount < _targetAmount && i >= 0) {
+        while (withdrawnAmount < _targetAmount) {
             uint256 proposalId = userProposalsList[i];
             withdrawnAmount = withdrawnAmount.add(
                 stakedForProposal[proposalId]

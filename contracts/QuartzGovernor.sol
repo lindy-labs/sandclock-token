@@ -1,16 +1,11 @@
-pragma solidity 0.7.3;
+pragma solidity ^0.8.9;
 pragma experimental ABIEncoderV2;
 
-import "@openzeppelin/contracts/math/Math.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./interfaces/IQuartz.sol";
-import "./libraries/SafeMath64.sol";
 
 contract QuartzGovernor is AccessControl {
-    using SafeMath for uint256;
-    using SafeMath64 for uint64;
-
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant UPDATE_SETTINGS_ROLE =
         keccak256("UPDATE_SETTINGS_ROLE");
@@ -176,7 +171,7 @@ contract QuartzGovernor is AccessControl {
 
         quartz = _quartz;
         require(address(_quartz) != address(0));
-        proposalCounter = ABSTAIN_PROPOSAL_ID.add(1); // First proposal should be #2, #1 is reserved for abstain proposal, #0 is not used for better UX.
+        proposalCounter = ABSTAIN_PROPOSAL_ID + 1; // First proposal should be #2, #1 is reserved for abstain proposal, #0 is not used for better UX.
         decay = _decay;
         maxRatio = _maxRatio;
         weight = _weight;
@@ -281,20 +276,20 @@ contract QuartzGovernor is AccessControl {
     ) external {
         Vote memory emptyVote1 =
             Vote({
-                id: lastVoteId.add(1),
+                id: lastVoteId + 1,
                 totalVotes: 0,
                 convictionLast: 0,
                 blockLast: 0
             });
         Vote memory emptyVote2 =
             Vote({
-                id: lastVoteId.add(2),
+                id: lastVoteId + 2,
                 totalVotes: 0,
                 convictionLast: 0,
                 blockLast: 0
             });
 
-        uint64 expiration = uint64(block.timestamp).add(proposalActivePeriod);
+        uint64 expiration = uint64(block.timestamp) + proposalActivePeriod;
         proposals[proposalCounter] = Proposal({
             positiveVotes: emptyVote1,
             negativeVotes: emptyVote2,
@@ -303,7 +298,7 @@ contract QuartzGovernor is AccessControl {
             expiration: expiration
         });
 
-        lastVoteId = lastVoteId.add(2);
+        lastVoteId = lastVoteId + 2;
 
         quartz.moveVotesToGovernor(msg.sender, proposalThreshold);
         stakedForProposal[proposalCounter] = proposalThreshold;
@@ -319,7 +314,7 @@ contract QuartzGovernor is AccessControl {
             _description,
             expiration
         );
-        proposalCounter = proposalCounter.add(1);
+        proposalCounter = proposalCounter + 1;
     }
 
     /**
@@ -395,9 +390,8 @@ contract QuartzGovernor is AccessControl {
 
             if (proposal.proposalStatus != ProposalStatus.Active) {
                 uint256 toWithdraw =
-                    userVotes[proposal.positiveVotes.id][_from].add(
-                        userVotes[proposal.negativeVotes.id][_from]
-                    );
+                    userVotes[proposal.positiveVotes.id][_from] +
+                        userVotes[proposal.negativeVotes.id][_from];
                 if (toWithdraw > 0) {
                     _withdrawVotesFromProposal(
                         proposalId,
@@ -407,7 +401,7 @@ contract QuartzGovernor is AccessControl {
                             ? true
                             : false
                     );
-                    withdrawnAmount = withdrawnAmount.add(toWithdraw);
+                    withdrawnAmount = withdrawnAmount + toWithdraw;
                 }
             }
             i += 1;
@@ -437,10 +431,9 @@ contract QuartzGovernor is AccessControl {
                 // In active proposals, we only subtract the needed amount to reach the target
                 uint256 toWithdraw =
                     Math.min(
-                        _targetAmount.sub(withdrawnAmount),
-                        userVotes[proposal.positiveVotes.id][_from].add(
+                        _targetAmount - withdrawnAmount,
+                        userVotes[proposal.positiveVotes.id][_from] +
                             userVotes[proposal.negativeVotes.id][_from]
-                        )
                     );
                 if (toWithdraw > 0) {
                     _withdrawVotesFromProposal(
@@ -451,7 +444,7 @@ contract QuartzGovernor is AccessControl {
                             ? true
                             : false
                     );
-                    withdrawnAmount = withdrawnAmount.add(toWithdraw);
+                    withdrawnAmount = withdrawnAmount + toWithdraw;
                 }
             }
             i += 1;
@@ -468,18 +461,16 @@ contract QuartzGovernor is AccessControl {
         returns (uint256 withdrawnAmount)
     {
         uint256[] storage userProposalsList = userProposals[_from];
-        uint256 i = userProposalsList.length.sub(1);
+        uint256 i = userProposalsList.length - 1;
 
         while (withdrawnAmount < _targetAmount) {
             uint256 proposalId = userProposalsList[i];
-            withdrawnAmount = withdrawnAmount.add(
-                stakedForProposal[proposalId]
-            );
+            withdrawnAmount = withdrawnAmount + stakedForProposal[proposalId];
             cancelProposal(userProposalsList[i]);
             if (i == 0) {
                 break;
             }
-            i = i.sub(1);
+            i = i - 1;
         }
     }
 
@@ -529,9 +520,7 @@ contract QuartzGovernor is AccessControl {
 
         require(
             positiveVotes.convictionLast > negativeVotes.convictionLast &&
-                positiveVotes.convictionLast.sub(
-                    negativeVotes.convictionLast
-                ) >=
+                positiveVotes.convictionLast - negativeVotes.convictionLast >=
                 calculateThreshold(),
             ERROR_INSUFFICIENT_CONVICTION
         );
@@ -545,9 +534,9 @@ contract QuartzGovernor is AccessControl {
         uint256 proposalIdx = userProposalIds[proposal.submitter][_proposalId];
         uint256 lastProposalId =
             userProposals[proposal.submitter][
-                userProposals[proposal.submitter].length.sub(1)
+                userProposals[proposal.submitter].length - 1
             ];
-        userProposals[proposal.submitter][proposalIdx.sub(1)] = lastProposalId;
+        userProposals[proposal.submitter][proposalIdx - 1] = lastProposalId;
         userProposalIds[proposal.submitter][_proposalId] = 0;
         userProposalIds[proposal.submitter][lastProposalId] = proposalIdx;
         userProposals[proposal.submitter].pop();
@@ -598,9 +587,9 @@ contract QuartzGovernor is AccessControl {
         uint256 proposalIdx = userProposalIds[proposal.submitter][_proposalId];
         uint256 lastProposalId =
             userProposals[proposal.submitter][
-                userProposals[proposal.submitter].length.sub(1)
+                userProposals[proposal.submitter].length - 1
             ];
-        userProposals[proposal.submitter][proposalIdx.sub(1)] = lastProposalId;
+        userProposals[proposal.submitter][proposalIdx - 1] = lastProposalId;
         userProposalIds[proposal.submitter][_proposalId] = 0;
         userProposalIds[proposal.submitter][lastProposalId] = proposalIdx;
         userProposals[proposal.submitter].pop();
@@ -740,10 +729,10 @@ contract QuartzGovernor is AccessControl {
             votes = proposal.negativeVotes;
         }
         uint256 previousVote = votes.totalVotes;
-        votes.totalVotes = previousVote.add(_amount);
-        userVotes[votes.id][_from] = userVotes[votes.id][_from].add(_amount);
-        totalUserVotes[_from] = totalUserVotes[_from].add(_amount);
-        totalVotes = totalVotes.add(_amount);
+        votes.totalVotes = previousVote + _amount;
+        userVotes[votes.id][_from] = userVotes[votes.id][_from] + _amount;
+        totalUserVotes[_from] = totalUserVotes[_from] + _amount;
+        totalVotes = totalVotes + _amount;
 
         if (votes.blockLast == 0) {
             votes.blockLast = block.number;
@@ -807,18 +796,18 @@ contract QuartzGovernor is AccessControl {
         quartz.moveVotesFromGovernor(_from, _amount);
         uint256 previousVote = votes.totalVotes;
 
-        votes.totalVotes = previousVote.sub(_amount);
-        userVotes[votes.id][_from] = userVotes[votes.id][_from].sub(_amount);
-        totalUserVotes[_from] = totalUserVotes[_from].sub(_amount);
-        totalVotes = totalVotes.sub(_amount);
+        votes.totalVotes = previousVote - _amount;
+        userVotes[votes.id][_from] = userVotes[votes.id][_from] - _amount;
+        totalUserVotes[_from] = totalUserVotes[_from] - _amount;
+        totalVotes = totalVotes - _amount;
 
         if (userVotes[votes.id][_from] == 0) {
-            uint256 index = userVotedProposalIds[_from][_proposalId].sub(1);
+            uint256 index = userVotedProposalIds[_from][_proposalId] - 1;
             userVotedProposalIds[_from][_proposalId] = 0;
-            uint256 lastIndex = voterCastedProposals[_from].length.sub(1);
+            uint256 lastIndex = voterCastedProposals[_from].length - 1;
             uint256 lastProposalId = voterCastedProposals[_from][lastIndex];
             voterCastedProposals[_from][index] = lastProposalId;
-            userVotedProposalIds[_from][lastProposalId] = index.add(1);
+            userVotedProposalIds[_from][lastProposalId] = index + 1;
 
             voterCastedProposals[_from].pop();
         }
@@ -851,16 +840,13 @@ contract QuartzGovernor is AccessControl {
     ) public view returns (uint256) {
         uint256 t = uint256(_timePassed);
         // atTWO_128 = 2^128 * a^t
-        uint256 atTWO_128 = _pow((decay << 128).div(D), t);
+        uint256 atTWO_128 = _pow((decay << 128) / D, t);
         // solium-disable-previous-line
         // conviction = (atTWO_128 * _lastConv + _oldAmount * D * (2^128 - atTWO_128) / (D - aD) + 2^127) / 2^128
         return
-            (
-                atTWO_128.mul(_lastConv).add(
-                    _oldAmount.mul(D).mul(TWO_128.sub(atTWO_128)).div(D - decay)
-                )
-            )
-                .add(TWO_127) >> 128;
+            (((atTWO_128 * _lastConv) +
+                ((_oldAmount * D * (TWO_128 - atTWO_128)) / (D - decay))) +
+                TWO_127) >> 128;
     }
 
     /**
@@ -876,26 +862,22 @@ contract QuartzGovernor is AccessControl {
     function calculateThreshold() public view returns (uint256 _threshold) {
         uint256 funds = quartz.totalStaked();
         require(
-            maxRatio.mul(funds) > minVotesToPass.mul(D),
+            maxRatio * funds > minVotesToPass * D,
             ERROR_AMOUNT_OVER_MAX_RATIO
         );
         // denom = maxRatio * 2 ** 64 / D  - minVotesToPass * 2 ** 64 / funds
-        uint256 denom =
-            (maxRatio << 64).div(D).sub((minVotesToPass << 64).div(funds));
+        uint256 denom = (maxRatio << 64) / D - (minVotesToPass << 64) / funds;
         // _threshold = (weight * 2 ** 128 / D) / (denom ** 2 / 2 ** 64) * totalStaked * D / 2 ** 128
         _threshold =
-            ((weight << 128).div(D).div(denom.mul(denom) >> 64))
-                .mul(D)
-                .div(D.sub(decay))
-                .mul(_totalVotes()) >>
+            ((((((weight << 128) / D) / ((denom * denom) >> 64)) * D) /
+                (D - decay)) * _totalVotes()) >>
             64;
     }
 
     function _totalVotes() internal view returns (uint256) {
         uint256 minTotalVotes =
-            (quartz.totalStaked().mul(minThresholdStakePercentage)).div(
-                ONE_HUNDRED_PERCENT
-            );
+            (quartz.totalStaked() * minThresholdStakePercentage) /
+                ONE_HUNDRED_PERCENT;
         return totalVotes < minTotalVotes ? minTotalVotes : totalVotes;
     }
 
@@ -911,16 +893,16 @@ contract QuartzGovernor is AccessControl {
         if (inactiveWithdrawn < _amount) {
             require(force, ERROR_NOT_ENOUGH_INACTIVE_VOTES);
             uint256 activeWithdrawn =
-                _withdrawActiveVotes(_amount.sub(inactiveWithdrawn), _from);
+                _withdrawActiveVotes(_amount - inactiveWithdrawn, _from);
             uint256 stakedWithdrawn;
-            if (inactiveWithdrawn.add(activeWithdrawn) < _amount) {
+            if (inactiveWithdrawn + (activeWithdrawn) < _amount) {
                 stakedWithdrawn = _withdrawStakedFromProposals(
-                    _amount.sub(inactiveWithdrawn).sub(activeWithdrawn),
+                    _amount - inactiveWithdrawn - activeWithdrawn,
                     _from
                 );
             }
             require(
-                inactiveWithdrawn.add(activeWithdrawn).add(stakedWithdrawn) >=
+                inactiveWithdrawn + activeWithdrawn + stakedWithdrawn >=
                     _amount,
                 ERROR_NO_ENOUGH_VOTES
             );
@@ -941,7 +923,7 @@ contract QuartzGovernor is AccessControl {
     {
         require(_a <= TWO_128, "_a should be less than or equal to 2^128");
         require(_b < TWO_128, "_b should be less than 2^128");
-        return _a.mul(_b).add(TWO_127) >> 128;
+        return (_a * _b + TWO_127) >> 128;
     }
 
     /**

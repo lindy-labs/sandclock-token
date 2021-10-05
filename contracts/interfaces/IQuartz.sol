@@ -1,4 +1,4 @@
-pragma solidity 0.7.3;
+pragma solidity ^0.8.9;
 
 interface IQuartz {
     function moveVotesToGovernor(address user, uint256 amount) external;

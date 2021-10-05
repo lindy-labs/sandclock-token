@@ -1,15 +1,10 @@
-pragma solidity 0.7.3;
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./interfaces/IQuartzGovernor.sol";
-import "./libraries/SafeMath64.sol";
 
 contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
-    using SafeMath for uint256;
-    using SafeMath64 for uint64;
-
     event Staked(
         uint64 indexed id,
         address indexed owner,
@@ -97,7 +92,7 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
 
         address _owner = msg.sender;
         uint64 _stakeId = stakeLength;
-        uint64 _maturationTimestamp = _getBlockTimestamp().add(_period);
+        uint64 _maturationTimestamp = _getBlockTimestamp() + _period;
         StakeInfo memory stakeInfo =
             StakeInfo({
                 owner: _owner,
@@ -109,15 +104,15 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
             });
         stakes[_stakeId] = stakeInfo;
 
-        userVotesRep[_beneficiary] = userVotesRep[_beneficiary].add(_amount);
+        userVotesRep[_beneficiary] = userVotesRep[_beneficiary] + _amount;
         if (delegates[_beneficiary] == address(0)) {
             _delegate(_beneficiary, _beneficiary);
         } else {
             _moveDelegates(address(0), delegates[_beneficiary], _amount);
         }
 
-        stakeLength = stakeLength.add(1);
-        totalStaked = totalStaked.add(_amount);
+        stakeLength = stakeLength + 1;
+        totalStaked = totalStaked + _amount;
         emit Staked(
             _stakeId,
             _owner,
@@ -139,10 +134,9 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
         _transfer(address(this), msg.sender, stakeInfo.amount);
 
         stakeInfo.active = false;
-        userVotesRep[stakeInfo.beneficiary] = userVotesRep[
-            stakeInfo.beneficiary
-        ]
-            .sub(stakeInfo.amount);
+        userVotesRep[stakeInfo.beneficiary] =
+            userVotesRep[stakeInfo.beneficiary] -
+            stakeInfo.amount;
 
         _moveDelegates(
             delegates[stakeInfo.beneficiary],
@@ -150,7 +144,7 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
             stakeInfo.amount
         );
 
-        totalStaked = totalStaked.sub(stakeInfo.amount);
+        totalStaked = totalStaked - stakeInfo.amount;
 
         emit Unstaked(
             _stakeId,
@@ -221,7 +215,7 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
                 if (srcRepOld < amount) {
                     governor.withdrawRequiredVotes(
                         srcRep,
-                        amount.sub(srcRepOld),
+                        amount - srcRepOld,
                         dstRep == address(0)
                     );
                     srcRepNum = numCheckpoints[srcRep];
@@ -229,11 +223,7 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
                         ? checkpoints[srcRep][srcRepNum - 1].votes
                         : 0;
                 }
-                uint256 srcRepNew =
-                    srcRepOld.sub(
-                        amount,
-                        "Quartz::_moveVotes: vote amount underflows"
-                    );
+                uint256 srcRepNew = srcRepOld - amount;
                 _writeCheckpoint(srcRep, srcRepNum, srcRepOld, srcRepNew);
             }
 
@@ -243,7 +233,7 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
                     dstRepNum > 0
                         ? checkpoints[dstRep][dstRepNum - 1].votes
                         : 0;
-                uint256 dstRepNew = dstRepOld.add(amount);
+                uint256 dstRepNew = dstRepOld + amount;
                 _writeCheckpoint(dstRep, dstRepNum, dstRepOld, dstRepNew);
             }
         }

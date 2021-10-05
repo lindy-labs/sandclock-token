@@ -205,7 +205,7 @@ describe('QuartzGovernor', () => {
       ).to.be.revertedWith('QG_NOT_ENOUGH_INACTIVE_VOTES');
     });
 
-    it.only('Should create new proposal', async () => {
+    it('Should create new proposal', async () => {
       await quartz
         .connect(owner)
         .stake(proposalThreshold, proposalSubmitter.address, '1');

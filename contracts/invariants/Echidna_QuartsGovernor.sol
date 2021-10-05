@@ -1,4 +1,4 @@
-pragma solidity 0.7.3;
+pragma solidity ^0.8.9;
 pragma experimental ABIEncoderV2;
 
 import "../Quartz.sol";
@@ -22,7 +22,9 @@ contract Echidna_QuartzGovernor is QuartzGovernor {
     {}
 
     function echidna_abstainProposalCannotBeExecuted() public returns (bool) {
-        return proposals[ABSTAIN_PROPOSAL_ID].status != ProposalStatus.Executed;
+        return
+            proposals[ABSTAIN_PROPOSAL_ID].proposalStatus !=
+            ProposalStatus.Executed;
     }
 
     function echidna_cannotExecuteProposalWithNegativeNetVotes()
@@ -30,12 +32,13 @@ contract Echidna_QuartzGovernor is QuartzGovernor {
         returns (bool)
     {
         for (uint256 i = 0; i < proposalCounter; i++) {
+            Proposal storage proposal = proposals[i];
+
             // this invariant only applies to executed proposals
-            if (proposal.status != ProposalStatus.Executed) {
+            if (proposal.proposalStatus != ProposalStatus.Executed) {
                 continue;
             }
 
-            Proposal storage proposal = proposals[i];
             Vote storage positiveVotes = proposal.positiveVotes;
             Vote storage negativeVotes = proposal.negativeVotes;
 
@@ -49,7 +52,7 @@ contract Echidna_QuartzGovernor is QuartzGovernor {
             // We would need to know the threshold at the time this was executed,
             // and not the current one
             if (
-                positiveVotes.convictionLast.sub(negativeVotes.convictionLast) <
+                positiveVotes.convictionLast - negativeVotes.convictionLast <
                 calculateThreshold()
             ) {
                 return false;

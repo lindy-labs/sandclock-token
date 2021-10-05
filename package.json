@@ -10,8 +10,7 @@
     "deploy:mainnet": "hardhat deploy --network mainnet",
     "deploy:polygon": "hardhat deploy --network polygon",
     "deploy:rinkeby": "hardhat deploy --network rinkeby",
-    "deploy:mumbai": "hardhat deploy --network mumbai",
-    "security:cli": "docker run -it -v `pwd`:/src trailofbits/eth-security-toolbox"
+    "deploy:mumbai": "hardhat deploy --network mumbai"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",

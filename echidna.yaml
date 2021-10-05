@@ -1,0 +1,11 @@
+filterBlacklist: true
+filterFunctions: [
+  "Quartz.decreaseAllowance(address,uint256)",
+  "Quartz.increaseAllowance(address,uint256)",
+  "Quartz.transferFrom(address,uint256)",
+  "Quartz.renounceOwnership()",
+  "Quartz.transferOwnership(address)"
+]
+checkAsserts: true
+coverage: true
+seqLen: 10

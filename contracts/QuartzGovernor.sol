@@ -4,8 +4,9 @@ pragma experimental ABIEncoderV2;
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./interfaces/IQuartz.sol";
+import "./interfaces/IQuartzGovernor.sol";
 
-contract QuartzGovernor is AccessControl {
+contract QuartzGovernor is AccessControl, IQuartzGovernor {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant UPDATE_SETTINGS_ROLE =
         keccak256("UPDATE_SETTINGS_ROLE");

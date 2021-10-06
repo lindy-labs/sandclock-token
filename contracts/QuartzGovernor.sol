@@ -233,7 +233,7 @@ contract QuartzGovernor is AccessControl {
         uint256 _minVotesToPass,
         uint256 _proposalThreshold,
         uint64 _proposalActivePeriod
-    ) public auth(UPDATE_SETTINGS_ROLE) {
+    ) external auth(UPDATE_SETTINGS_ROLE) {
         decay = _decay;
         maxRatio = _maxRatio;
         weight = _weight;

@@ -8,4 +8,6 @@ filterFunctions: [
 ]
 checkAsserts: true
 coverage: true
-seqLen: 10
+seqLen: 1
+stopOnFail: true
+testLimit: 10

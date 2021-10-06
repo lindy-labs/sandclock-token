@@ -1,5 +1,3 @@
-pragma solidity ^0.8.9;
-
 import "../QuartzGovernor.sol";
 import "../Quartz.sol";
 

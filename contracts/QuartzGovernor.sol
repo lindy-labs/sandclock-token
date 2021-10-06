@@ -16,7 +16,6 @@ contract QuartzGovernor is AccessControl {
     uint256 public constant ONE_HUNDRED_PERCENT = 1e18;
     uint256 private constant TWO_128 = 1 << 128; // 2 ^ 128
     uint256 private constant TWO_127 = 1 << 127; // 2^127
-    uint256 private constant TWO_64 = 1 << 64; // 2^64
     uint256 public constant ABSTAIN_PROPOSAL_ID = 1;
     uint64 public constant MAX_STAKED_PROPOSALS = 10;
 
@@ -36,8 +35,6 @@ contract QuartzGovernor is AccessControl {
         "QG_AMOUNT_OVER_MAX_RATIO";
     string private constant ERROR_AMOUNT_CAN_NOT_BE_ZERO =
         "QG_AMOUNT_CAN_NOT_BE_ZERO";
-    string private constant ERROR_VOTES_MORE_THAN_AVAILABLE =
-        "QG_VOTES_MORE_THAN_AVAILABLE";
     string private constant ERROR_ALREADY_POSITIVE_VOTED =
         "QG_ALREADY_POSITIVE_VOTED";
     string private constant ERROR_ALREADY_NEGATIVE_VOTED =

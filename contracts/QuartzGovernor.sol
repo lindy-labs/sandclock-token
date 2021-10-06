@@ -13,7 +13,7 @@ contract QuartzGovernor is AccessControl, IQuartzGovernor {
     bytes32 public constant CANCEL_PROPOSAL_ROLE =
         keccak256("CANCEL_PROPOSAL_ROLE");
 
-    uint256 public constant D = 10000000;
+    uint256 public constant D = 1e7;
     uint256 public constant ONE_HUNDRED_PERCENT = 1e18;
     uint256 private constant TWO_128 = 1 << 128; // 2 ^ 128
     uint256 private constant TWO_127 = 1 << 127; // 2^127
@@ -565,6 +565,7 @@ contract QuartzGovernor is AccessControl, IQuartzGovernor {
             ERROR_PROPOSAL_NOT_ACTIVE
         );
 
+        // slither-disable-next-line timestamp
         if (proposal.expiration > uint64(block.timestamp)) {
             bool senderHasPermission =
                 hasRole(CANCEL_PROPOSAL_ROLE, msg.sender);

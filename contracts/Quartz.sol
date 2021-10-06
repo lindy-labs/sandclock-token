@@ -60,7 +60,7 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
     uint256 public totalStaked;
 
     constructor(uint64 _minStakePeriod) {
-        _mint(msg.sender, 100000000 * 1e18);
+        _mint(msg.sender, 1e8 ether);
         minStakePeriod = _minStakePeriod;
     }
 
@@ -125,6 +125,7 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
     function unstake(uint64 _stakeId) external {
         require(_stakeId < stakeLength, "QUARTZ: Invalid id");
         StakeInfo storage stakeInfo = stakes[_stakeId];
+        //slither-disable-next-line timestamp
         require(
             stakeInfo.maturationTimestamp <= _getBlockTimestamp(),
             "QUARTZ: Not ready to unstake"

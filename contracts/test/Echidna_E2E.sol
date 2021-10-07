@@ -2,6 +2,7 @@ pragma solidity ^0.8.9;
 
 import "../QuartzGovernor.sol";
 import "../Quartz.sol";
+import "hardhat/console.sol";
 
 contract EOAMock {
     Quartz private quartz;
@@ -71,10 +72,9 @@ contract Echidna_E2E {
         uint256 _amount,
         uint64 _period
     ) external {
-        assert(false);
         EOAMock eoa = users[msg.sender];
 
-        require(quartz.balanceOf(msg.sender) >= _amount);
+        require(quartz.balanceOf(address(eoa)) >= _amount);
 
         uint256 totalBefore = quartz.totalStaked();
         uint256 countBefore = quartz.stakeLength();
@@ -84,19 +84,18 @@ contract Echidna_E2E {
         uint256 totalAfter = quartz.totalStaked();
         uint256 countAfter = quartz.stakeLength();
 
-        assert(false);
         assert(totalAfter == totalBefore + _amount);
         assert(countAfter == countBefore + 1);
     }
 
     function unstake(uint64 _stakeId) external {
-        assert(false);
         EOAMock eoa = users[msg.sender];
 
         // uint256 totalBefore = quartz.totalStaked();
         uint256 countBefore = quartz.stakeLength();
 
         eoa.unstake(_stakeId);
+        assert(false);
 
         // uint256 totalAfter = quartz.totalStaked();
         uint256 countAfter = quartz.stakeLength();

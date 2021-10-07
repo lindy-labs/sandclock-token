@@ -10,8 +10,7 @@
     "deploy:mainnet": "hardhat deploy --network mainnet",
     "deploy:polygon": "hardhat deploy --network polygon",
     "deploy:rinkeby": "hardhat deploy --network rinkeby",
-    "deploy:mumbai": "hardhat deploy --network mumbai",
-    "test:echidna": "echidna-test . --config echidna.yaml --contract"
+    "deploy:mumbai": "hardhat deploy --network mumbai"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",

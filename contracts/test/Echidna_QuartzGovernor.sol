@@ -27,8 +27,8 @@ contract Echidna_QuartzGovernor is QuartzGovernor {
         uint256 _amount,
         uint8 _periods
     ) external {
-        require(_amount > 0);
-        require(_periods > 0);
+        require(_amount > 1 ether);
+        require(_periods > 1 minutes);
 
         uint256 period = block.timestamp - lastTimestamp;
         require(period > 0);
@@ -62,10 +62,10 @@ contract Echidna_QuartzGovernor is QuartzGovernor {
         uint256 _amountToRemove,
         uint8 _periods
     ) external {
-        require(_initialAmount > 0);
-        require(_amountToRemove > 0);
+        require(_initialAmount > 1 ether);
+        require(_amountToRemove > 0.01 ether);
         require(_amountToRemove >= _initialAmount);
-        require(_periods > 0);
+        require(_periods > 1 minutes);
 
         uint256 period = block.timestamp - lastTimestamp;
         require(period > 0);
@@ -91,6 +91,9 @@ contract Echidna_QuartzGovernor is QuartzGovernor {
     }
 
     function test_pow(uint256 _a, uint256 _b) external pure {
+        require(_a < (1 << 128));
+        require(_b < (1 << 128));
+
         uint256 result = _pow(_a, _b);
 
         if (_b == 0) {

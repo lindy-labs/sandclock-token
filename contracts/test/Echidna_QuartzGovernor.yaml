@@ -1,0 +1,10 @@
+filterBlacklist: false
+filterFunctions: [
+  "Echidna_QuartzGovernor.test_convictionContinuousGrowth(uint256,uint256,uint8)",
+  "Echidna_QuartzGovernor.test_removingVotesContinuouslyDropsConviction(uint256,uint256,uint256,uint8)",
+  "Echidna_QuartzGovernor.test_pow(uint256,uint256)"
+]
+testMode: 'assertion'
+coverage: true
+stopOnFail: true
+seqLen: 1

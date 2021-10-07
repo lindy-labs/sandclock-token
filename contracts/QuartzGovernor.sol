@@ -377,7 +377,7 @@ contract QuartzGovernor is AccessControl, IQuartzGovernor {
         internal
         returns (uint256 withdrawnAmount)
     {
-        uint256 i;
+        uint256 i = 0;
         uint256[] memory voterCastedProposalsCopy = voterCastedProposals[_from];
 
         while (
@@ -416,7 +416,7 @@ contract QuartzGovernor is AccessControl, IQuartzGovernor {
         internal
         returns (uint256 withdrawnAmount)
     {
-        uint256 i;
+        uint256 i = 0;
         uint256[] memory voterCastedProposalsCopy = voterCastedProposals[_from];
 
         while (
@@ -678,6 +678,7 @@ contract QuartzGovernor is AccessControl, IQuartzGovernor {
     {
         uint256 blockNumber = block.number;
         assert(_vote.blockLast <= blockNumber);
+        // slither-disable-next-line incorrect-equality
         if (_vote.blockLast == blockNumber) {
             return; // Conviction already stored
         }
@@ -894,7 +895,7 @@ contract QuartzGovernor is AccessControl, IQuartzGovernor {
             require(force, ERROR_NOT_ENOUGH_INACTIVE_VOTES);
             uint256 activeWithdrawn =
                 _withdrawActiveVotes(_amount - inactiveWithdrawn, _from);
-            uint256 stakedWithdrawn;
+            uint256 stakedWithdrawn = 0;
             if (inactiveWithdrawn + (activeWithdrawn) < _amount) {
                 stakedWithdrawn = _withdrawStakedFromProposals(
                     _amount - inactiveWithdrawn - activeWithdrawn,
@@ -942,7 +943,9 @@ contract QuartzGovernor is AccessControl, IQuartzGovernor {
         uint256 a = _a;
         uint256 b = _b;
         _result = TWO_128;
+
         while (b > 0) {
+            // slither-disable-next-line incorrect-equality
             if (b & 1 == 0) {
                 a = _mul(a, a);
                 b >>= 1;

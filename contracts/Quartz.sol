@@ -252,8 +252,8 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
                 block.number,
                 "Quartz::_writeCheckpoint: block number exceeds 32 bits"
             );
-
         if (
+            //slither-disable-next-line incorrect-equality
             nCheckpoints > 0 &&
             checkpoints[delegatee][nCheckpoints - 1].fromBlock == blockNumber
         ) {

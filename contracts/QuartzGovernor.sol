@@ -171,7 +171,8 @@ contract QuartzGovernor is AccessControl {
 
         quartz = _quartz;
         require(address(_quartz) != address(0));
-        proposalCounter = ABSTAIN_PROPOSAL_ID + 1; // First proposal should be #2, #1 is reserved for abstain proposal, #0 is not used for better UX.
+        // First proposal should be #2, #1 is reserved for abstain proposal, #0 is not used for better UX.
+        proposalCounter = ABSTAIN_PROPOSAL_ID + 1;
         decay = _decay;
         maxRatio = _maxRatio;
         weight = _weight;
@@ -855,7 +856,8 @@ contract QuartzGovernor is AccessControl {
      * weight = ρ * D
      * maxRatio = β * D
      * decay = a * D
-     * threshold = weight * totalStaked * D ** 2 * funds ** 2 / (D - decay) / (maxRatio * funds - minVotesToPass * D) ** 2
+     * threshold =
+     *     weight * totalStaked * D ** 2 * funds ** 2 / (D - decay) / (maxRatio * funds - minVotesToPass * D) ** 2
      * @return _threshold Threshold a proposal's conviction should surpass in order to be able to
      * executed it.
      */

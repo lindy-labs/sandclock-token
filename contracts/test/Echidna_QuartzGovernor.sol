@@ -36,7 +36,6 @@ contract Echidna_QuartzGovernor is QuartzGovernor {
 
         uint256 currentGrowth = type(uint256).max;
         uint256 currentConv = _initialConv;
-        uint256 nextConv;
 
         for (uint256 i = 0; i < _periods; ++i) {
             uint256 nextConv =
@@ -73,7 +72,6 @@ contract Echidna_QuartzGovernor is QuartzGovernor {
 
         uint256 currentDecay = 0;
         uint256 currentConv = _initialConv;
-        uint256 nextConv;
 
         uint256 finalAmount = _initialAmount - _amountToRemove;
 
@@ -90,6 +88,8 @@ contract Echidna_QuartzGovernor is QuartzGovernor {
         }
     }
 
+    // TODO this currently fails for _pow(0, 0)
+    // Is this expected? is it a problem?
     function test_pow(uint256 _a, uint256 _b) external pure {
         require(_a < (1 << 128));
         require(_b < (1 << 128));

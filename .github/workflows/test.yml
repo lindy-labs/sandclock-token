@@ -11,6 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     container: node:16.4.2
 
+    env:
+      # disposable private key, meant as placeholder.
+      # do not use in production
+      MAINNET_PRIVATE_KEY: "0x8b6734a335e529e584f2b1b77f7a07cdd1e46991a5b2cd0cef9c933a8710a1c2"
+      TESTNET_PRIVATE_KEY: "0x8b6734a335e529e584f2b1b77f7a07cdd1e46991a5b2cd0cef9c933a8710a1c2"
+
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2

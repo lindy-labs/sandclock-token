@@ -3,6 +3,7 @@ require('@nomiclabs/hardhat-web3');
 require('@openzeppelin/hardhat-upgrades');
 require('hardhat-deploy');
 require('hardhat-deploy-ethers');
+require('hardhat-gas-reporter');
 require('solidity-coverage');
 require('dotenv').config();
 
@@ -55,5 +56,9 @@ module.exports = {
     deployer: {
       default: 0,
     },
+  },
+  gasReporter: {
+    currency: 'ETH',
+    gasPrice: 21,
   },
 };

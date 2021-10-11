@@ -88,7 +88,7 @@ contract Echidna_QuartzGovernor is QuartzGovernor {
         }
     }
 
-    // TODO this currently fails for _pow(0, 0)
+    // TODO this currently fails for _pow(1, 2)
     // Is this expected? is it a problem?
     function test_pow(uint256 _a, uint256 _b) external pure {
         require(_a < (1 << 128));

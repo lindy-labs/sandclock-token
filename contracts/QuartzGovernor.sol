@@ -1,22 +1,23 @@
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./interfaces/IQuartz.sol";
+import "./interfaces/IQuartzGovernor.sol";
 
-contract QuartzGovernor is AccessControl {
+contract QuartzGovernor is AccessControl, IQuartzGovernor {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant UPDATE_SETTINGS_ROLE =
         keccak256("UPDATE_SETTINGS_ROLE");
     bytes32 public constant CANCEL_PROPOSAL_ROLE =
         keccak256("CANCEL_PROPOSAL_ROLE");
 
-    uint256 public constant D = 10000000;
+    uint256 public constant D = 1e7;
     uint256 public constant ONE_HUNDRED_PERCENT = 1e18;
     uint256 private constant TWO_128 = 1 << 128; // 2 ^ 128
     uint256 private constant TWO_127 = 1 << 127; // 2^127
-    uint256 private constant TWO_64 = 1 << 64; // 2^64
     uint256 public constant ABSTAIN_PROPOSAL_ID = 1;
     uint64 public constant MAX_STAKED_PROPOSALS = 10;
 
@@ -36,8 +37,6 @@ contract QuartzGovernor is AccessControl {
         "QG_AMOUNT_OVER_MAX_RATIO";
     string private constant ERROR_AMOUNT_CAN_NOT_BE_ZERO =
         "QG_AMOUNT_CAN_NOT_BE_ZERO";
-    string private constant ERROR_VOTES_MORE_THAN_AVAILABLE =
-        "QG_VOTES_MORE_THAN_AVAILABLE";
     string private constant ERROR_ALREADY_POSITIVE_VOTED =
         "QG_ALREADY_POSITIVE_VOTED";
     string private constant ERROR_ALREADY_NEGATIVE_VOTED =
@@ -234,7 +233,7 @@ contract QuartzGovernor is AccessControl {
         uint256 _minVotesToPass,
         uint256 _proposalThreshold,
         uint64 _proposalActivePeriod
-    ) public auth(UPDATE_SETTINGS_ROLE) {
+    ) external auth(UPDATE_SETTINGS_ROLE) {
         decay = _decay;
         maxRatio = _maxRatio;
         weight = _weight;
@@ -379,7 +378,7 @@ contract QuartzGovernor is AccessControl {
         internal
         returns (uint256 withdrawnAmount)
     {
-        uint256 i;
+        uint256 i = 0;
         uint256[] memory voterCastedProposalsCopy = voterCastedProposals[_from];
 
         while (
@@ -418,7 +417,7 @@ contract QuartzGovernor is AccessControl {
         internal
         returns (uint256 withdrawnAmount)
     {
-        uint256 i;
+        uint256 i = 0;
         uint256[] memory voterCastedProposalsCopy = voterCastedProposals[_from];
 
         while (
@@ -568,6 +567,7 @@ contract QuartzGovernor is AccessControl {
             ERROR_PROPOSAL_NOT_ACTIVE
         );
 
+        // slither-disable-next-line timestamp
         if (proposal.expiration > uint64(block.timestamp)) {
             bool senderHasPermission =
                 hasRole(CANCEL_PROPOSAL_ROLE, msg.sender);
@@ -679,6 +679,7 @@ contract QuartzGovernor is AccessControl {
     {
         uint256 blockNumber = block.number;
         assert(_vote.blockLast <= blockNumber);
+        // slither-disable-next-line incorrect-equality
         if (_vote.blockLast == blockNumber) {
             return; // Conviction already stored
         }
@@ -896,7 +897,7 @@ contract QuartzGovernor is AccessControl {
             require(force, ERROR_NOT_ENOUGH_INACTIVE_VOTES);
             uint256 activeWithdrawn =
                 _withdrawActiveVotes(_amount - inactiveWithdrawn, _from);
-            uint256 stakedWithdrawn;
+            uint256 stakedWithdrawn = 0;
             if (inactiveWithdrawn + (activeWithdrawn) < _amount) {
                 stakedWithdrawn = _withdrawStakedFromProposals(
                     _amount - inactiveWithdrawn - activeWithdrawn,
@@ -944,7 +945,9 @@ contract QuartzGovernor is AccessControl {
         uint256 a = _a;
         uint256 b = _b;
         _result = TWO_128;
+
         while (b > 0) {
+            // slither-disable-next-line incorrect-equality
             if (b & 1 == 0) {
                 a = _mul(a, a);
                 b >>= 1;

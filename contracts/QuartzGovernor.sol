@@ -870,7 +870,7 @@ contract QuartzGovernor is AccessControl, IQuartzGovernor {
         );
         // denom = maxRatio * 2 ** 64 / D  - minVotesToPass * 2 ** 64 / funds
         uint256 denom = (maxRatio << 64) / D - (minVotesToPass << 64) / funds;
-        // _threshold = (weight * 2 ** 128 / D) / (denom ** 2 / 2 ** 64) * totalStaked * D / 2 ** 128
+        // _threshold = (weight * 2 ** 128 / D) / (denom ** 2 / 2 ** 64) * totalVotes * D / 2 ** 128
         _threshold =
             ((((((weight << 128) / D) / ((denom * denom) >> 64)) * D) /
                 (D - decay)) * _totalVotes()) >>

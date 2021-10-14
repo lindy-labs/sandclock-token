@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -60,7 +61,7 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
     uint256 public totalStaked;
 
     constructor(uint64 _minStakePeriod) {
-        _mint(msg.sender, 100000000 * 1e18);
+        _mint(msg.sender, 1e8 ether);
         minStakePeriod = _minStakePeriod;
     }
 
@@ -125,6 +126,7 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
     function unstake(uint64 _stakeId) external {
         require(_stakeId < stakeLength, "QUARTZ: Invalid id");
         StakeInfo storage stakeInfo = stakes[_stakeId];
+        //slither-disable-next-line timestamp
         require(
             stakeInfo.maturationTimestamp <= _getBlockTimestamp(),
             "QUARTZ: Not ready to unstake"
@@ -183,7 +185,7 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
      * @param account The address to get votes balance
      * @return The number of current votes for `account`
      */
-    function getCurrentVotes(address account) public view returns (uint256) {
+    function getCurrentVotes(address account) external view returns (uint256) {
         uint32 nCheckpoints = numCheckpoints[account];
         return
             nCheckpoints > 0 ? checkpoints[account][nCheckpoints - 1].votes : 0;
@@ -250,8 +252,8 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
                 block.number,
                 "Quartz::_writeCheckpoint: block number exceeds 32 bits"
             );
-
         if (
+            //slither-disable-next-line incorrect-equality
             nCheckpoints > 0 &&
             checkpoints[delegatee][nCheckpoints - 1].fromBlock == blockNumber
         ) {

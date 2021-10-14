@@ -57,4 +57,8 @@ module.exports = {
       default: 0,
     },
   },
+  gasReporter: {
+    currency: 'ETH',
+    gasPrice: 21,
+  },
 };

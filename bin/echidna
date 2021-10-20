@@ -1,0 +1,18 @@
+#!/bin/sh -ue
+
+contract=$1
+config="contracts/test/$contract.yaml"
+
+if [[ $contract == "" ]]; then
+  echo "Missing contract name argument"
+  exit 1
+fi
+
+if [[ ! -f $config ]]; then
+  echo "Missing config file $config"
+  exit 1
+fi
+
+rm -rf crytic-export
+hardhat compile
+echidna-test . --contract $contract --config $config

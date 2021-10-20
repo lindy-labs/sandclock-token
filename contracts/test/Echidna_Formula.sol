@@ -34,7 +34,7 @@ contract Echidna_Formula {
             64;
     }
 
-    function echidna_valuesAreEqual() public returns (bool) {
+    function echidna_valuesAreEqual() public view returns (bool) {
         return t1 == t2;
     }
 }

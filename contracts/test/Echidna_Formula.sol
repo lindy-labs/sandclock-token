@@ -29,8 +29,8 @@ contract Echidna_Formula {
             64;
 
         t2 =
-            (((weight << 128) / (((denom * denom) >> 64) * (D - decay))) *
-                totalVotes) >>
+            (((weight << 128) * totalVotes) /
+                (((denom * denom) >> 64) * (D - decay))) >>
             64;
     }
 

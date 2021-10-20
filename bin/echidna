@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -ue
 
 contract=$1
 config="contracts/test/$contract.yaml"
@@ -13,4 +13,6 @@ if [[ ! -f $config ]]; then
   exit 1
 fi
 
+rm -rf crytic-export
+hardhat compile
 echidna-test . --contract $contract --config $config

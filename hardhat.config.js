@@ -1,5 +1,6 @@
 require('@nomiclabs/hardhat-waffle');
 require('@nomiclabs/hardhat-web3');
+require("@nomiclabs/hardhat-etherscan");
 require('@openzeppelin/hardhat-upgrades');
 require('hardhat-deploy');
 require('hardhat-deploy-ethers');
@@ -18,7 +19,7 @@ module.exports = {
       timeout: 1000000,
     },
     mainnet: {
-      url: `wss://mainnet.infura.io/ws/v3/${process.env.INFURA_KEY}`,
+      url: `https://mainnet.infura.io/v3/${process.env.INFURA_KEY}`,
       chainId: 1,
       accounts: [process.env.MAINNET_PRIVATE_KEY],
     },
@@ -61,4 +62,7 @@ module.exports = {
     currency: 'ETH',
     gasPrice: 21,
   },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY
+  }
 };

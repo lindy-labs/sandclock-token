@@ -10,6 +10,8 @@ describe('Vesting', () => {
   let owner;
   let alice;
   let bob;
+  const batchDuration = 100;
+  const batchSize = 100;
   const minStakePeriod = 100;
   const start = 3600;
 
@@ -21,7 +23,12 @@ describe('Vesting', () => {
 
     const currentTime = await getCurrentTime();
     const Vesting = await ethers.getContractFactory('Vesting');
-    vesting = await Vesting.deploy(quartz.address, currentTime.add(start));
+    vesting = await Vesting.deploy(
+      quartz.address,
+      currentTime.add(start),
+      batchDuration,
+      batchSize,
+    );
   });
 
   describe('addClaimable', () => {
@@ -63,20 +70,41 @@ describe('Vesting', () => {
   });
 
   describe('currentlyClaimable', () => {
-    it('is zero before the start period', async () => {
+    it('is zero before the start batch', async () => {
       await quartz.transfer(vesting.address, 11);
       await vesting.addClaimable(alice.address, 10);
 
       expect(await vesting.currentlyClaimable(alice.address)).to.equal(0);
     });
 
-    it('is more than zero for a beneficiary after the start period', async () => {
-      await quartz.transfer(vesting.address, 11);
-      await vesting.addClaimable(alice.address, 10);
+    it('increases with each batch', async () => {
+      await quartz.transfer(vesting.address, 1000);
+      await vesting.addClaimable(alice.address, 1000);
 
       await time.increase(start);
 
-      expect(await vesting.currentlyClaimable(alice.address)).to.equal(10);
+      for (let amount = batchSize; amount <= 1000; amount += batchSize) {
+        expect(await vesting.currentlyClaimable(alice.address)).to.equal(
+          amount,
+        );
+
+        await time.increase(batchDuration);
+      }
+
+      expect(await vesting.currentlyClaimable(alice.address)).to.equal(1000);
+    });
+
+    it('takes the claimed amount into account', async () => {
+      await quartz.transfer(vesting.address, 1000);
+      await vesting.addClaimable(alice.address, 1000);
+
+      await time.increase(start);
+      await vesting.claim(alice.address);
+      await time.increase(batchDuration);
+
+      expect(await vesting.currentlyClaimable(alice.address)).to.equal(
+        batchSize,
+      );
     });
   });
 

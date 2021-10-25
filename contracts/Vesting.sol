@@ -3,6 +3,7 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 
 /**
  * Vesting contract for QUARTZ (Polygon chain)
@@ -17,11 +18,23 @@ contract Vesting is Ownable {
     // how much each beneficiary has left to claim
     mapping(address => uint256) public claimable;
 
+    // how much each beneficiary has claimed
+    mapping(address => uint256) public claimed;
+
     // total amount of tokens to be claimed (includind the ones still locked)
     uint256 public totalClaimable;
 
     // total amount already claimed
     uint256 public totalClaimed;
+
+    // starting date for the claim
+    uint256 public start;
+
+    // duration of each claim batch
+    uint256 public batchDuration;
+
+    // amount that can be claimed for each batch
+    uint256 public batchSize;
 
     // emitted when a new claim is added
     event ClaimAdded(address indexed beneficiary, uint256 amount);
@@ -29,9 +42,16 @@ contract Vesting is Ownable {
     // emitted when tokens are claimed
     event Claimed(address indexed beneficiary, uint256 amount);
 
-    constructor(IERC20 _token, uint256 _start) {
+    constructor(
+        IERC20 _token,
+        uint256 _start,
+        uint256 _batchDuration,
+        uint256 _batchSize
+    ) {
         token = _token;
         start = _start;
+        batchDuration = _batchDuration;
+        batchSize = _batchSize;
     }
 
     /**
@@ -43,7 +63,8 @@ contract Vesting is Ownable {
      * Therefore, the required tokens need to be transfered before-hand
      *
      * @param _beneficiary Address of the beneficiary
- *   * @param _amount Amount of tokens to add
+     * @param _amount Amount of tokens to add
+     */
 
     function addClaimable(address _beneficiary, uint256 _amount)
         public
@@ -76,7 +97,10 @@ contract Vesting is Ownable {
             return 0;
         }
 
-        return claimable[_beneficiary];
+        uint256 batches = (block.timestamp - start) / batchDuration + 1;
+        uint256 maxClaimable = batches * batchSize - claimed[_beneficiary];
+
+        return Math.min(claimable[_beneficiary], maxClaimable);
     }
 
     function claim(address _beneficiary) public {
@@ -85,6 +109,7 @@ contract Vesting is Ownable {
         require(amount > 0, "no tokens to claim");
 
         claimable[_beneficiary] -= amount;
+        claimed[_beneficiary] += amount;
         totalClaimable -= amount;
         totalClaimed += amount;
         emit Claimed(_beneficiary, amount);

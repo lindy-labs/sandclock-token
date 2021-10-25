@@ -2,7 +2,7 @@ const { ethers } = require('hardhat');
 const { expect } = require('chai');
 const { BigNumber } = require('ethers');
 const { time, constants } = require('@openzeppelin/test-helpers');
-const { getCurrentTime, getCurrentBlock } = require('./utils');
+const { advanceBlock, getCurrentTime, getCurrentBlock } = require('./utils');
 
 describe('Quartz', () => {
   let accounts;
@@ -144,6 +144,7 @@ describe('Quartz', () => {
       const tx = await quartz
         .connect(sender)
         .stake(amount, beneficiary.address, period);
+      advanceBlock;
       const currentTime = await getCurrentTime();
       const currentBlock = await getCurrentBlock();
       expect(tx)

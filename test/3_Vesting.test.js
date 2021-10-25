@@ -124,6 +124,7 @@ describe('Vesting', () => {
 
       expect(await quartz.balanceOf(alice.address)).to.equal(10);
       expect(await vesting.claimable(alice.address)).to.equal(0);
+      expect(await vesting.claimed(alice.address)).to.equal(10);
       expect(await vesting.totalClaimable()).to.equal(1);
       expect(await vesting.totalClaimed()).to.equal(10);
     });

@@ -51,8 +51,11 @@ contract VestedRewards is ERC20, Ownable {
      *
      * @param _amount Amount of QUARTZ to lock
      */
-    function deposit(uint256 _amount) public onlyBeforeStart {
-        quartz.transferFrom(msg.sender, address(this), _amount);
+    function deposit(uint256 _amount) external onlyBeforeStart {
+        require(
+            quartz.transferFrom(msg.sender, address(this), _amount),
+            "deposit failed"
+        );
 
         _mint(_msgSender(), _amount);
     }
@@ -66,13 +69,13 @@ contract VestedRewards is ERC20, Ownable {
      *
      * @param _beneficiary Beneficiary account to withdraw from
      */
-    function withdraw(address _beneficiary) public onlyAfterStart {
+    function withdraw(address _beneficiary) external onlyAfterStart {
         uint256 amount = withdrawable(_beneficiary);
         _burn(_beneficiary, amount);
 
         withdrawals[_beneficiary] += amount;
 
-        quartz.transfer(_beneficiary, amount);
+        require(quartz.transfer(_beneficiary, amount), "withdrawal failed");
     }
 
     /**

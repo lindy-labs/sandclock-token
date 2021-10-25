@@ -5,8 +5,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./interfaces/IQuartzGovernor.sol";
 
-import "hardhat/console.sol";
-
 /**
  * A contract that locks QUARTZ in exchange for freshly minted vestedQUARTZ
  * Meant to be used to give away rewards that then get subject to vesting rules.
@@ -24,6 +22,9 @@ contract VestedRewards is ERC20, Ownable {
     uint256 public duration;
 
     mapping(address => uint256) public withdrawals;
+
+    // useful to keep 2 decimal precision when dealing with percentages
+    uint256 constant MUL = 10000;
 
     /**
      * @param _quartz the address of the QUARTZ token contract
@@ -85,9 +86,30 @@ contract VestedRewards is ERC20, Ownable {
         }
 
         uint256 balance = balanceOf(_beneficiary);
-        // uint256 withdrawn = withdrawals[_beneficiary];
+        uint256 withdrawn = withdrawals[_beneficiary];
 
-        return balance;
+        uint256 unlocked = (balance * _durationPercent()) / MUL;
+
+        return unlocked > withdrawn ? unlocked - withdrawn : 0;
+    }
+
+    /**
+     * Calculates the percentage of the timespan given by `start` and `duration`
+     *
+     * @notice Return value is multiplied by `MUL`, so as to keep precision.
+     * Any calculation from this value must later be divided by `MUL` to
+     * retrieve the original value
+     */
+    function _durationPercent() private view returns (uint256) {
+        if (block.timestamp < start) {
+            return 0;
+        }
+
+        if (block.timestamp > start + duration) {
+            return MUL;
+        }
+
+        return ((block.timestamp - start) * MUL) / duration;
     }
 
     function _started() private view returns (bool) {

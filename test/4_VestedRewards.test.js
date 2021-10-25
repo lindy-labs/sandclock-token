@@ -92,4 +92,51 @@ describe('vested', () => {
       'transfer amount exceeds allowance',
     );
   });
+
+  describe('withdraw', () => {
+    it('cannot withdraw anything before start', async () => {
+      await quartz.approve(vested.address, 100);
+      await vested.deposit(100);
+
+      expect(await vested.withdrawable(owner.address)).to.equal(0);
+    });
+
+    it('can withdraw the full amount after the full period', async () => {
+      await quartz.approve(vested.address, 100);
+      await vested.deposit(100);
+
+      await time.increase(start + duration);
+
+      expect(await vested.withdrawable(owner.address)).to.equal(100);
+    });
+
+    it('can withdraw 10% of the amount after 10% of the period', async () => {
+      await quartz.approve(vested.address, 100);
+      await vested.deposit(100);
+
+      await time.increase(start + duration * 0.1);
+
+      expect(await vested.withdrawable(owner.address)).to.equal(10);
+    });
+
+    it('can withdraw 56% of the amount after 56% of the period', async () => {
+      await quartz.approve(vested.address, 100);
+      await vested.deposit(100);
+
+      await time.increase(start + duration * 0.56);
+
+      expect(await vested.withdrawable(owner.address)).to.equal(56);
+    });
+
+    it("withdrawals are limited by sender's vestedQUARTZ balance", async () => {
+      await quartz.approve(vested.address, 100);
+      await vested.deposit(100);
+      await vested.transfer(alice.address, 40);
+
+      await time.increase(start + duration);
+
+      expect(await vested.withdrawable(owner.address)).to.equal(60);
+      expect(await vested.withdrawable(alice.address)).to.equal(40);
+    });
+  });
 });

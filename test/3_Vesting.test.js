@@ -105,6 +105,10 @@ describe('Vesting', () => {
       expect(await vesting.currentlyClaimable(alice.address)).to.equal(
         batchSize,
       );
+
+      await vesting.claim(alice.address);
+
+      expect(await vesting.currentlyClaimable(alice.address)).to.equal(0);
     });
   });
 

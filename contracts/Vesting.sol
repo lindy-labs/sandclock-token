@@ -52,6 +52,8 @@ contract Vesting is Ownable {
         uint256 _batchDuration,
         uint256 _batchSize
     ) {
+        require(block.timestamp <= _start, "start cannot be in the past");
+
         token = _token;
         start = _start;
         startAmount = _startAmount;
@@ -76,7 +78,7 @@ contract Vesting is Ownable {
         uint256 _batchDuration,
         uint256 _batchSize
     ) public onlyOwner {
-        require(block.timestamp <= _start, "batches must start in the future");
+        require(block.timestamp <= _start, "start cannot be in the past");
 
         if (block.timestamp > start) {
             uint256 batches = (block.timestamp - start) / batchDuration;

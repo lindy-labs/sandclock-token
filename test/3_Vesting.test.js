@@ -34,6 +34,23 @@ describe('Vesting', () => {
     );
   });
 
+  describe('constructor', () => {
+    it('doesnt allow the start to be in the past', async () => {
+      const timeInThePast = (await getCurrentTime()).sub(1);
+
+      const Vesting = await ethers.getContractFactory('Vesting');
+      action = Vesting.deploy(
+        quartz.address,
+        timeInThePast,
+        startAmount,
+        batchDuration,
+        batchSize,
+      );
+
+      await expect(action).to.be.revertedWith('start cannot be in the past');
+    });
+  });
+
   describe('changeBatches', () => {
     it('updates the configuration', async () => {
       await quartz.transfer(vesting.address, 1000);
@@ -76,9 +93,7 @@ describe('Vesting', () => {
       const newTime = await getCurrentTime();
       const action = vesting.changeBatches(newTime, 0, 200, 200);
 
-      await expect(action).to.be.revertedWith(
-        'batches must start in the future',
-      );
+      await expect(action).to.be.revertedWith('start cannot be in the past');
     });
   });
 

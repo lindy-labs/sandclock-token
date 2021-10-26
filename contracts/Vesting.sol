@@ -30,6 +30,9 @@ contract Vesting is Ownable {
     // starting date for the claim
     uint256 public start;
 
+    // starting claim size
+    uint256 public startAmount;
+
     // duration of each claim batch
     uint256 public batchDuration;
 
@@ -45,10 +48,34 @@ contract Vesting is Ownable {
     constructor(
         IERC20 _token,
         uint256 _start,
+        uint256 _startAmount,
         uint256 _batchDuration,
         uint256 _batchSize
     ) {
         token = _token;
+        start = _start;
+        startAmount = _startAmount;
+        batchDuration = _batchDuration;
+        batchSize = _batchSize;
+    }
+
+    function changeBatches(
+        uint256 _start,
+        uint256 _startAmount,
+        uint256 _batchDuration,
+        uint256 _batchSize
+    ) public onlyOwner {
+        require(block.timestamp <= _start, "batches must start in the future");
+
+        if (block.timestamp > start) {
+            uint256 batches = (block.timestamp - start) / batchDuration;
+            uint256 maxClaimable = batches * batchSize;
+
+            startAmount = Math.max(startAmount + maxClaimable, _startAmount);
+        } else {
+            startAmount = _startAmount;
+        }
+
         start = _start;
         batchDuration = _batchDuration;
         batchSize = _batchSize;
@@ -97,8 +124,9 @@ contract Vesting is Ownable {
             return 0;
         }
 
-        uint256 batches = (block.timestamp - start) / batchDuration + 1;
-        uint256 maxClaimable = batches * batchSize - claimed[_beneficiary];
+        uint256 batches = (block.timestamp - start) / batchDuration;
+        uint256 maxClaimable =
+            batches * batchSize + startAmount - claimed[_beneficiary];
 
         return Math.min(claimable[_beneficiary], maxClaimable);
     }

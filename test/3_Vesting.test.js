@@ -10,10 +10,12 @@ describe('Vesting', () => {
   let owner;
   let alice;
   let bob;
+  let startTime;
   const batchDuration = 100;
   const batchSize = 100;
   const minStakePeriod = 100;
   const start = 3600;
+  const startAmount = 100;
 
   beforeEach(async () => {
     [owner, alice, bob] = await ethers.getSigners();
@@ -21,14 +23,63 @@ describe('Vesting', () => {
     const Quartz = await ethers.getContractFactory('Quartz');
     quartz = await Quartz.deploy(minStakePeriod);
 
-    const currentTime = await getCurrentTime();
+    startTime = (await getCurrentTime()).add(start);
     const Vesting = await ethers.getContractFactory('Vesting');
     vesting = await Vesting.deploy(
       quartz.address,
-      currentTime.add(start),
+      startTime,
+      startAmount,
       batchDuration,
       batchSize,
     );
+  });
+
+  describe('changeBatches', () => {
+    it('updates the configuration', async () => {
+      await quartz.transfer(vesting.address, 1000);
+      await vesting.addClaimable(alice.address, 1000);
+
+      expect(await vesting.start()).to.equal(startTime);
+      expect(await vesting.startAmount()).to.equal(startAmount);
+      expect(await vesting.batchDuration()).to.equal(batchDuration);
+      expect(await vesting.batchSize()).to.equal(batchSize);
+
+      const newTime = startTime.add(100);
+      await vesting.changeBatches(newTime, 200, 200, 200);
+
+      expect(await vesting.start()).to.equal(newTime);
+      expect(await vesting.startAmount()).to.equal(200);
+      expect(await vesting.batchDuration()).to.equal(200);
+      expect(await vesting.batchSize()).to.equal(200);
+    });
+
+    it('ensures that the startAmount cannot decrease after it starts', async () => {
+      await quartz.transfer(vesting.address, 1000);
+      await vesting.addClaimable(alice.address, 1000);
+
+      await time.increase(start);
+      const newTime = (await getCurrentTime()).add(100);
+      await vesting.changeBatches(newTime, 0, 200, 200);
+
+      // the start amount is 100 because the first batch is already available to be claimed
+      expect(await vesting.startAmount()).to.equal(100);
+
+      await vesting.changeBatches(newTime, 300, 200, 200);
+
+      expect(await vesting.startAmount()).to.equal(300);
+    });
+
+    it('requires the start to be in the future', async () => {
+      await quartz.transfer(vesting.address, 1000);
+      await vesting.addClaimable(alice.address, 1000);
+
+      const newTime = await getCurrentTime();
+      const action = vesting.changeBatches(newTime, 0, 200, 200);
+
+      await expect(action).to.be.revertedWith(
+        'batches must start in the future',
+      );
+    });
   });
 
   describe('addClaimable', () => {
@@ -70,7 +121,7 @@ describe('Vesting', () => {
   });
 
   describe('currentlyClaimable', () => {
-    it('is zero before the start batch', async () => {
+    it('is zero before the start', async () => {
       await quartz.transfer(vesting.address, 11);
       await vesting.addClaimable(alice.address, 10);
 
@@ -110,10 +161,29 @@ describe('Vesting', () => {
 
       expect(await vesting.currentlyClaimable(alice.address)).to.equal(0);
     });
+
+    it('takes configuration changes into account', async () => {
+      await quartz.transfer(vesting.address, 1000);
+      await vesting.addClaimable(alice.address, 1000);
+
+      await time.increase(start);
+      await vesting.claim(alice.address);
+
+      expect(await vesting.currentlyClaimable(alice.address)).to.equal(0);
+
+      const newTime = (await getCurrentTime()).add(1);
+      await vesting.changeBatches(newTime, 300, 300, 300);
+
+      time.increase(1);
+      expect(await vesting.currentlyClaimable(alice.address)).to.equal(200);
+
+      time.increase(300);
+      expect(await vesting.currentlyClaimable(alice.address)).to.equal(500);
+    });
   });
 
   describe('claim', () => {
-    it('allows a beneficiary to claim his amount', async () => {
+    it('allows a beneficiary to claim the corresponding amount', async () => {
       await quartz.transfer(vesting.address, 11);
       await vesting.addClaimable(bob.address, 1);
 

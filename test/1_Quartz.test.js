@@ -633,7 +633,7 @@ describe('Quartz', () => {
   });
 });
 
-describe('QuartzL1', () => {
+describe('QuartzToken', () => {
   let accounts;
   let quartz;
   let owner;
@@ -647,7 +647,7 @@ describe('QuartzL1', () => {
     accounts = await ethers.getSigners();
     owner = accounts[0];
 
-    const Quartz = await ethers.getContractFactory('QuartzL1');
+    const Quartz = await ethers.getContractFactory('QuartzToken');
     quartz = await Quartz.deploy();
   });
 

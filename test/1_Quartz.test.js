@@ -146,7 +146,7 @@ describe('Quartz', () => {
         .stake(amount, beneficiary.address, period);
       const currentTime = await getCurrentTime();
       const currentBlock = await getCurrentBlock();
-      expect(tx)
+      await expect(tx)
         .to.emit(quartz, 'Staked')
         .withArgs(
           '0',
@@ -170,14 +170,14 @@ describe('Quartz', () => {
       expect(stakeInfo.maturationTimestamp).equal(currentTime.add(period));
       expect(stakeInfo.active).equal(true);
 
-      expect(tx)
+      await expect(tx)
         .to.emit(quartz, 'DelegateChanged')
         .withArgs(
           beneficiary.address,
           constants.ZERO_ADDRESS,
           beneficiary.address,
         );
-      expect(tx)
+      await expect(tx)
         .to.emit(quartz, 'DelegateVotesChanged')
         .withArgs(beneficiary.address, '0', amount);
       expect(await quartz.userVotesRep(beneficiary.address)).equal(amount);
@@ -207,7 +207,7 @@ describe('Quartz', () => {
 
       const currentTime2 = await getCurrentTime();
       const currentBlock2 = await getCurrentBlock();
-      expect(tx)
+      await expect(tx)
         .to.emit(quartz, 'Staked')
         .withArgs(
           '1',
@@ -231,7 +231,7 @@ describe('Quartz', () => {
       expect(stakeInfo.maturationTimestamp).equal(currentTime2.add(period2));
       expect(stakeInfo.active).equal(true);
 
-      expect(tx)
+      await expect(tx)
         .to.emit(quartz, 'DelegateVotesChanged')
         .withArgs(beneficiary.address, amount, amount.add(amount2));
       expect(await quartz.userVotesRep(beneficiary.address)).equal(
@@ -267,7 +267,7 @@ describe('Quartz', () => {
 
       const currentTime2 = await getCurrentTime();
       const currentBlock2 = await getCurrentBlock();
-      expect(tx2)
+      await expect(tx2)
         .to.emit(quartz, 'Staked')
         .withArgs(
           '1',
@@ -299,7 +299,7 @@ describe('Quartz', () => {
       expect(stakeInfo.maturationTimestamp).equal(currentTime2.add(period2));
       expect(stakeInfo.active).equal(true);
 
-      expect(tx2)
+      await expect(tx2)
         .to.emit(quartz, 'DelegateVotesChanged')
         .withArgs(beneficiary2.address, '0', amount2);
       expect(await quartz.userVotesRep(beneficiary.address)).equal(amount);
@@ -331,7 +331,7 @@ describe('Quartz', () => {
         .stake(amount, beneficiary.address, period);
       const currentTime = await getCurrentTime();
       const currentBlock = await getCurrentBlock();
-      expect(tx)
+      await expect(tx)
         .to.emit(quartz, 'Staked')
         .withArgs(
           '0',
@@ -355,14 +355,14 @@ describe('Quartz', () => {
       expect(stakeInfo.maturationTimestamp).equal(currentTime.add(period));
       expect(stakeInfo.active).equal(true);
 
-      expect(tx)
+      await expect(tx)
         .to.emit(quartz, 'DelegateChanged')
         .withArgs(
           beneficiary.address,
           constants.ZERO_ADDRESS,
           beneficiary.address,
         );
-      expect(tx)
+      await expect(tx)
         .to.emit(quartz, 'DelegateVotesChanged')
         .withArgs(beneficiary.address, '0', amount);
       expect(await quartz.userVotesRep(beneficiary.address)).equal(amount);
@@ -387,7 +387,7 @@ describe('Quartz', () => {
         .stake(amount, beneficiary.address, period);
       const currentTime = await getCurrentTime();
       const currentBlock = await getCurrentBlock();
-      expect(tx)
+      await expect(tx)
         .to.emit(quartz, 'Staked')
         .withArgs(
           '0',
@@ -411,7 +411,7 @@ describe('Quartz', () => {
       expect(stakeInfo.maturationTimestamp).equal(currentTime.add(period));
       expect(stakeInfo.active).equal(true);
 
-      expect(tx)
+      await expect(tx)
         .to.emit(quartz, 'DelegateVotesChanged')
         .withArgs(delegatee.address, '0', amount);
       expect(await quartz.userVotesRep(beneficiary.address)).equal(amount);
@@ -477,7 +477,7 @@ describe('Quartz', () => {
       await time.increase(period.toString());
       const tx = await quartz.connect(sender).unstake('0');
       const unstakedBlock = await getCurrentBlock();
-      expect(tx)
+      await expect(tx)
         .to.emit(quartz, 'Unstaked')
         .withArgs('0', sender.address, beneficiary.address, amount);
       expect(await quartz.balanceOf(quartz.address)).equal('0');
@@ -491,7 +491,7 @@ describe('Quartz', () => {
       expect(stakeInfo.amount).equal(amount);
       expect(stakeInfo.active).equal(false);
 
-      expect(tx)
+      await expect(tx)
         .to.emit(quartz, 'DelegateVotesChanged')
         .withArgs(beneficiary.address, amount, '0');
       expect(await quartz.userVotesRep(beneficiary.address)).equal('0');
@@ -549,7 +549,7 @@ describe('Quartz', () => {
       expect(await quartz.delegates(accounts[2].address)).equal(
         delegatee.address,
       );
-      expect(tx)
+      await expect(tx)
         .to.emit(quartz, 'DelegateChanged')
         .withArgs(
           accounts[2].address,
@@ -561,7 +561,7 @@ describe('Quartz', () => {
       expect(await quartz.delegates(accounts[2].address)).equal(
         newDelegatee.address,
       );
-      expect(tx)
+      await expect(tx)
         .to.emit(quartz, 'DelegateChanged')
         .withArgs(accounts[2].address, delegatee.address, newDelegatee.address);
     });
@@ -589,7 +589,7 @@ describe('Quartz', () => {
         .connect(beneficiary)
         .delegate(delegatee.address);
       let delegateBlock = await getCurrentBlock();
-      expect(delegateTx)
+      await expect(delegateTx)
         .to.emit(quartz, 'DelegateChanged')
         .withArgs(beneficiary.address, beneficiary.address, delegatee.address);
 

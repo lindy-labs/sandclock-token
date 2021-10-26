@@ -167,7 +167,7 @@ describe('QuartzGovernor', () => {
           newProposalThreshold,
           newProposalActivePeriod,
         );
-      expect(tx)
+      await expect(tx)
         .to.emit(governor, 'ConvictionSettingsChanged')
         .withArgs(
           newDecay,
@@ -221,7 +221,7 @@ describe('QuartzGovernor', () => {
       expect(await quartz.getCurrentVotes(governor.address)).equal(
         proposalThreshold,
       );
-      // expect(tx)
+      // await expect(tx)
       //   .to.emit(governor, 'ProposalAdded')
       //   .withArgs(
       //     proposalSubmitter.address,
@@ -294,7 +294,7 @@ describe('QuartzGovernor', () => {
 
     it('Proposal submitter can cancel', async () => {
       const tx = await governor.connect(proposalSubmitter).cancelProposal('2');
-      expect(tx).to.emit(governor, 'ProposalCancelled').withArgs(2);
+      await expect(tx).to.emit(governor, 'ProposalCancelled').withArgs(2);
       expect(await governor.lastVoteId()).equal(4);
 
       const proposal = await governor.getProposal('2');
@@ -310,7 +310,7 @@ describe('QuartzGovernor', () => {
       const tx = await governor
         .connect(cancelProposalsRole)
         .cancelProposal('2');
-      expect(tx).to.emit(governor, 'ProposalCancelled').withArgs(2);
+      await expect(tx).to.emit(governor, 'ProposalCancelled').withArgs(2);
       expect(await governor.lastVoteId()).equal(4);
 
       const proposal = await governor.getProposal('2');
@@ -325,7 +325,7 @@ describe('QuartzGovernor', () => {
     it('Anyone can cancel after expiration', async () => {
       await time.increase(proposalActivePeriod + 1);
       const tx = await governor.connect(accounts[8]).cancelProposal('2');
-      expect(tx).to.emit(governor, 'ProposalCancelled').withArgs(2);
+      await expect(tx).to.emit(governor, 'ProposalCancelled').withArgs(2);
       expect(await governor.lastVoteId()).equal(4);
 
       const proposal = await governor.getProposal('2');
@@ -432,7 +432,7 @@ describe('QuartzGovernor', () => {
         await governor.calculateConviction(increaseBlock + 1, '0', votesToCast),
       );
       const tx = await governor.connect(accounts[1]).executeProposal('2');
-      expect(tx)
+      await expect(tx)
         .to.emit(governor, 'ProposalExecuted')
         .withArgs('2', conviction, '0');
       const proposal = await governor.getProposal('2');
@@ -532,7 +532,7 @@ describe('QuartzGovernor', () => {
       const tx = await governor
         .connect(beneficiary)
         .castVotes('2', votesToCast, true);
-      expect(tx)
+      await expect(tx)
         .to.emit(governor, 'VoteCasted')
         .withArgs(beneficiary.address, '2', votesToCast, '0', true);
       const currentBlock = await getCurrentBlock();
@@ -560,7 +560,7 @@ describe('QuartzGovernor', () => {
       const tx = await governor
         .connect(beneficiary)
         .castVotes('2', votesToCast, false);
-      expect(tx)
+      await expect(tx)
         .to.emit(governor, 'VoteCasted')
         .withArgs(beneficiary.address, '2', votesToCast, '0', false);
       const currentBlock = await getCurrentBlock();
@@ -598,7 +598,7 @@ describe('QuartzGovernor', () => {
         .connect(beneficiary)
         .castVotes('2', votesToCast1, true);
       const currentBlock = await getCurrentBlock();
-      expect(tx)
+      await expect(tx)
         .to.emit(governor, 'VoteCasted')
         .withArgs(beneficiary.address, '2', votesToCast1, conviction, true);
       expect(await governor.userVotes(3, beneficiary.address)).equal(
@@ -734,7 +734,7 @@ describe('QuartzGovernor', () => {
         .connect(beneficiary)
         .withdrawVotes('2', votesToWithdraw, true);
 
-      expect(tx)
+      await expect(tx)
         .to.emit(governor, 'VoteWithdrawn')
         .withArgs(beneficiary.address, '2', votesToWithdraw, conviction, true);
       const currentBlock = await getCurrentBlock();
@@ -774,7 +774,7 @@ describe('QuartzGovernor', () => {
         .connect(beneficiary)
         .withdrawAllVotesFromProposal('2', true);
 
-      expect(tx)
+      await expect(tx)
         .to.emit(governor, 'VoteWithdrawn')
         .withArgs(beneficiary.address, '2', votesToCast, conviction, true);
       const currentBlock = await getCurrentBlock();

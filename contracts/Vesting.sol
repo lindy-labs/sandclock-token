@@ -77,7 +77,7 @@ contract Vesting is Ownable {
         uint256 _startAmount,
         uint256 _batchDuration,
         uint256 _batchSize
-    ) public onlyOwner {
+    ) external onlyOwner {
         require(block.timestamp <= _start, "start cannot be in the past");
 
         if (block.timestamp > start) {
@@ -107,7 +107,7 @@ contract Vesting is Ownable {
      */
 
     function addClaimable(address _beneficiary, uint256 _amount)
-        public
+        external
         onlyOwner
     {
         totalClaimable += _amount;
@@ -149,7 +149,7 @@ contract Vesting is Ownable {
      *
      * @param _beneficiary The address of the beneficiary
      */
-    function claim(address _beneficiary) public {
+    function claim(address _beneficiary) external {
         uint256 amount = currentlyClaimable(_beneficiary);
 
         require(amount > 0, "no tokens to claim");

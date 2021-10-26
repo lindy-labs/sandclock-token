@@ -53,7 +53,7 @@ describe('Vesting', () => {
       expect(await vesting.batchSize()).to.equal(200);
     });
 
-    it('ensures that the startAmount cannot decrease after it starts', async () => {
+    it('ensures that the startAmount cannot be less than the current claimable amount after it starts', async () => {
       await quartz.transfer(vesting.address, 1000);
       await vesting.addClaimable(alice.address, 1000);
 

@@ -59,6 +59,17 @@ contract Vesting is Ownable {
         batchSize = _batchSize;
     }
 
+    /**
+     * Updates the batch parameters.
+     *
+     * @notice The new start date can only be in the future.
+     * @notice After it starts, the new startAmount will never be less than the existing startAmount + nr of batches * batch size.
+     *
+     * @param _start The new start date.
+     * @param _startAmount The new start amount.
+     * @param _batchDuration The new batch duration.
+     * @param _batchSize The new batch size.
+     */
     function changeBatches(
         uint256 _start,
         uint256 _startAmount,
@@ -82,12 +93,12 @@ contract Vesting is Ownable {
     }
 
     /**
-     * Adds a given amount of tokens to be claimed by a beneficiary
-     * If beneficiary already has a claim, this will simply increase his claimable amount
+     * Adds a given amount of tokens to be claimed by a beneficiary.
+     * If the beneficiary already has a claim, this will simply increase the claimable amount.
      *
      * @notice This ensures the current token balance of the contract
      * is enough to fulfill all future claims.
-     * Therefore, the required tokens need to be transfered before-hand
+     * Therefore, the required tokens need to be transfered before-hand.
      *
      * @param _beneficiary Address of the beneficiary
      * @param _amount Amount of tokens to add
@@ -109,11 +120,11 @@ contract Vesting is Ownable {
     }
 
     /**
-     * Calculates amount that can be currently claimed by an address,
-     * based on his own vested amount, and how much has been already unlocked;
+     * Calculates amount that can be currently claimed by a beneficiary,
+     * based on the vested amount, and how much has been already unlocked.
      *
-     * @param _beneficiary The address to calculate for
-     * TODO check for how much time has passed, and truncate amount accordingly
+     * @param _beneficiary The address of the beneficiary.
+     * @return the beneficiary's claimable amount.
      */
     function currentlyClaimable(address _beneficiary)
         public
@@ -131,6 +142,11 @@ contract Vesting is Ownable {
         return Math.min(claimable[_beneficiary], maxClaimable);
     }
 
+    /**
+     * Transfers the claimable amount to the beneficiary.
+     *
+     * @param _beneficiary The address of the beneficiary
+     */
     function claim(address _beneficiary) public {
         uint256 amount = currentlyClaimable(_beneficiary);
 

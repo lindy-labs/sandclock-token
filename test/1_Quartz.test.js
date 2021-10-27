@@ -107,8 +107,9 @@ describe('Quartz', () => {
 
     it('Should set governor by owner', async () => {
       expect(await quartz.governor()).to.equal(constants.ZERO_ADDRESS);
-      await quartz.connect(owner).setGovernor(governor);
+      const tx = await quartz.connect(owner).setGovernor(governor);
       expect(await quartz.governor()).to.equal(governor);
+      await expect(tx).to.emit(quartz, 'GovernorChanged').withArgs(governor);
     });
   });
 
@@ -122,8 +123,9 @@ describe('Quartz', () => {
     });
 
     it('Should set minStakePeriod by owner', async () => {
-      await quartz.connect(owner).setMinStakePeriod(50);
+      const tx = await quartz.connect(owner).setMinStakePeriod(50);
       expect(await quartz.minStakePeriod()).to.equal(50);
+      await expect(tx).to.emit(quartz, 'MinStakePeriodChanged').withArgs('50');
     });
   });
 

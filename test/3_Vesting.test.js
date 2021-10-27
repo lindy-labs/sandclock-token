@@ -39,7 +39,8 @@ describe('Vesting', () => {
       const timeInThePast = (await getCurrentTime()).sub(1);
 
       const Vesting = await ethers.getContractFactory('Vesting');
-      action = Vesting.deploy(
+
+      const action = Vesting.deploy(
         quartz.address,
         timeInThePast,
         startAmount,

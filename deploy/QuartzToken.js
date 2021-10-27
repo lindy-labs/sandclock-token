@@ -1,4 +1,4 @@
-const deployQuartzL1 = async function ({ deployments, getNamedAccounts }) {
+const deployQuartzToken = async function ({ deployments, getNamedAccounts }) {
   const chainId = await getChainId();
   if (chainId !== '1' && chainId !== '4') {
     throw Error('Unsupported chain');
@@ -7,12 +7,12 @@ const deployQuartzL1 = async function ({ deployments, getNamedAccounts }) {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  await deploy('QuartzL1', {
+  await deploy('QuartzToken', {
     from: deployer,
     args: [],
     log: true,
   });
 };
 
-module.exports = deployQuartzL1;
-module.exports.tags = ['QuartzL1'];
+module.exports = deployQuartzToken;
+module.exports.tags = ['QuartzToken'];

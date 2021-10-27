@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-etherscan": "^2.1.6",
     "@nomiclabs/hardhat-web3": "^2.0.0",
     "@openzeppelin/hardhat-upgrades": "^1.6.0",
     "@openzeppelin/test-helpers": "^0.5.10",

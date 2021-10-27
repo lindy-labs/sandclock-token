@@ -1,21 +1,25 @@
 require('@nomiclabs/hardhat-waffle');
 require('@nomiclabs/hardhat-web3');
-require("@nomiclabs/hardhat-etherscan");
-require('@openzeppelin/hardhat-upgrades');
+require('@nomiclabs/hardhat-etherscan');
 require('hardhat-deploy');
 require('hardhat-deploy-ethers');
 require('hardhat-gas-reporter');
+require('hardhat-contract-sizer');
 require('solidity-coverage');
 require('dotenv').config();
 
 module.exports = {
+  contractSizer: {
+    runOnCompile: true,
+    disambiguatePaths: false,
+  },
   networks: {
     hardhat: {
       gas: 10000000,
       accounts: {
         accountsBalance: '100000000000000000000000000',
       },
-      allowUnlimitedContractSize: true,
+      // allowUnlimitedContractSize: true,
       timeout: 1000000,
     },
     mainnet: {
@@ -63,6 +67,6 @@ module.exports = {
     gasPrice: 21,
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY
-  }
+    apiKey: process.env.ETHERSCAN_API_KEY,
+  },
 };

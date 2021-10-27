@@ -54,6 +54,12 @@ contract Quartz is
         uint256 newBalance
     );
 
+    // Emitted when the governor contract is changed
+    event GovernorChanged(address indexed governor);
+
+    // Emitted when the minimum stake period is updated
+    event MinStakePeriodChanged(uint64 minStakePeriod);
+
     struct StakeInfo {
         address owner; // Owner who staked tokens
         address beneficiary; // Beneficiary who received vote rep
@@ -105,6 +111,7 @@ contract Quartz is
      */
     constructor(uint64 _minStakePeriod, address _childChainManager) {
         minStakePeriod = _minStakePeriod;
+        emit MinStakePeriodChanged(_minStakePeriod);
 
         require(
             _childChainManager != address(0),
@@ -134,6 +141,7 @@ contract Quartz is
             "QUARTZ: Governor cannot be zero"
         );
         governor = _governor;
+        emit GovernorChanged(address(_governor));
     }
 
     /**
@@ -174,15 +182,15 @@ contract Quartz is
             });
         stakes[_stakeId] = stakeInfo;
 
-        userVotesRep[_beneficiary] = userVotesRep[_beneficiary] + _amount;
+        userVotesRep[_beneficiary] += _amount;
         if (delegates[_beneficiary] == address(0)) {
             _delegate(_beneficiary, _beneficiary);
         } else {
             _moveDelegates(address(0), delegates[_beneficiary], _amount);
         }
 
-        stakeLength = stakeLength + 1;
-        totalStaked = totalStaked + _amount;
+        stakeLength += 1;
+        totalStaked += _amount;
         emit Staked(
             _stakeId,
             _owner,
@@ -207,12 +215,10 @@ contract Quartz is
         );
         require(stakeInfo.active, "QUARTZ: Already unstaked");
         require(stakeInfo.owner == msg.sender, "QUARTZ: Not owner");
-        _transfer(address(this), msg.sender, stakeInfo.amount);
 
         stakeInfo.active = false;
-        userVotesRep[stakeInfo.beneficiary] =
-            userVotesRep[stakeInfo.beneficiary] -
-            stakeInfo.amount;
+        userVotesRep[stakeInfo.beneficiary] -= stakeInfo.amount;
+        totalStaked -= stakeInfo.amount;
 
         _moveDelegates(
             delegates[stakeInfo.beneficiary],
@@ -220,7 +226,7 @@ contract Quartz is
             stakeInfo.amount
         );
 
-        totalStaked = totalStaked - stakeInfo.amount;
+        _transfer(address(this), msg.sender, stakeInfo.amount);
 
         emit Unstaked(
             _stakeId,
@@ -468,6 +474,33 @@ contract Quartz is
         return uint32(n);
     }
 
+<<<<<<< HEAD
+||||||| e450ac1
+    function _getBlockTimestamp() private view returns (uint64) {
+        return uint64(block.timestamp);
+    }
+
+    function setMinStakePeriod(uint64 _minStakePeriod)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        minStakePeriod = _minStakePeriod;
+    }
+
+=======
+    function _getBlockTimestamp() private view returns (uint64) {
+        return uint64(block.timestamp);
+    }
+
+    function setMinStakePeriod(uint64 _minStakePeriod)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        minStakePeriod = _minStakePeriod;
+        emit MinStakePeriodChanged(_minStakePeriod);
+    }
+
+>>>>>>> dev
     /**
      * Returns the current block timestamp as a uint64
      */

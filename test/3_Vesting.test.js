@@ -95,6 +95,18 @@ describe('Vesting', () => {
 
       await expect(action).to.be.revertedWith('start cannot be in the past');
     });
+
+    it('emits a ConfigurationChanged event', async () => {
+      await quartz.transfer(vesting.address, 10);
+      await vesting.addClaimable(alice.address, 10);
+
+      const newTime = (await getCurrentTime()).add(1);
+      const action = vesting.changeBatches(newTime, 0, 200, 200);
+
+      await expect(action)
+        .to.emit(vesting, 'ConfigurationChanged')
+        .withArgs(newTime, 0, 200, 200);
+    });
   });
 
   describe('addClaimable', () => {
@@ -108,7 +120,7 @@ describe('Vesting', () => {
       expect(await vesting.claimable(alice.address)).to.equal(10);
     });
 
-    it('emits a ClaimAdded even', async () => {
+    it('emits a ClaimAdded event', async () => {
       await quartz.transfer(vesting.address, 10);
       const action = vesting.addClaimable(alice.address, 10);
 

@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
  * Vesting contract for QUARTZ (Polygon chain)
  *
  * QUARTZ for Phase I token owners are meant to be vested,
- * and claims should follow a configurable rate limit logic
+ * and claims should be in batches.
  */
 contract Vesting is Ownable {
     // QUARTZ token address
@@ -44,6 +44,14 @@ contract Vesting is Ownable {
 
     // emitted when tokens are claimed
     event Claimed(address indexed beneficiary, uint256 amount);
+
+    // emitted when the batch configuration is updated
+    event ConfigurationChanged(
+        uint256 start,
+        uint256 startAmount,
+        uint256 batchDuration,
+        uint256 batchSize
+    );
 
     constructor(
         IERC20 _token,
@@ -81,6 +89,7 @@ contract Vesting is Ownable {
         require(block.timestamp <= _start, "start cannot be in the past");
 
         if (block.timestamp > start) {
+            //slither-disable-next-line divide-before-multiply
             uint256 batches = (block.timestamp - start) / batchDuration;
             uint256 maxClaimable = batches * batchSize;
 
@@ -92,6 +101,8 @@ contract Vesting is Ownable {
         start = _start;
         batchDuration = _batchDuration;
         batchSize = _batchSize;
+
+        emit ConfigurationChanged(start, startAmount, batchDuration, batchSize);
     }
 
     /**
@@ -137,6 +148,7 @@ contract Vesting is Ownable {
             return 0;
         }
 
+        //slither-disable-next-line divide-before-multiply
         uint256 batches = (block.timestamp - start) / batchDuration;
         uint256 maxClaimable =
             batches * batchSize + startAmount - claimed[_beneficiary];
@@ -160,6 +172,6 @@ contract Vesting is Ownable {
         totalClaimed += amount;
         emit Claimed(_beneficiary, amount);
 
-        token.transfer(_beneficiary, amount);
+        require(token.transfer(_beneficiary, amount), "transfer failed");
     }
 }

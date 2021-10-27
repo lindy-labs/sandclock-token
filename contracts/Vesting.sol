@@ -4,6 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 /**
  * Vesting contract for QUARTZ (Polygon chain)
@@ -12,6 +13,8 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
  * and claims should be in batches.
  */
 contract Vesting is Ownable {
+    using SafeERC20 for IERC20;
+
     // QUARTZ token address
     IERC20 token;
 
@@ -195,6 +198,6 @@ contract Vesting is Ownable {
         totalClaimed += amount;
         emit Claimed(_beneficiary, amount);
 
-        require(token.transfer(_beneficiary, amount), "transfer failed");
+        token.safeTransfer(_beneficiary, amount);
     }
 }

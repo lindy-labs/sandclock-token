@@ -8,7 +8,6 @@ import "./interfaces/IQuartz.sol";
 import "./interfaces/IQuartzGovernor.sol";
 
 contract QuartzGovernor is AccessControl, IQuartzGovernor {
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant UPDATE_SETTINGS_ROLE =
         keccak256("UPDATE_SETTINGS_ROLE");
     bytes32 public constant CANCEL_PROPOSAL_ROLE =
@@ -164,12 +163,10 @@ contract QuartzGovernor is AccessControl, IQuartzGovernor {
         uint256 _proposalThreshold,
         uint64 _proposalActivePeriod
     ) {
-        _setRoleAdmin(UPDATE_SETTINGS_ROLE, ADMIN_ROLE);
-        _setRoleAdmin(CANCEL_PROPOSAL_ROLE, ADMIN_ROLE);
-        _setupRole(ADMIN_ROLE, msg.sender);
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
-        quartz = _quartz;
         require(address(_quartz) != address(0));
+        quartz = _quartz;
         // First proposal should be #2, #1 is reserved for abstain proposal, #0 is not used for better UX.
         proposalCounter = ABSTAIN_PROPOSAL_ID + 1;
         decay = _decay;
@@ -274,31 +271,15 @@ contract QuartzGovernor is AccessControl, IQuartzGovernor {
         bytes memory _link,
         string memory _description
     ) external {
-        Vote memory emptyVote1 =
-            Vote({
-                id: lastVoteId + 1,
-                totalVotes: 0,
-                convictionLast: 0,
-                blockLast: 0
-            });
-        Vote memory emptyVote2 =
-            Vote({
-                id: lastVoteId + 2,
-                totalVotes: 0,
-                convictionLast: 0,
-                blockLast: 0
-            });
-
         uint64 expiration = uint64(block.timestamp) + proposalActivePeriod;
-        proposals[proposalCounter] = Proposal({
-            positiveVotes: emptyVote1,
-            negativeVotes: emptyVote2,
-            proposalStatus: ProposalStatus.Active,
-            submitter: msg.sender,
-            expiration: expiration
-        });
 
-        lastVoteId = lastVoteId + 2;
+        Proposal storage proposal = proposals[proposalCounter];
+
+        proposal.positiveVotes.id = ++lastVoteId;
+        proposal.negativeVotes.id = ++lastVoteId;
+        proposal.proposalStatus = ProposalStatus.Active;
+        proposal.submitter = msg.sender;
+        proposal.expiration = expiration;
 
         quartz.moveVotesToGovernor(msg.sender, proposalThreshold);
         stakedForProposal[proposalCounter] = proposalThreshold;
@@ -314,7 +295,7 @@ contract QuartzGovernor is AccessControl, IQuartzGovernor {
             _description,
             expiration
         );
-        proposalCounter = proposalCounter + 1;
+        proposalCounter += 1;
     }
 
     /**

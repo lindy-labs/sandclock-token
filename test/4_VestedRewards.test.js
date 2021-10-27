@@ -12,7 +12,7 @@ describe('vested', () => {
   let alice;
   let bob;
   let currentTime;
-  const start = 3600;
+  const startDelay = 3600;
   const duration = 7776000; // 90 days
   const gracePeriod = 2592000; // 30 days
 
@@ -26,7 +26,7 @@ describe('vested', () => {
     VestedRewards = await ethers.getContractFactory('VestedRewards');
     vested = await VestedRewards.deploy(
       quartz.address,
-      currentTime.add(start),
+      currentTime.add(startDelay),
       duration,
       gracePeriod,
     );
@@ -34,41 +34,41 @@ describe('vested', () => {
 
   describe('constructor', () => {
     it('sets the given params', async () => {
-      const start = currentTime.add(3600);
+      const startDelay = currentTime.add(3600);
       const duration = 2;
       const vested2 = await VestedRewards.deploy(
         quartz.address,
-        start,
+        startDelay,
         duration,
         gracePeriod,
       );
 
       expect(await vested2.quartz()).to.equal(quartz.address);
-      expect(await vested2.start()).to.equal(start);
+      expect(await vested2.start()).to.equal(startDelay);
       expect(await vested2.duration()).to.equal(duration);
     });
 
-    it('fails is start date is in the past', async () => {
-      const start = currentTime.sub(1);
+    it('fails if start date is in the past', async () => {
+      const startDelay = currentTime.sub(1);
       const duration = 2;
       const action = VestedRewards.deploy(
         quartz.address,
-        start,
+        startDelay,
         duration,
         gracePeriod,
       );
 
       await expect(action).to.be.revertedWith(
-        'start date cannot be in the past',
+        'startDelay date cannot be in the past',
       );
     });
 
     it('fails is duration is zero', async () => {
-      const start = currentTime.add(3600);
+      const startDelay = currentTime.add(3600);
       const duration = 0;
       const action = VestedRewards.deploy(
         quartz.address,
-        start,
+        startDelay,
         duration,
         gracePeriod,
       );
@@ -98,7 +98,7 @@ describe('vested', () => {
   });
 
   it('does not allow deposits after start date', async () => {
-    await time.increase(start + duration);
+    await time.increase(startDelay + duration);
 
     const action = vested.deposit(100);
 
@@ -114,7 +114,7 @@ describe('vested', () => {
   });
 
   describe('withdraw', () => {
-    it('cannot withdraw anything before start', async () => {
+    it('cannot withdraw anything before startDelay', async () => {
       await quartz.approve(vested.address, 100);
       await vested.deposit(100);
 
@@ -125,7 +125,7 @@ describe('vested', () => {
       await quartz.approve(vested.address, 100);
       await vested.deposit(100);
 
-      await time.increase(start + duration);
+      await time.increase(startDelay + duration);
 
       expect(await vested.withdrawable(owner.address)).to.equal(100);
     });
@@ -134,7 +134,7 @@ describe('vested', () => {
       await quartz.approve(vested.address, 100);
       await vested.deposit(100);
 
-      await time.increase(start + duration * 0.1);
+      await time.increase(startDelay + duration * 0.1);
 
       expect(await vested.withdrawable(owner.address)).to.equal(10);
     });
@@ -143,7 +143,7 @@ describe('vested', () => {
       await quartz.approve(vested.address, 100);
       await vested.deposit(100);
 
-      await time.increase(start + duration * 0.56);
+      await time.increase(startDelay + duration * 0.56);
 
       expect(await vested.withdrawable(owner.address)).to.equal(56);
     });
@@ -153,7 +153,7 @@ describe('vested', () => {
       await vested.deposit(100);
       await vested.transfer(alice.address, 40);
 
-      await time.increase(start + duration);
+      await time.increase(startDelay + duration);
 
       expect(await vested.withdrawable(owner.address)).to.equal(60);
       expect(await vested.withdrawable(alice.address)).to.equal(40);
@@ -166,7 +166,7 @@ describe('vested', () => {
       await vested.deposit(100);
       await vested.transfer(alice.address, 100);
 
-      await time.increase(start + duration * 0.1);
+      await time.increase(startDelay + duration * 0.1);
 
       await vested.connect(alice).transfer(bob.address, 1);
 
@@ -178,7 +178,7 @@ describe('vested', () => {
       await vested.deposit(100);
       await vested.transfer(alice.address, 100);
 
-      await time.increase(start + duration * 0.1);
+      await time.increase(startDelay + duration * 0.1);
       await vested.connect(alice).withdraw();
 
       const tx = vested.connect(alice).transfer(bob.address, 1);
@@ -196,7 +196,7 @@ describe('vested', () => {
       await vested.transfer(alice.address, 25);
       await vested.transfer(bob.address, 75);
 
-      await time.increase(start + duration + gracePeriod);
+      await time.increase(startDelay + duration + gracePeriod);
 
       await vested.connect(alice).withdraw();
 
@@ -212,7 +212,7 @@ describe('vested', () => {
       await quartz.approve(vested.address, 100);
       await vested.deposit(100);
 
-      await time.increase(start + duration + gracePeriod);
+      await time.increase(startDelay + duration + gracePeriod);
 
       await vested.clawback();
 
@@ -227,7 +227,7 @@ describe('vested', () => {
       await vested.transfer(alice.address, 25);
       await vested.transfer(bob.address, 75);
 
-      await time.increase(start + duration + gracePeriod * 0.9);
+      await time.increase(startDelay + duration + gracePeriod * 0.9);
 
       const tx = vested.clawback();
 

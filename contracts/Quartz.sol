@@ -70,6 +70,7 @@ contract Quartz is
 
     constructor(uint64 _minStakePeriod, address _childChainManager) {
         minStakePeriod = _minStakePeriod;
+        emit MinStakePeriodChanged(_minStakePeriod);
 
         require(
             _childChainManager != address(0),

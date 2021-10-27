@@ -8,6 +8,4 @@ interface IChildToken {
     function deposit(address user, bytes calldata depositData) external;
 
     function withdraw(uint256 amount) external;
-
-    function mint(address user, uint256 amount) external;
 }

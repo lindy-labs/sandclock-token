@@ -87,7 +87,15 @@ describe('vested', () => {
       expect(await vested.balanceOf(owner.address)).to.equal(100);
     });
 
-    it('withdraws QUARTZ from the sender', async () => {});
+    it('withdraws QUARTZ from the sender', async () => {
+      await quartz.approve(vested.address, 100);
+
+      const balanceBefore = await quartz.balanceOf(owner.address);
+      await vested.deposit(100);
+      const balanceAfter = await quartz.balanceOf(owner.address);
+
+      expect(balanceAfter).to.eq(balanceBefore.sub(100));
+    });
   });
 
   it('does not allow deposits after start date', async () => {

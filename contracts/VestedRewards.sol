@@ -2,9 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "./interfaces/IQuartzGovernor.sol";
-import "hardhat/console.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
  * A contract that locks QUARTZ in exchange for freshly minted vestedQUARTZ

@@ -59,7 +59,7 @@ describe('vested', () => {
       );
 
       await expect(action).to.be.revertedWith(
-        'startDelay date cannot be in the past',
+        'start date cannot be in the past',
       );
     });
 

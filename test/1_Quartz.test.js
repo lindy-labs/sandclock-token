@@ -1,6 +1,6 @@
 const { ethers } = require('hardhat');
 const { expect } = require('chai');
-const { BigNumber } = require('ethers');
+const { BigNumber, utils } = require('ethers');
 const { time, constants } = require('@openzeppelin/test-helpers');
 const { getCurrentTime, getCurrentBlock } = require('./utils');
 
@@ -8,6 +8,13 @@ describe('Quartz', () => {
   let accounts;
   let quartz;
   let owner;
+  let childChainManager;
+  let user1;
+  let user2;
+  let user3;
+  let user4;
+  let user5;
+  let user6;
   let governor = '0xe813FED5dAE6B9DBf29671bF09F8Ae998c42768D';
   let decimalsUnit = BigNumber.from('10').pow(new BigNumber.from('18'));
   let totalSupply = BigNumber.from('100000000').mul(decimalsUnit);
@@ -15,13 +22,24 @@ describe('Quartz', () => {
   const symbol = 'QUARTZ';
   const decimals = 18;
   const minStakePeriod = 100;
+  const DEFAULT_ADMIN_ROLE = constants.ZERO_BYTES32;
+  const DEPOSITOR_ROLE = utils.keccak256(utils.toUtf8Bytes('DEPOSITOR_ROLE'));
 
   beforeEach(async () => {
     accounts = await ethers.getSigners();
-    owner = accounts[0];
+    [
+      owner,
+      childChainManager,
+      user1,
+      user2,
+      user3,
+      user4,
+      user5,
+      user6,
+    ] = accounts;
 
     const Quartz = await ethers.getContractFactory('Quartz');
-    quartz = await Quartz.deploy(minStakePeriod);
+    quartz = await Quartz.deploy(minStakePeriod, childChainManager.address);
   });
 
   describe('Quartz tokenomics', () => {
@@ -38,15 +56,21 @@ describe('Quartz', () => {
     });
 
     it('Check total supply', async () => {
-      expect(await quartz.totalSupply()).equal(totalSupply);
+      expect(await quartz.totalSupply()).equal('0');
     });
 
-    it('Check owner', async () => {
-      expect(await quartz.owner()).equal(owner.address);
+    it('Check default admin', async () => {
+      expect(await quartz.hasRole(DEFAULT_ADMIN_ROLE, owner.address)).equal(
+        true,
+      );
     });
 
-    it('Check owner balance', async () => {
-      expect(await quartz.balanceOf(owner.address)).equal(totalSupply);
+    it('Check depositor role', async () => {
+      expect(await quartz.hasRole(DEPOSITOR_ROLE, owner.address)).equal(false);
+
+      expect(
+        await quartz.hasRole(DEPOSITOR_ROLE, childChainManager.address),
+      ).equal(true);
     });
 
     it('Check governor', async () => {
@@ -67,10 +91,12 @@ describe('Quartz', () => {
   });
 
   describe('setGovernor', () => {
-    it('Revert to set governor by non-owner', async () => {
+    it('Revert to set governor by non-admin', async () => {
       await expect(
-        quartz.connect(accounts[1]).setGovernor(governor),
-      ).to.be.revertedWith('Ownable: caller is not the owner');
+        quartz.connect(user1).setGovernor(governor),
+      ).to.be.revertedWith(
+        `AccessControl: account ${user1.address.toLowerCase()} is missing role ${DEFAULT_ADMIN_ROLE}`,
+      );
     });
 
     it('Revert to set zero address as governor', async () => {
@@ -87,10 +113,12 @@ describe('Quartz', () => {
   });
 
   describe('setMinStakePeriod', () => {
-    it('Revert to set minStakePeriod by non-owner', async () => {
+    it('Revert to set minStakePeriod by non-admin', async () => {
       await expect(
-        quartz.connect(accounts[1]).setMinStakePeriod(50),
-      ).to.be.revertedWith('Ownable: caller is not the owner');
+        quartz.connect(user1).setMinStakePeriod(50),
+      ).to.be.revertedWith(
+        `AccessControl: account ${user1.address.toLowerCase()} is missing role ${DEFAULT_ADMIN_ROLE}`,
+      );
     });
 
     it('Should set minStakePeriod by owner', async () => {
@@ -106,8 +134,16 @@ describe('Quartz', () => {
     let beneficiary;
 
     beforeEach(async () => {
-      sender = accounts[1];
-      beneficiary = accounts[2];
+      sender = user1;
+      beneficiary = user2;
+
+      const depositData = utils.defaultAbiCoder.encode(
+        ['uint256'],
+        [totalSupply],
+      );
+      await quartz
+        .connect(childChainManager)
+        .deposit(owner.address, depositData);
       await quartz.connect(owner).transfer(sender.address, totalSupply);
     });
 
@@ -125,7 +161,7 @@ describe('Quartz', () => {
 
     it('Revert to stake when sender has no balance', async () => {
       await expect(
-        quartz.connect(accounts[3]).stake(amount, beneficiary.address, period),
+        quartz.connect(user3).stake(amount, beneficiary.address, period),
       ).to.be.revertedWith('ERC20: transfer amount exceeds balance');
     });
 
@@ -252,7 +288,7 @@ describe('Quartz', () => {
     it('Stake for two beneficiaries', async () => {
       let amount2 = BigNumber.from('100').mul(decimalsUnit);
       let period2 = BigNumber.from('360');
-      let beneficiary2 = accounts[4];
+      let beneficiary2 = user4;
       let waitTime = BigNumber.from('100');
       let tx = await quartz
         .connect(sender)
@@ -376,7 +412,7 @@ describe('Quartz', () => {
     });
 
     it('Stake for beneficiary who has delegatee', async () => {
-      const delegatee = accounts[5];
+      const delegatee = user5;
       await quartz.connect(beneficiary).delegate(delegatee.address);
       expect(await quartz.delegates(beneficiary.address)).equal(
         delegatee.address,
@@ -434,8 +470,15 @@ describe('Quartz', () => {
     let currentBlock;
 
     beforeEach(async () => {
-      sender = accounts[1];
-      beneficiary = accounts[2];
+      sender = user1;
+      beneficiary = user2;
+      const depositData = utils.defaultAbiCoder.encode(
+        ['uint256'],
+        [totalSupply],
+      );
+      await quartz
+        .connect(childChainManager)
+        .deposit(owner.address, depositData);
       await quartz.connect(owner).transfer(sender.address, totalSupply);
       await quartz.connect(sender).stake(amount, beneficiary.address, period);
       currentTime = await getCurrentTime();
@@ -454,9 +497,9 @@ describe('Quartz', () => {
       );
     });
 
-    it('Revert to unstake with non-owner', async () => {
+    it('Revert to unstake with non-admin', async () => {
       await time.increase(period.toString());
-      await expect(quartz.connect(accounts[3]).unstake('0')).to.be.revertedWith(
+      await expect(quartz.connect(user3).unstake('0')).to.be.revertedWith(
         'QUARTZ: Not owner',
       );
     });
@@ -536,6 +579,14 @@ describe('Quartz', () => {
     };
 
     beforeEach(async () => {
+      const depositData = utils.defaultAbiCoder.encode(
+        ['uint256'],
+        [totalSupply],
+      );
+      await quartz
+        .connect(childChainManager)
+        .deposit(owner.address, depositData);
+
       for (let i = 0; i < 10; i += 1) {
         await quartz
           .connect(owner)
@@ -544,38 +595,30 @@ describe('Quartz', () => {
     });
 
     it('delegate', async () => {
-      const delegatee = accounts[5];
-      let tx = await quartz.connect(accounts[2]).delegate(delegatee.address);
-      expect(await quartz.delegates(accounts[2].address)).equal(
-        delegatee.address,
-      );
+      const delegatee = user5;
+      let tx = await quartz.connect(user2).delegate(delegatee.address);
+      expect(await quartz.delegates(user2.address)).equal(delegatee.address);
       await expect(tx)
         .to.emit(quartz, 'DelegateChanged')
-        .withArgs(
-          accounts[2].address,
-          constants.ZERO_ADDRESS,
-          delegatee.address,
-        );
-      const newDelegatee = accounts[6];
-      tx = await quartz.connect(accounts[2]).delegate(newDelegatee.address);
-      expect(await quartz.delegates(accounts[2].address)).equal(
-        newDelegatee.address,
-      );
+        .withArgs(user2.address, constants.ZERO_ADDRESS, delegatee.address);
+      const newDelegatee = user6;
+      tx = await quartz.connect(user2).delegate(newDelegatee.address);
+      expect(await quartz.delegates(user2.address)).equal(newDelegatee.address);
       await expect(tx)
         .to.emit(quartz, 'DelegateChanged')
-        .withArgs(accounts[2].address, delegatee.address, newDelegatee.address);
+        .withArgs(user2.address, delegatee.address, newDelegatee.address);
     });
 
     it('Cannot delegate to zero address', async () => {
       await expect(
-        quartz.connect(accounts[2]).delegate(constants.ZERO_ADDRESS),
+        quartz.connect(user2).delegate(constants.ZERO_ADDRESS),
       ).to.be.revertedWith('QUARTZ: delegatee cannot be 0x0');
     });
 
     it('Move delegates', async () => {
-      const sender = accounts[1];
-      const beneficiary = accounts[2];
-      const delegatee = accounts[3];
+      const sender = user1;
+      const beneficiary = user2;
+      const delegatee = user3;
       const amount = BigNumber.from('1000').mul(decimalsUnit);
       const period = BigNumber.from('3600');
       const { tx, currentTime, currentBlock, stakeLength } = await stake(
@@ -609,9 +652,9 @@ describe('Quartz', () => {
     });
 
     it('Unstake after delegate changed', async () => {
-      const sender = accounts[1];
-      const beneficiary = accounts[2];
-      const delegatee = accounts[3];
+      const sender = user1;
+      const beneficiary = user2;
+      const delegatee = user3;
       const amount = BigNumber.from('1000').mul(decimalsUnit);
       const period = BigNumber.from('3600');
       await stake(sender, beneficiary, amount, period);
@@ -629,6 +672,57 @@ describe('Quartz', () => {
       expect(await quartz.numCheckpoints(delegatee.address)).equal(2);
       expect(await quartz.getCurrentVotes(beneficiary.address)).equal(0);
       expect(await quartz.getCurrentVotes(delegatee.address)).equal(0);
+    });
+  });
+
+  describe('deposit', () => {
+    const amount = utils.parseEther('100');
+    const depositData = utils.defaultAbiCoder.encode(['uint256'], [amount]);
+
+    it('Revert to deposit by non-depositor-role', async () => {
+      await expect(
+        quartz.connect(user1).deposit(user1.address, depositData),
+      ).to.be.revertedWith(
+        `AccessControl: account ${user1.address.toLowerCase()} is missing role ${DEPOSITOR_ROLE}`,
+      );
+    });
+
+    it('Should mint to user by depositor', async () => {
+      await expect(await quartz.balanceOf(user1.address)).to.be.equal('0');
+      await quartz
+        .connect(childChainManager)
+        .deposit(user1.address, depositData);
+      await expect(await quartz.balanceOf(user1.address)).to.be.equal(amount);
+      await expect(await quartz.totalSupply()).to.be.equal(amount);
+    });
+  });
+
+  describe('withdraw', () => {
+    const depositAmount = utils.parseEther('100');
+    const withdrawAmount = utils.parseEther('20');
+
+    beforeEach(async () => {
+      const depositData = utils.defaultAbiCoder.encode(
+        ['uint256'],
+        [depositAmount],
+      );
+
+      await quartz
+        .connect(childChainManager)
+        .deposit(user1.address, depositData);
+    });
+
+    it('Should burn by user', async () => {
+      await expect(await quartz.balanceOf(user1.address)).to.be.equal(
+        depositAmount,
+      );
+      await quartz.connect(user1).withdraw(withdrawAmount);
+      await expect(await quartz.balanceOf(user1.address)).to.be.equal(
+        depositAmount.sub(withdrawAmount),
+      );
+      await expect(await quartz.totalSupply()).to.be.equal(
+        depositAmount.sub(withdrawAmount),
+      );
     });
   });
 });

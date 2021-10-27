@@ -107,6 +107,29 @@ contract Vesting is Ownable {
 
     /**
      * Adds a given amount of tokens to be claimed by a beneficiary.
+     * If the beneficiary already has a claim, this will fail.
+     *
+     * @param _beneficiary Address of the beneficiary
+     * @param _amount Amount of tokens to add
+     */
+
+    function addUniqueClaimable(address _beneficiary, uint256 _amount)
+        external
+        onlyOwner
+    {
+        require(
+            claimable[_beneficiary] == 0,
+            "the beneficiary already has a claimable amount"
+        );
+
+        totalClaimable += _amount;
+        claimable[_beneficiary] += _amount;
+
+        emit ClaimAdded(_beneficiary, _amount);
+    }
+
+    /**
+     * Adds a given amount of tokens to be claimed by a beneficiary.
      * If the beneficiary already has a claim, this will simply increase the claimable amount.
      *
      * @notice This ensures the current token balance of the contract

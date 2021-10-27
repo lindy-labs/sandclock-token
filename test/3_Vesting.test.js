@@ -13,15 +13,14 @@ describe('Vesting', () => {
   let startTime;
   const batchDuration = 100;
   const batchSize = 100;
-  const minStakePeriod = 100;
   const start = 3600;
   const startAmount = 100;
 
   beforeEach(async () => {
     [owner, alice, bob] = await ethers.getSigners();
 
-    const Quartz = await ethers.getContractFactory('Quartz');
-    quartz = await Quartz.deploy(minStakePeriod);
+    const Quartz = await ethers.getContractFactory('QuartzToken');
+    quartz = await Quartz.deploy();
 
     startTime = (await getCurrentTime()).add(start);
     const Vesting = await ethers.getContractFactory('Vesting');
@@ -107,6 +106,47 @@ describe('Vesting', () => {
       await expect(action)
         .to.emit(vesting, 'ConfigurationChanged')
         .withArgs(newTime, 0, 200, 200);
+    });
+  });
+
+  describe('addUniqueClaimable', () => {
+    it('increases the claimable amount for a given beneficiary', async () => {
+      expect(await vesting.claimable(alice.address)).to.equal(0);
+
+      await quartz.transfer(vesting.address, 10);
+      await vesting.addUniqueClaimable(alice.address, 10);
+
+      expect(await vesting.claimable(owner.address)).to.equal(0);
+      expect(await vesting.claimable(alice.address)).to.equal(10);
+    });
+
+    it('emits a ClaimAdded event', async () => {
+      await quartz.transfer(vesting.address, 10);
+      const action = vesting.addUniqueClaimable(alice.address, 10);
+
+      await expect(action)
+        .to.emit(vesting, 'ClaimAdded')
+        .withArgs(alice.address, 10);
+    });
+
+    it('updates totalClaimable', async () => {
+      await quartz.transfer(vesting.address, 11);
+
+      await vesting.addUniqueClaimable(alice.address, 10);
+      expect(await vesting.totalClaimable()).to.equal(10);
+
+      await vesting.addUniqueClaimable(owner.address, 1);
+      expect(await vesting.totalClaimable()).to.equal(11);
+    });
+
+    it('fails if the beneficiary already has a claimable amount', async () => {
+      await vesting.addUniqueClaimable(alice.address, 10);
+
+      const action = vesting.addUniqueClaimable(alice.address, 10);
+
+      await expect(action).to.be.revertedWith(
+        'the beneficiary already has a claimable amount',
+      );
     });
   });
 

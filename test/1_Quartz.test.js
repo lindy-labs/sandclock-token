@@ -138,7 +138,14 @@ describe('Quartz', () => {
     beforeEach(async () => {
       sender = user1;
       beneficiary = user2;
-      await quartz.connect(owner).mint(owner.address, totalSupply);
+
+      const depositData = utils.defaultAbiCoder.encode(
+        ['uint256'],
+        [totalSupply],
+      );
+      await quartz
+        .connect(childChainManager)
+        .deposit(owner.address, depositData);
       await quartz.connect(owner).transfer(sender.address, totalSupply);
     });
 
@@ -467,7 +474,13 @@ describe('Quartz', () => {
     beforeEach(async () => {
       sender = user1;
       beneficiary = user2;
-      await quartz.connect(owner).mint(owner.address, totalSupply);
+      const depositData = utils.defaultAbiCoder.encode(
+        ['uint256'],
+        [totalSupply],
+      );
+      await quartz
+        .connect(childChainManager)
+        .deposit(owner.address, depositData);
       await quartz.connect(owner).transfer(sender.address, totalSupply);
       await quartz.connect(sender).stake(amount, beneficiary.address, period);
       currentTime = await getCurrentTime();
@@ -568,7 +581,13 @@ describe('Quartz', () => {
     };
 
     beforeEach(async () => {
-      await quartz.connect(owner).mint(owner.address, totalSupply);
+      const depositData = utils.defaultAbiCoder.encode(
+        ['uint256'],
+        [totalSupply],
+      );
+      await quartz
+        .connect(childChainManager)
+        .deposit(owner.address, depositData);
 
       for (let i = 0; i < 10; i += 1) {
         await quartz
@@ -706,27 +725,6 @@ describe('Quartz', () => {
       await expect(await quartz.totalSupply()).to.be.equal(
         depositAmount.sub(withdrawAmount),
       );
-    });
-  });
-
-  describe('mint', () => {
-    const mintAmount = utils.parseEther('100');
-
-    it('Revert to mint by non-admin', async () => {
-      await expect(
-        quartz.connect(user1).mint(user1.address, mintAmount),
-      ).to.be.revertedWith(
-        `AccessControl: account ${user1.address.toLowerCase()} is missing role ${DEFAULT_ADMIN_ROLE}`,
-      );
-    });
-
-    it('Should mint to user by depositor', async () => {
-      await expect(await quartz.balanceOf(user1.address)).to.be.equal('0');
-      await quartz.connect(owner).mint(user1.address, mintAmount);
-      await expect(await quartz.balanceOf(user1.address)).to.be.equal(
-        mintAmount,
-      );
-      await expect(await quartz.totalSupply()).to.be.equal(mintAmount);
     });
   });
 });

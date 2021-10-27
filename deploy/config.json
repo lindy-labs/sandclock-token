@@ -5,5 +5,10 @@
   "minThresholdStakePercentage": "200000000000000000",
   "minVotesToPass": "100000000000000000000",
   "proposalThreshold": "100000000000000000000000",
-  "proposalActivePeriod": "2592000"
+  "proposalActivePeriod": "2592000",
+  "vestedRewards": {
+    "start": "1635724800",
+    "duration": "7776000",
+    "gracePeriod": "2592000"
+  }
 }

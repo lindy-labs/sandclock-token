@@ -14,7 +14,8 @@ describe('vested', () => {
   let currentTime;
   const minStakePeriod = 100;
   const start = 3600;
-  const duration = 86400;
+  const duration = 7776000; // 90 days
+  const gracePeriod = 2592000; // 30 days
 
   beforeEach(async () => {
     [owner, alice, bob] = await ethers.getSigners();
@@ -28,6 +29,7 @@ describe('vested', () => {
       quartz.address,
       currentTime.add(start),
       duration,
+      gracePeriod,
     );
   });
 
@@ -39,6 +41,7 @@ describe('vested', () => {
         quartz.address,
         start,
         duration,
+        gracePeriod,
       );
 
       expect(await vested2.quartz()).to.equal(quartz.address);
@@ -49,7 +52,12 @@ describe('vested', () => {
     it('fails is start date is in the past', async () => {
       const start = currentTime.sub(1);
       const duration = 2;
-      const action = VestedRewards.deploy(quartz.address, start, duration);
+      const action = VestedRewards.deploy(
+        quartz.address,
+        start,
+        duration,
+        gracePeriod,
+      );
 
       await expect(action).to.be.revertedWith(
         'start date cannot be in the past',
@@ -59,7 +67,12 @@ describe('vested', () => {
     it('fails is duration is zero', async () => {
       const start = currentTime.add(3600);
       const duration = 0;
-      const action = VestedRewards.deploy(quartz.address, start, duration);
+      const action = VestedRewards.deploy(
+        quartz.address,
+        start,
+        duration,
+        gracePeriod,
+      );
 
       await expect(action).to.be.revertedWith('duration cannot be 0');
     });
@@ -137,6 +150,81 @@ describe('vested', () => {
 
       expect(await vested.withdrawable(owner.address)).to.equal(60);
       expect(await vested.withdrawable(alice.address)).to.equal(40);
+    });
+  });
+
+  describe('transfer', () => {
+    it('allows outgoing transfers for accounts that have not yet redeemed vestedQUARTZ', async () => {
+      await quartz.approve(vested.address, 100);
+      await vested.deposit(100);
+      await vested.transfer(alice.address, 100);
+
+      await time.increase(start + duration * 0.1);
+
+      await vested.connect(alice).transfer(bob.address, 1);
+
+      expect(await vested.balanceOf(bob.address)).to.equal(1);
+    });
+
+    it('does not allow outgoing transfers for accounts that have redeemed vestedQUARTZ', async () => {
+      await quartz.approve(vested.address, 100);
+      await vested.deposit(100);
+      await vested.transfer(alice.address, 100);
+
+      await time.increase(start + duration * 0.1);
+      await vested.connect(alice).withdraw();
+
+      const tx = vested.connect(alice).transfer(bob.address, 1);
+
+      await expect(tx).to.be.revertedWith(
+        'outgoing transfers are locked for this account',
+      );
+    });
+  });
+
+  describe('clawback', () => {
+    it('allows withdrawing any remaining QUARTZ after the grace period', async () => {
+      await quartz.approve(vested.address, 100);
+      await vested.deposit(100);
+      await vested.transfer(alice.address, 25);
+      await vested.transfer(bob.address, 75);
+
+      await time.increase(start + duration + gracePeriod);
+
+      await vested.connect(alice).withdraw();
+
+      const balanceBefore = await quartz.balanceOf(owner.address);
+      await vested.clawback();
+      const balanceAfter = await quartz.balanceOf(owner.address);
+
+      expect(balanceAfter).to.equal(balanceBefore.add(75));
+      expect(await quartz.balanceOf(vested.address)).to.equal(0);
+    });
+
+    it('selfdestructs the contract', async () => {
+      await quartz.approve(vested.address, 100);
+      await vested.deposit(100);
+
+      await time.increase(start + duration + gracePeriod);
+
+      await vested.clawback();
+
+      const tx = vested.balanceOf(owner.address);
+
+      await expect(tx).to.be.revertedWith('call revert exception');
+    });
+
+    it('fails if called before the end of grace period', async () => {
+      await quartz.approve(vested.address, 100);
+      await vested.deposit(100);
+      await vested.transfer(alice.address, 25);
+      await vested.transfer(bob.address, 75);
+
+      await time.increase(start + duration + gracePeriod * 0.9);
+
+      const tx = vested.clawback();
+
+      await expect(tx).to.be.revertedWith('grace period not over yet');
     });
   });
 });

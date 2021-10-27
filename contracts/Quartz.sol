@@ -1,11 +1,18 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./interfaces/IQuartzGovernor.sol";
+import "./interfaces/IQuartz.sol";
+import "./interfaces/IChildToken.sol";
 
-contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
+contract Quartz is
+    ERC20("Sandclock", "QUARTZ"),
+    AccessControl,
+    IQuartz,
+    IChildToken
+{
     event Staked(
         uint64 indexed id,
         address indexed owner,
@@ -47,6 +54,8 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
         uint256 votes;
     }
 
+    bytes32 public constant DEPOSITOR_ROLE = keccak256("DEPOSITOR_ROLE");
+
     IQuartzGovernor public governor;
 
     mapping(address => uint256) public userVotesRep;
@@ -58,14 +67,23 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
     // All stakes infos
     mapping(uint64 => StakeInfo) public stakes;
     // Total staked amount
-    uint256 public totalStaked;
+    uint256 public override totalStaked;
 
-    constructor(uint64 _minStakePeriod) {
-        _mint(msg.sender, 1e8 ether);
+    constructor(uint64 _minStakePeriod, address _childChainManager) {
         minStakePeriod = _minStakePeriod;
+
+        require(
+            _childChainManager != address(0),
+            "QUARTZ: Child chain manager cannot be zero"
+        );
+        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _setupRole(DEPOSITOR_ROLE, _childChainManager);
     }
 
-    function setGovernor(IQuartzGovernor _governor) external onlyOwner {
+    function setGovernor(IQuartzGovernor _governor)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         require(
             address(_governor) != address(0),
             "QUARTZ: Governor cannot be zero"
@@ -164,7 +182,10 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
         return _delegate(msg.sender, delegatee);
     }
 
-    function moveVotesToGovernor(address user, uint256 amount) external {
+    function moveVotesToGovernor(address user, uint256 amount)
+        external
+        override
+    {
         require(
             msg.sender == address(governor),
             "QUARTZ: only governor can call"
@@ -172,7 +193,10 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
         _moveDelegates(user, msg.sender, amount);
     }
 
-    function moveVotesFromGovernor(address user, uint256 amount) external {
+    function moveVotesFromGovernor(address user, uint256 amount)
+        external
+        override
+    {
         require(
             msg.sender == address(governor),
             "QUARTZ: only governor can call"
@@ -185,7 +209,12 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
      * @param account The address to get votes balance
      * @return The number of current votes for `account`
      */
-    function getCurrentVotes(address account) external view returns (uint256) {
+    function getCurrentVotes(address account)
+        external
+        view
+        override
+        returns (uint256)
+    {
         uint32 nCheckpoints = numCheckpoints[account];
         return
             nCheckpoints > 0 ? checkpoints[account][nCheckpoints - 1].votes : 0;
@@ -282,7 +311,31 @@ contract Quartz is ERC20("Sandclock", "QUARTZ"), Ownable {
         return uint64(block.timestamp);
     }
 
-    function setMinStakePeriod(uint64 _minStakePeriod) external onlyOwner {
+    function setMinStakePeriod(uint64 _minStakePeriod)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         minStakePeriod = _minStakePeriod;
+    }
+
+    function deposit(address _user, bytes calldata _depositData)
+        external
+        override
+        onlyRole(DEPOSITOR_ROLE)
+    {
+        uint256 amount = abi.decode(_depositData, (uint256));
+        _mint(_user, amount);
+    }
+
+    function withdraw(uint256 amount) external override {
+        _burn(_msgSender(), amount);
+    }
+
+    function mint(address user, uint256 amount)
+        external
+        override
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        _mint(user, amount);
     }
 }

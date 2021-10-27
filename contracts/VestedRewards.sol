@@ -199,14 +199,14 @@ contract VestedRewards is ERC20, Ownable {
             return 0;
         }
 
-        if (block.timestamp > end()) {
+        if (block.timestamp > _end()) {
             return MUL;
         }
 
         return ((block.timestamp - start) * MUL) / duration;
     }
 
-    function end() private view returns (uint256) {
+    function _end() private view returns (uint256) {
         return start + duration;
     }
 
@@ -226,7 +226,7 @@ contract VestedRewards is ERC20, Ownable {
 
     modifier onlyAfterGracePeriod() {
         require(
-            (end() + gracePeriod) <= block.timestamp,
+            (_end() + gracePeriod) <= block.timestamp,
             "grace period not over yet"
         );
         _;

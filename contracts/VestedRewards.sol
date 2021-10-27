@@ -3,6 +3,7 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 /**
  * A contract that locks QUARTZ in exchange for freshly minted vestedQUARTZ
@@ -23,6 +24,8 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  * 50% would be allowed)
  */
 contract VestedRewards is ERC20, Ownable {
+    using SafeERC20 for IERC20;
+
     IERC20 public quartz;
     uint256 public start;
     uint256 public duration;
@@ -82,10 +85,7 @@ contract VestedRewards is ERC20, Ownable {
      * @param _amount Amount of QUARTZ to lock
      */
     function deposit(uint256 _amount) external onlyBeforeStart {
-        require(
-            quartz.transferFrom(_msgSender(), address(this), _amount),
-            "deposit failed"
-        );
+        quartz.safeTransferFrom(_msgSender(), address(this), _amount);
 
         _mint(_msgSender(), _amount);
     }
@@ -135,7 +135,7 @@ contract VestedRewards is ERC20, Ownable {
      */
     function clawback() external onlyAfterGracePeriod onlyOwner {
         uint256 balance = quartz.balanceOf(address(this));
-        require(quartz.transfer(_msgSender(), balance), "withdrawal failed");
+        quartz.safeTransfer(_msgSender(), balance);
 
         selfdestruct(payable(_msgSender()));
     }

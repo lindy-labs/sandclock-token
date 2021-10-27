@@ -302,18 +302,6 @@ contract Quartz is
             nCheckpoints > 0 ? checkpoints[account][nCheckpoints - 1].votes : 0;
     }
 
-    /**
-     * Updates the minimum period for new stakes
-     *
-     * @param _minStakePeriod new minumum period
-     */
-    function setMinStakePeriod(uint64 _minStakePeriod)
-        external
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
-        minStakePeriod = _minStakePeriod;
-    }
-
     //
     // Polygon PoS Bridge API
     //
@@ -474,24 +462,11 @@ contract Quartz is
         return uint32(n);
     }
 
-<<<<<<< HEAD
-||||||| e450ac1
-    function _getBlockTimestamp() private view returns (uint64) {
-        return uint64(block.timestamp);
-    }
-
-    function setMinStakePeriod(uint64 _minStakePeriod)
-        external
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
-        minStakePeriod = _minStakePeriod;
-    }
-
-=======
-    function _getBlockTimestamp() private view returns (uint64) {
-        return uint64(block.timestamp);
-    }
-
+    /**
+     * Updates the minimum period for new stakes
+     *
+     * @param _minStakePeriod new minumum period
+     */
     function setMinStakePeriod(uint64 _minStakePeriod)
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
@@ -500,7 +475,6 @@ contract Quartz is
         emit MinStakePeriodChanged(_minStakePeriod);
     }
 
->>>>>>> dev
     /**
      * Returns the current block timestamp as a uint64
      */

@@ -12,7 +12,6 @@ describe('vested', () => {
   let alice;
   let bob;
   let currentTime;
-  const minStakePeriod = 100;
   const start = 3600;
   const duration = 7776000; // 90 days
   const gracePeriod = 2592000; // 30 days
@@ -20,8 +19,8 @@ describe('vested', () => {
   beforeEach(async () => {
     [owner, alice, bob] = await ethers.getSigners();
 
-    const Quartz = await ethers.getContractFactory('Quartz');
-    quartz = await Quartz.deploy(minStakePeriod);
+    const MockERC20 = await ethers.getContractFactory('MockERC20');
+    quartz = await MockERC20.deploy();
 
     currentTime = await getCurrentTime();
     VestedRewards = await ethers.getContractFactory('VestedRewards');

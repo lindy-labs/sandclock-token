@@ -217,7 +217,7 @@ describe('Quartz', () => {
         );
       await expect(tx)
         .to.emit(quartz, 'DelegateVotesChanged')
-        .withArgs(beneficiary.address, '0', amount);
+        .withArgs(beneficiary.address, amount);
       expect(await quartz.userVotesRep(beneficiary.address)).equal(amount);
       expect(await quartz.delegates(beneficiary.address)).equal(
         beneficiary.address,
@@ -271,7 +271,7 @@ describe('Quartz', () => {
 
       await expect(tx)
         .to.emit(quartz, 'DelegateVotesChanged')
-        .withArgs(beneficiary.address, amount, amount.add(amount2));
+        .withArgs(beneficiary.address, amount.add(amount2));
       expect(await quartz.userVotesRep(beneficiary.address)).equal(
         amount.add(amount2),
       );
@@ -339,7 +339,7 @@ describe('Quartz', () => {
 
       await expect(tx2)
         .to.emit(quartz, 'DelegateVotesChanged')
-        .withArgs(beneficiary2.address, '0', amount2);
+        .withArgs(beneficiary2.address, amount2);
       expect(await quartz.userVotesRep(beneficiary.address)).equal(amount);
       expect(await quartz.userVotesRep(beneficiary2.address)).equal(amount2);
       expect(await quartz.delegates(beneficiary.address)).equal(
@@ -402,7 +402,7 @@ describe('Quartz', () => {
         );
       await expect(tx)
         .to.emit(quartz, 'DelegateVotesChanged')
-        .withArgs(beneficiary.address, '0', amount);
+        .withArgs(beneficiary.address, amount);
       expect(await quartz.userVotesRep(beneficiary.address)).equal(amount);
       expect(await quartz.delegates(beneficiary.address)).equal(
         beneficiary.address,
@@ -451,7 +451,7 @@ describe('Quartz', () => {
 
       await expect(tx)
         .to.emit(quartz, 'DelegateVotesChanged')
-        .withArgs(delegatee.address, '0', amount);
+        .withArgs(delegatee.address, amount);
       expect(await quartz.userVotesRep(beneficiary.address)).equal(amount);
       expect(await quartz.delegates(beneficiary.address)).equal(
         delegatee.address,
@@ -538,7 +538,7 @@ describe('Quartz', () => {
 
       await expect(tx)
         .to.emit(quartz, 'DelegateVotesChanged')
-        .withArgs(beneficiary.address, amount, '0');
+        .withArgs(beneficiary.address, '0');
       expect(await quartz.userVotesRep(beneficiary.address)).equal('0');
       expect(await quartz.delegates(beneficiary.address)).equal(
         beneficiary.address,

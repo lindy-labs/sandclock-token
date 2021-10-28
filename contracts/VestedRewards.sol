@@ -178,6 +178,8 @@ contract VestedRewards is ERC20, Ownable {
      */
     function _withdraw(address _beneficiary) private {
         uint256 amount = withdrawable(_beneficiary);
+        require(amount > 0, "nothing to withdraw");
+
         _burn(_beneficiary, amount);
 
         withdrawals[_beneficiary] += amount;

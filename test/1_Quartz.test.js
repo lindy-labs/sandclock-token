@@ -2,7 +2,7 @@ const { ethers } = require('hardhat');
 const { expect } = require('chai');
 const { BigNumber, utils } = require('ethers');
 const { time, constants } = require('@openzeppelin/test-helpers');
-const { advanceBlock, getCurrentTime, getCurrentBlock } = require('./utils');
+const { getCurrentTime, getCurrentBlock } = require('./utils');
 
 describe('Quartz', () => {
   let accounts;

@@ -5,14 +5,26 @@ const deployQuartz = async function ({ deployments, getNamedAccounts }) {
   }
 
   const { deploy } = deployments;
-  const { deployer } = await getNamedAccounts();
+  const { deployer, childChainProxy } = await getNamedAccounts();
 
   const minStakePeriod = 3600 * 24 * 30;
+
+  const ProxyAdmin = await ethers.getContract('ProxyAdmin');
+
   await deploy('Quartz', {
     from: deployer,
-    args: [minStakePeriod],
+    args: [],
     log: true,
+    deterministicDeployment: false,
+    proxy: {
+      owner: ProxyAdmin.address,
+      proxyContract: 'TransparentUpgradeableProxy',
+    },
   });
+
+  const Quartz = await ethers.getContract('Quartz');
+
+  await Quartz.initialize(minStakePeriod, childChainProxy);
 };
 
 module.exports = deployQuartz;

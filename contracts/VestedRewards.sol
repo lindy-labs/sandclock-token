@@ -157,7 +157,9 @@ contract VestedRewards is ERC20, Ownable {
         if (unlocked <= withdrawn) {
             unlocked = 0;
         } else {
-            unlocked -= withdrawn;
+            unchecked {
+                unlocked -= withdrawn;
+            }
         }
 
         if (unlocked > balance) {
@@ -180,7 +182,7 @@ contract VestedRewards is ERC20, Ownable {
 
         withdrawals[_beneficiary] += amount;
 
-        require(quartz.transfer(_beneficiary, amount), "withdrawal failed");
+        quartz.safeTransfer(_beneficiary, amount);
     }
 
     /**

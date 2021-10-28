@@ -79,9 +79,11 @@ contract Quartz is
     // https://docs.polygon.technology/docs/develop/ethereum-polygon/pos/mapping-assets/
     bytes32 public constant DEPOSITOR_ROLE = keccak256("DEPOSITOR_ROLE");
 
+    // governor contract instance
     IQuartzGovernor public governor;
 
     // total amount staked by an account, which corresponds to his total voting power
+    // (including delegated power)
     mapping(address => uint256) public userVotesRep;
 
     // delegates for each account
@@ -364,6 +366,12 @@ contract Quartz is
      * its own delegate so this function is always used when transfering voting
      * power
      *
+     * @notice If not enough voting power exists on srcRep, we try to withdraw
+     * votes from governor's executed or canceled proposals. If we still don't
+     * have enough votes, and if dstRep is 0x0 (meaning we need to destroy
+     * votes), we force governor to withdraw from active proposals as well,
+     * until the target amount is reached
+     *
      * @param srcRep Account from which to take votes. If 0x0, we're creating new voting power
      * @param dstRep Account which will receive votes. If 0x0, we're destroying voting power
      * @param amount Amount of votes to transfer
@@ -464,6 +472,8 @@ contract Quartz is
 
     /**
      * Updates the minimum period for new stakes
+     *
+     * @notice Only callable by contract admin
      *
      * @param _minStakePeriod new minumum period
      */

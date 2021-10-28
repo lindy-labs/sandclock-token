@@ -15,7 +15,7 @@ describe('Quartz', () => {
   let user4;
   let user5;
   let user6;
-  let governor = '0xe813FED5dAE6B9DBf29671bF09F8Ae998c42768D';
+  let governor = '0xe813FED5dAE6B9DBf29671bF09F8Ae998c42768D'; // temp address
   let decimalsUnit = BigNumber.from('10').pow(new BigNumber.from('18'));
   let totalSupply = BigNumber.from('100000000').mul(decimalsUnit);
   const name = 'Sandclock';
@@ -110,6 +110,13 @@ describe('Quartz', () => {
       const tx = await quartz.connect(owner).setGovernor(governor);
       expect(await quartz.governor()).to.equal(governor);
       await expect(tx).to.emit(quartz, 'GovernorChanged').withArgs(governor);
+    });
+
+    it('Revert to set if already set', async () => {
+      await quartz.connect(owner).setGovernor(user1.address);
+      await expect(
+        quartz.connect(owner).setGovernor(governor),
+      ).to.be.revertedWith('QUARTZ: Governor already set');
     });
   });
 
@@ -468,7 +475,6 @@ describe('Quartz', () => {
     const period = BigNumber.from('3600');
     let sender;
     let beneficiary;
-    let currentTime;
     let currentBlock;
 
     beforeEach(async () => {
@@ -663,9 +669,8 @@ describe('Quartz', () => {
       expect(await quartz.getCurrentVotes(beneficiary.address)).equal(amount);
       await quartz.connect(beneficiary).delegate(delegatee.address);
       await time.increase(period.toString());
-      let delegateBlock = await getCurrentBlock();
 
-      let { tx, currentTime, currentBlock } = await unstake(sender, '0');
+      let { currentBlock } = await unstake(sender, '0');
 
       expect(await quartz.numCheckpoints(delegatee.address)).equal(2);
       let checkpoints = await quartz.checkpoints(delegatee.address, 1);

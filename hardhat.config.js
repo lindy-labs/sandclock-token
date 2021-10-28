@@ -7,6 +7,7 @@ require('hardhat-gas-reporter');
 require('hardhat-contract-sizer');
 require('solidity-coverage');
 require('@openzeppelin/hardhat-upgrades');
+require('hardhat-dependency-compiler');
 require('dotenv').config();
 
 module.exports = {
@@ -62,6 +63,10 @@ module.exports = {
     deployer: {
       default: 0,
     },
+    childChainProxy: {
+      137: '0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa',
+      4: '0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa',
+    },
   },
   gasReporter: {
     currency: 'ETH',
@@ -69,5 +74,11 @@ module.exports = {
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
+  },
+  dependencyCompiler: {
+    paths: [
+      '@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol',
+      '@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol',
+    ],
   },
 };

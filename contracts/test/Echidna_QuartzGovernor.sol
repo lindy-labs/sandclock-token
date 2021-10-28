@@ -6,8 +6,8 @@ import "../QuartzGovernor.sol";
 contract Echidna_QuartzGovernor is QuartzGovernor {
     uint256 lastTimestamp;
 
-    constructor()
-        QuartzGovernor(
+    constructor() {
+        initialize(
             IQuartz(address(this)),
             9999799,
             1000000,
@@ -16,8 +16,7 @@ contract Echidna_QuartzGovernor is QuartzGovernor {
             100000000000000000000,
             100000000000000000000000,
             2592000
-        )
-    {
+        );
         lastTimestamp = block.timestamp;
     }
 

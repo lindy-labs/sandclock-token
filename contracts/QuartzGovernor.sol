@@ -2,12 +2,12 @@
 pragma solidity ^0.8.9;
 pragma experimental ABIEncoderV2;
 
-import "@openzeppelin/contracts/utils/math/Math.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "./interfaces/IQuartz.sol";
 import "./interfaces/IQuartzGovernor.sol";
 
-contract QuartzGovernor is AccessControl, IQuartzGovernor {
+contract QuartzGovernor is AccessControlUpgradeable, IQuartzGovernor {
     bytes32 public constant UPDATE_SETTINGS_ROLE =
         keccak256("UPDATE_SETTINGS_ROLE");
     bytes32 public constant CANCEL_PROPOSAL_ROLE =
@@ -76,7 +76,7 @@ contract QuartzGovernor is AccessControl, IQuartzGovernor {
     mapping(uint256 => mapping(address => uint256)) public userVotes;
     uint256 public lastVoteId;
 
-    IQuartz public immutable quartz;
+    IQuartz public quartz;
     uint256 public decay;
     uint256 public maxRatio;
     uint256 public weight;
@@ -153,7 +153,7 @@ contract QuartzGovernor is AccessControl, IQuartzGovernor {
         _;
     }
 
-    constructor(
+    function initialize(
         IQuartz _quartz,
         uint256 _decay,
         uint256 _maxRatio,
@@ -162,7 +162,8 @@ contract QuartzGovernor is AccessControl, IQuartzGovernor {
         uint256 _minVotesToPass,
         uint256 _proposalThreshold,
         uint64 _proposalActivePeriod
-    ) {
+    ) public initializer {
+        __AccessControl_init();
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
         require(address(_quartz) != address(0));
@@ -411,7 +412,7 @@ contract QuartzGovernor is AccessControl, IQuartzGovernor {
             if (proposal.proposalStatus == ProposalStatus.Active) {
                 // In active proposals, we only subtract the needed amount to reach the target
                 uint256 toWithdraw =
-                    Math.min(
+                    MathUpgradeable.min(
                         _targetAmount - withdrawnAmount,
                         userVotes[proposal.positiveVotes.id][_from] +
                             userVotes[proposal.negativeVotes.id][_from]

@@ -1,4 +1,4 @@
-const { ethers } = require('hardhat');
+const { ethers, upgrades } = require('hardhat');
 const { expect } = require('chai');
 const { BigNumber } = require('ethers');
 const { utils } = require('ethers');
@@ -38,7 +38,7 @@ describe('QuartzGovernor', () => {
     );
     await quartz.connect(owner).deposit(owner.address, depositData);
     const QuartzGovernor = await ethers.getContractFactory('QuartzGovernor');
-    governor = await QuartzGovernor.deploy(
+    governor = await upgrades.deployProxy(QuartzGovernor, [
       quartz.address,
       decay,
       maxRatio,
@@ -47,7 +47,7 @@ describe('QuartzGovernor', () => {
       minVotesToPass,
       proposalThreshold,
       proposalActivePeriod,
-    );
+    ]);
     await quartz.setGovernor(governor.address);
     await governor.grantRole(
       utils.keccak256(utils.toUtf8Bytes('UPDATE_SETTINGS_ROLE')),

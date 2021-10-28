@@ -48,11 +48,7 @@ contract Quartz is
     );
 
     // Emitted when voting power for an account is changed
-    event DelegateVotesChanged(
-        address indexed delegate,
-        uint256 previousBalance,
-        uint256 newBalance
-    );
+    event DelegateVotesChanged(address indexed delegate, uint256 newBalance);
 
     // Emitted when the governor contract is changed
     event GovernorChanged(address indexed governor);
@@ -143,6 +139,10 @@ contract Quartz is
         require(
             address(_governor) != address(0),
             "QUARTZ: Governor cannot be zero"
+        );
+        require(
+            address(governor) == address(0),
+            "QUARTZ: Governor already set"
         );
         governor = _governor;
         emit GovernorChanged(address(_governor));
@@ -404,7 +404,7 @@ contract Quartz is
                         : 0;
                 }
                 uint256 srcRepNew = srcRepOld - amount;
-                _writeCheckpoint(srcRep, srcRepNum, srcRepOld, srcRepNew);
+                _writeCheckpoint(srcRep, srcRepNum, srcRepNew);
             }
 
             if (dstRep != address(0)) {
@@ -415,7 +415,7 @@ contract Quartz is
                         ? checkpoints[dstRep][dstRepNum - 1].votes
                         : 0;
                 uint256 dstRepNew = dstRepOld + amount;
-                _writeCheckpoint(dstRep, dstRepNum, dstRepOld, dstRepNew);
+                _writeCheckpoint(dstRep, dstRepNum, dstRepNew);
             }
         }
     }
@@ -431,7 +431,6 @@ contract Quartz is
     function _writeCheckpoint(
         address delegatee,
         uint32 nCheckpoints,
-        uint256 oldVotes,
         uint256 newVotes
     ) internal {
         uint32 blockNumber =
@@ -453,7 +452,7 @@ contract Quartz is
             numCheckpoints[delegatee] = nCheckpoints + 1;
         }
 
-        emit DelegateVotesChanged(delegatee, oldVotes, newVotes);
+        emit DelegateVotesChanged(delegatee, newVotes);
     }
 
     /**

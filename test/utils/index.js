@@ -1,8 +1,5 @@
 const { BigNumber } = require('ethers');
-const { expect } = require('chai');
-const {
-  time, // Big Number support
-} = require('@openzeppelin/test-helpers');
+const { time } = require('@openzeppelin/test-helpers');
 
 const getCurrentTime = async () => {
   return BigNumber.from((await time.latest()).toString());

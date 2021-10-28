@@ -30,7 +30,7 @@ describe('QuartzGovernor', () => {
     proposalSubmitter = accounts[3];
     cancelProposalsRole = accounts[4];
     const Quartz = await ethers.getContractFactory('Quartz');
-    quartz = await Quartz.deploy(0, owner.address);
+    quartz = await upgrades.deployProxy(Quartz, [0, owner.address]);
 
     const depositData = utils.defaultAbiCoder.encode(
       ['uint256'],

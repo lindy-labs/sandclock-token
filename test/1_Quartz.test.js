@@ -1,4 +1,4 @@
-const { ethers } = require('hardhat');
+const { ethers, upgrades } = require('hardhat');
 const { expect } = require('chai');
 const { BigNumber, utils } = require('ethers');
 const { time, constants } = require('@openzeppelin/test-helpers');
@@ -39,7 +39,10 @@ describe('Quartz', () => {
     ] = accounts;
 
     const Quartz = await ethers.getContractFactory('Quartz');
-    quartz = await Quartz.deploy(minStakePeriod, childChainManager.address);
+    quartz = await upgrades.deployProxy(Quartz, [
+      minStakePeriod,
+      childChainManager.address,
+    ]);
   });
 
   describe('Quartz tokenomics', () => {

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "./interfaces/IQuartzGovernor.sol";
 import "./interfaces/IQuartz.sol";
 import "./interfaces/IChildToken.sol";
@@ -18,8 +18,8 @@ import "./interfaces/IChildToken.sol";
  * the ability to delegate that power to another party
  */
 contract Quartz is
-    ERC20("Sandclock", "QUARTZ"),
-    AccessControl,
+    ERC20Upgradeable,
+    AccessControlUpgradeable,
     IQuartz,
     IChildToken
 {
@@ -107,7 +107,10 @@ contract Quartz is
      * @param _minStakePeriod the initial minStakePeriod to set
      * @param _childChainManager ChildChainManager instance for Polygon PoS bridge
      */
-    constructor(uint64 _minStakePeriod, address _childChainManager) {
+    function initialize(uint64 _minStakePeriod, address _childChainManager)
+        external
+        initializer
+    {
         minStakePeriod = _minStakePeriod;
         emit MinStakePeriodChanged(_minStakePeriod);
 
@@ -115,6 +118,9 @@ contract Quartz is
             _childChainManager != address(0),
             "QUARTZ: Child chain manager cannot be zero"
         );
+
+        __ERC20_init("Sandclock", "QUARTZ");
+        __AccessControl_init();
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(DEPOSITOR_ROLE, _childChainManager);
     }

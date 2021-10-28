@@ -130,9 +130,11 @@ contract Quartz is
     /**
      * Sets the governor contract
      *
-     * @param _governor new Governor instance to use
-     *
      * @notice Can only be called by a contract admin
+     *
+     * @notice Can only be called once
+     *
+     * @param _governor new Governor instance to use
      */
     function setGovernor(IQuartzGovernor _governor)
         external

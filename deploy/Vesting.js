@@ -1,3 +1,5 @@
+const { ethers } = require('hardhat');
+
 module.exports = async function deployQuartz({
   deployments,
   getNamedAccounts,
@@ -14,9 +16,9 @@ module.exports = async function deployQuartz({
   const quartzAddress = (await deployments.get('QuartzToken')).address;
 
   const start = Math.floor(new Date().getTime() / 1000) + 5 * 60; // in 5 minutes
-  const startAmount = 100;
-  const batchDuration = 100;
-  const batchSize = 100;
+  const startAmount = ethers.utils.parseUnits("1", 18);
+  const batchDuration = 5 * 60; // 5 minutes
+  const batchSize = ethers.utils.parseUnits("1", 18);
 
   await deploy('Vesting', {
     from: deployer,

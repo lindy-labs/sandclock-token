@@ -162,7 +162,7 @@ contract QuartzGovernor is AccessControlUpgradeable, IQuartzGovernor {
         uint256 _minVotesToPass,
         uint256 _proposalThreshold,
         uint64 _proposalActivePeriod
-    ) external initializer {
+    ) public initializer {
         __AccessControl_init();
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
 

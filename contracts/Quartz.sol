@@ -425,7 +425,6 @@ contract Quartz is
      *
      * @param delegatee The delegatee account
      * @param nCheckpoints How many checkpoints already exist for this delegatee
-     * @param oldVotes old voting power for this delegatee
      * @param newVotes new voting power for this delegatee
      */
     function _writeCheckpoint(

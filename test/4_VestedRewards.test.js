@@ -63,7 +63,7 @@ describe('vested', () => {
       );
     });
 
-    it('fails is duration is zero', async () => {
+    it('fails if duration is zero', async () => {
       const startDelay = currentTime.add(3600);
       const duration = 0;
       const action = VestedRewards.deploy(

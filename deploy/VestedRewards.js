@@ -11,7 +11,7 @@ const deployVestedRewards = async function ({ deployments, getNamedAccounts }) {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  const quartz = await deployments.get('QuartzL1');
+  const quartz = await deployments.get('QuartzToken');
 
   await deploy('VestedRewards', {
     from: deployer,

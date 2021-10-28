@@ -182,7 +182,6 @@ describe('Quartz', () => {
       const tx = await quartz
         .connect(sender)
         .stake(amount, beneficiary.address, period);
-      advanceBlock;
       const currentTime = await getCurrentTime();
       const currentBlock = await getCurrentBlock();
       await expect(tx)

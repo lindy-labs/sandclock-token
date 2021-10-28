@@ -26,16 +26,15 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 contract VestedRewards is ERC20, Ownable {
     using SafeERC20 for IERC20;
 
-    IERC20 public quartz;
-    uint256 public start;
-    uint256 public duration;
-    uint256 public gracePeriod;
+    IERC20 public immutable quartz;
+    uint64 public immutable start;
+    uint64 public immutable duration;
+    uint64 public immutable gracePeriod;
 
     mapping(address => uint256) public withdrawals;
-    mapping(address => bool) redeemers;
 
     // useful to keep 2 decimal precision when dealing with percentages
-    uint256 constant MUL = 10000;
+    uint64 constant MUL = 10000;
 
     // start                  50%                     100%
     // G 100
@@ -50,9 +49,9 @@ contract VestedRewards is ERC20, Ownable {
      */
     constructor(
         IERC20 _quartz,
-        uint256 _start,
-        uint256 _duration,
-        uint256 _gracePeriod
+        uint64 _start,
+        uint64 _duration,
+        uint64 _gracePeriod
     ) ERC20("Sandclock (vested rewards)", "vestedQUARTZ") {
         require(_start > block.timestamp, "start date cannot be in the past");
         require(_duration > 0, "duration cannot be 0");
@@ -70,7 +69,7 @@ contract VestedRewards is ERC20, Ownable {
         uint256 amount
     ) internal override(ERC20) {
         require(
-            !redeemers[sender],
+            withdrawals[sender] == 0,
             "outgoing transfers are locked for this account"
         );
 
@@ -99,8 +98,7 @@ contract VestedRewards is ERC20, Ownable {
      * @notice Amount to transfer is given the sender's current
      * vestedQUARTZ balance, and restricted by vesting rules
      *
-     * @notice Marks the beneficiary as redeemer, which blocks future
-     * outgoing transfers from him
+     * @notice Withdrawing blocks future outgoing transfers from this account
      */
     function withdraw() external onlyAfterStart {
         _withdraw(_msgSender());
@@ -116,8 +114,9 @@ contract VestedRewards is ERC20, Ownable {
      * vestedQUARTZ balance, and restricted by vesting rules
      *
      * @notice Can only be called by the owner, to force rewards to be
-     * redeemed if necessary @notice Marks the beneficiary as redeemer, which
-     * blocks future outgoing transfers from him
+     * redeemed if necessary
+     *
+     * @notice Withdrawing blocks future outgoing transfers from this account
      *
      * @param _beneficiary Beneficiary account to withdraw from
      */
@@ -155,7 +154,7 @@ contract VestedRewards is ERC20, Ownable {
 
         uint256 unlocked = ((balance + withdrawn) * _durationPercent()) / MUL;
 
-        if (unlocked < withdrawn) {
+        if (unlocked <= withdrawn) {
             unlocked = 0;
         } else {
             unlocked -= withdrawn;
@@ -180,7 +179,6 @@ contract VestedRewards is ERC20, Ownable {
         _burn(_beneficiary, amount);
 
         withdrawals[_beneficiary] += amount;
-        redeemers[_beneficiary] = true;
 
         require(quartz.transfer(_beneficiary, amount), "withdrawal failed");
     }
@@ -192,16 +190,18 @@ contract VestedRewards is ERC20, Ownable {
      * Any calculation from this value must later be divided by `MUL` to
      * retrieve the original value
      */
-    function _durationPercent() private view returns (uint256) {
-        if (block.timestamp < start) {
+    function _durationPercent() private view returns (uint64) {
+        uint64 timestamp = _getBlockTimestamp();
+
+        if (timestamp < start) {
             return 0;
         }
 
-        if (block.timestamp > _end()) {
+        if (timestamp >= _end()) {
             return MUL;
         }
 
-        return ((block.timestamp - start) * MUL) / duration;
+        return ((timestamp - start) * MUL) / duration;
     }
 
     function _end() private view returns (uint256) {
@@ -209,7 +209,7 @@ contract VestedRewards is ERC20, Ownable {
     }
 
     function _started() private view returns (bool) {
-        return start <= block.timestamp;
+        return start <= _getBlockTimestamp();
     }
 
     modifier onlyBeforeStart() {
@@ -228,5 +228,9 @@ contract VestedRewards is ERC20, Ownable {
             "grace period not over yet"
         );
         _;
+    }
+
+    function _getBlockTimestamp() private view returns (uint64) {
+        return uint64(block.timestamp);
     }
 }

@@ -88,6 +88,10 @@ contract Quartz is
             address(_governor) != address(0),
             "QUARTZ: Governor cannot be zero"
         );
+        require(
+            address(governor) == address(0),
+            "QUARTZ: Governor already set"
+        );
         governor = _governor;
         emit GovernorChanged(address(_governor));
     }

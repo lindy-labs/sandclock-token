@@ -73,6 +73,21 @@ contract Vesting is Ownable {
     }
 
     /**
+     * Allows the owner to withdraw execess funds in the contract.
+     */
+    function withdrawExcess() external onlyOwner {
+        require(
+            totalClaimable < token.balanceOf(address(this)),
+            "nothing to withdraw"
+        );
+
+        token.safeTransfer(
+            msg.sender,
+            token.balanceOf(address(this)) - totalClaimable
+        );
+    }
+
+    /**
      * Updates the batch parameters.
      *
      * @notice The new start date can only be in the future.

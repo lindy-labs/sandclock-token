@@ -51,6 +51,42 @@ describe('Vesting', () => {
     });
   });
 
+  describe('withdrawExcess', () => {
+    it('withdraws the exceess tokens in the contract', async () => {
+      await quartz.transfer(vesting.address, 2000);
+      await vesting.addClaimable(alice.address, 1000);
+
+      await vesting.withdrawExcess();
+
+      const totalClaimable = await quartz.balanceOf(vesting.address);
+      expect(totalClaimable.toString()).to.equal('1000');
+    });
+
+    it('fails if there is not excess to withdraw', async () => {
+      await quartz.transfer(vesting.address, 1000);
+      await vesting.addClaimable(alice.address, 1000);
+
+      const action = vesting.withdrawExcess();
+
+      await expect(action).to.be.revertedWith('nothing to withdraw');
+
+      const totalClaimable = await quartz.balanceOf(vesting.address);
+      expect(totalClaimable.toString()).to.equal('1000');
+    });
+
+    it('fails if not the owner calling', async () => {
+      await quartz.transfer(vesting.address, 2000);
+      await vesting.addClaimable(alice.address, 1000);
+
+      const action = vesting.connect(alice).withdrawExcess();
+
+      await expect(action).to.be.reverted;
+
+      const totalClaimable = await quartz.balanceOf(vesting.address);
+      expect(totalClaimable.toString()).to.equal('2000');
+    });
+  });
+
   describe('changeBatches', () => {
     it('updates the configuration', async () => {
       await quartz.transfer(vesting.address, 1000);

@@ -16,7 +16,7 @@ contract Vesting is Ownable {
     using SafeERC20 for IERC20;
 
     // QUARTZ token address
-    IERC20 token;
+    IERC20 public token;
 
     // how much each beneficiary has left to claim
     mapping(address => uint256) public claimable;
@@ -31,7 +31,7 @@ contract Vesting is Ownable {
     uint256 public totalClaimed;
 
     // starting date for the claim
-    uint256 public start;
+    uint64 public start;
 
     // starting claim size
     uint256 public startAmount;
@@ -50,7 +50,7 @@ contract Vesting is Ownable {
 
     // emitted when the batch configuration is updated
     event ConfigurationChanged(
-        uint256 start,
+        uint64 start,
         uint256 startAmount,
         uint256 batchDuration,
         uint256 batchSize
@@ -58,7 +58,7 @@ contract Vesting is Ownable {
 
     constructor(
         IERC20 _token,
-        uint256 _start,
+        uint64 _start,
         uint256 _startAmount,
         uint256 _batchDuration,
         uint256 _batchSize
@@ -99,7 +99,7 @@ contract Vesting is Ownable {
      * @param _batchSize The new batch size.
      */
     function changeBatches(
-        uint256 _start,
+        uint64 _start,
         uint256 _startAmount,
         uint256 _batchDuration,
         uint256 _batchSize

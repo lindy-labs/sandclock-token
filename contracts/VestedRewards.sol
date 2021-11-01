@@ -68,6 +68,7 @@ contract VestedRewards is ERC20, Ownable {
         address recipient,
         uint256 amount
     ) internal override(ERC20) {
+        //slither-disable-next-line incorrect-equality
         require(
             withdrawals[sender] == 0,
             "outgoing transfers are locked for this account"

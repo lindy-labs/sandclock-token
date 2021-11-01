@@ -28,6 +28,7 @@ jobs:
 
       - run: yarn install
       - run: pip install slither-analyzer
+      - run: rm -rf cache artifacts
       - run: yarn run hardhat compile
       - run: yarn test:slither
       - run: yarn run hardhat test

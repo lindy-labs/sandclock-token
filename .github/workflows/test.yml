@@ -21,7 +21,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '16'
-          cache: 'yarn'
       - uses: actions/setup-python@v2
         with:
           python-version: '3.x'
@@ -29,5 +28,5 @@ jobs:
       - run: yarn install
       - run: pip install slither-analyzer
       - run: yarn run hardhat compile
-      - run: yarn test:slither
       - run: yarn run hardhat test
+      # - run: yarn test:slither

@@ -190,7 +190,7 @@ contract Vesting is Ownable {
         }
 
         //slither-disable-next-line divide-before-multiply
-        uint256 batches = (block.timestamp - start) / batchDuration;
+        uint256 batches = uint256((block.timestamp - start) / batchDuration);
         uint256 maxClaimable =
             batches * batchSize + startAmount - claimed[_beneficiary];
 

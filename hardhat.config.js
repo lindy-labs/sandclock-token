@@ -30,7 +30,7 @@ module.exports = {
       accounts: [process.env.MAINNET_PRIVATE_KEY],
     },
     polygon: {
-      url: 'https://rpc-mainnet.matic.network',
+      url: 'https://polygon-rpc.com',
       chainId: 137,
       accounts: [process.env.MAINNET_PRIVATE_KEY],
     },

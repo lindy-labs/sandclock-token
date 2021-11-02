@@ -15,10 +15,12 @@ module.exports = async function deployQuartz({
 
   const quartzAddress = (await deployments.get('QuartzToken')).address;
 
-  const start = Math.floor(new Date().getTime() / 1000) + 5 * 60; // in 5 minutes
-  const startAmount = ethers.utils.parseUnits("1", 18);
-  const batchDuration = 5 * 60; // 5 minutes
-  const batchSize = ethers.utils.parseUnits("1", 18);
+  const start = Math.floor(
+    new Date('2021-11-04T12:00:00.000Z').getTime() / 1000,
+  );
+  const startAmount = ethers.utils.parseUnits('100', 18);
+  const batchDuration = 60 * 60 * 24; // 24 hours
+  const batchSize = ethers.utils.parseUnits('100', 18);
 
   await deploy('Vesting', {
     from: deployer,

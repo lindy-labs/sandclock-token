@@ -4,6 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 
 /**
  * A contract that locks QUARTZ in exchange for freshly minted vestedQUARTZ
@@ -22,9 +23,12 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
  * then sending remaining tokens to a separate wallet, where they'd be able to
  * redeem an extra share again (effectively being able to redeem 75% when only
  * 50% would be allowed)
+ *
+ * @notice Quartz can only be redeemed by user-accounts, not contracts. This is implemented to prevent staking contracts and other Dapps from maliciously redeeming user tokens
  */
 contract VestedRewards is ERC20, Ownable {
     using SafeERC20 for IERC20;
+    using Address for address;
 
     IERC20 public immutable quartz;
     uint64 public immutable start;
@@ -143,10 +147,12 @@ contract VestedRewards is ERC20, Ownable {
     /**
      * Calculates how much vestedQUARTZ can be currently redeemed by a beneficiary
      *
+     * @notice If start date hasn't been reached yet, or if beneficiary is a contract, withdrawable amount is always 0.
+     *
      * @param _beneficiary Beneficiary account
      */
     function withdrawable(address _beneficiary) public view returns (uint256) {
-        if (!_started()) {
+        if (!_started() || _beneficiary.isContract()) {
             return 0;
         }
 

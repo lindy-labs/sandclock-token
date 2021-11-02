@@ -158,6 +158,16 @@ describe('vested', () => {
       expect(await vested.withdrawable(owner.address)).to.equal(60);
       expect(await vested.withdrawable(alice.address)).to.equal(40);
     });
+
+    it('is always 0 for contracts', async () => {
+      await quartz.approve(vested.address, 100);
+      await vested.deposit(100);
+      await vested.transfer(quartz.address, 100);
+
+      await time.increase(startDelay + duration);
+
+      expect(await vested.withdrawable(quartz.address)).to.equal(0);
+    });
   });
 
   describe('transfer', () => {

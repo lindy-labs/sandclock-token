@@ -16,7 +16,7 @@ contract Vesting is Ownable {
     using SafeERC20 for IERC20;
 
     // QUARTZ token address
-    IERC20 public token;
+    IERC20 public immutable token;
 
     // how much each beneficiary has left to claim
     mapping(address => uint256) public claimable;

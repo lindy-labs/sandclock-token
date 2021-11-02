@@ -10,6 +10,14 @@ require('@openzeppelin/hardhat-upgrades');
 require('hardhat-dependency-compiler');
 require('dotenv').config();
 
+task('accounts', 'Prints the list of accounts', async (args, hre) => {
+  const accounts = await hre.ethers.getSigners();
+
+  for (const account of accounts) {
+    console.log(account.address);
+  }
+});
+
 module.exports = {
   contractSizer: {
     runOnCompile: true,
@@ -38,6 +46,7 @@ module.exports = {
       url: `https://rinkeby.infura.io/v3/${process.env.INFURA_KEY}`,
       chainId: 4,
       accounts: [process.env.TESTNET_PRIVATE_KEY],
+      gas: 10000000,
     },
     mumbai: {
       url: 'https://rpc-mumbai.matic.today',

@@ -37,7 +37,7 @@ contract Vesting is Ownable {
     uint256 public startAmount;
 
     // duration of each claim batch
-    uint256 public batchDuration;
+    uint64 public batchDuration;
 
     // amount that can be claimed for each batch
     uint256 public batchSize;
@@ -52,7 +52,7 @@ contract Vesting is Ownable {
     event ConfigurationChanged(
         uint64 start,
         uint256 startAmount,
-        uint256 batchDuration,
+        uint64 batchDuration,
         uint256 batchSize
     );
 
@@ -60,7 +60,7 @@ contract Vesting is Ownable {
         IERC20 _token,
         uint64 _start,
         uint256 _startAmount,
-        uint256 _batchDuration,
+        uint64 _batchDuration,
         uint256 _batchSize
     ) {
         require(block.timestamp <= _start, "start cannot be in the past");
@@ -101,7 +101,7 @@ contract Vesting is Ownable {
     function changeBatches(
         uint64 _start,
         uint256 _startAmount,
-        uint256 _batchDuration,
+        uint64 _batchDuration,
         uint256 _batchSize
     ) external onlyOwner {
         require(block.timestamp <= _start, "start cannot be in the past");

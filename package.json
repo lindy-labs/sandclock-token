@@ -26,6 +26,7 @@
     "eslint-plugin-prettier": "^3.3.1",
     "ethereum-waffle": "^3.3.0",
     "ethers": "^5.0.32",
+    "fast-csv": "^4.3.6",
     "hardhat": "^2.1.1",
     "hardhat-contract-sizer": "^2.1.1",
     "hardhat-dependency-compiler": "^1.1.1",

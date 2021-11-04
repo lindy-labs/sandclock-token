@@ -10,6 +10,7 @@ describe('Vesting', () => {
   let owner;
   let alice;
   let bob;
+  let Vesting;
   let startTime;
   const batchDuration = 100;
   const batchSize = 100;
@@ -23,7 +24,7 @@ describe('Vesting', () => {
     quartz = await Quartz.deploy();
 
     startTime = (await getCurrentTime()).add(start);
-    const Vesting = await ethers.getContractFactory('Vesting');
+    Vesting = await ethers.getContractFactory('Vesting');
     vesting = await Vesting.deploy(
       quartz.address,
       startTime,
@@ -31,24 +32,6 @@ describe('Vesting', () => {
       batchDuration,
       batchSize,
     );
-  });
-
-  describe('constructor', () => {
-    it('doesnt allow the start to be in the past', async () => {
-      const timeInThePast = (await getCurrentTime()).sub(1);
-
-      const Vesting = await ethers.getContractFactory('Vesting');
-
-      const action = Vesting.deploy(
-        quartz.address,
-        timeInThePast,
-        startAmount,
-        batchDuration,
-        batchSize,
-      );
-
-      await expect(action).to.be.revertedWith('start cannot be in the past');
-    });
   });
 
   describe('withdrawExcess', () => {
@@ -230,6 +213,42 @@ describe('Vesting', () => {
       await vesting.addClaimable(alice.address, 10);
 
       expect(await vesting.currentlyClaimable(alice.address)).to.equal(0);
+    });
+
+    it.only('calculates correct amount if startDate is in the past and startAmount is 0', async () => {
+      const amount = batchSize * 2;
+
+      startTime = (await getCurrentTime()).sub(batchDuration);
+      vesting = await Vesting.deploy(
+        quartz.address,
+        startTime,
+        0,
+        batchDuration,
+        batchSize,
+      );
+      await quartz.transfer(vesting.address, amount);
+      await vesting.addClaimable(alice.address, amount);
+
+      expect(await vesting.currentlyClaimable(alice.address)).to.eq(batchSize);
+    });
+
+    it.only('calculates correct amount if startDate is in the past', async () => {
+      const amount = batchSize * 2;
+
+      startTime = (await getCurrentTime()).sub(batchDuration);
+      vesting = await Vesting.deploy(
+        quartz.address,
+        startTime,
+        10,
+        batchDuration,
+        batchSize,
+      );
+      await quartz.transfer(vesting.address, amount);
+      await vesting.addClaimable(alice.address, amount);
+
+      expect(await vesting.currentlyClaimable(alice.address)).to.eq(
+        batchSize + 10,
+      );
     });
 
     it('increases with each batch', async () => {

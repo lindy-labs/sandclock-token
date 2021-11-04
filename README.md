@@ -64,8 +64,9 @@ that decision.
 ### Vesting
 
 Polygon contract with a vesting mechanism for Phase I investors. Initial
-settings allow for withdrawals of up to 100 QUARTZ / day for each beneficiary.
-These settings may be later adjusted by the team if need be.
+settings allow for withdrawals of a starting amount, followed by up to 100
+QUARTZ / day for each beneficiary.  These settings may be later adjusted by the
+team if need be.
 
 ### VestedRewards
 
@@ -73,6 +74,9 @@ A separate ERC20 token called $vestedQUARTZ can be minted by locking regular
 $QUARTZ into it. This vestedQUARTZ acts as a distributable reward, subject to
 vesting logic. Receivers of vestedQUARTZ can, over the course of a few months,
 redeem the locked QUARTZ by burning vestedQUARTZ.
+Once an account redeems any amount of vestedQUARTZ, they can no longer send
+outgoing transfer, meaning they're the final owners of all the vestedQUARTZ they
+still have or will receive in the future
 
 [Sandclock]: https://sandclock.org
 [PoS bridge]: https://wallet.polygon.technology/bridge/

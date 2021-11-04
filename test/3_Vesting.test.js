@@ -215,7 +215,7 @@ describe('Vesting', () => {
       expect(await vesting.currentlyClaimable(alice.address)).to.equal(0);
     });
 
-    it.only('calculates correct amount if startDate is in the past and startAmount is 0', async () => {
+    it('calculates correct amount if startDate is in the past and startAmount is 0', async () => {
       const amount = batchSize * 2;
 
       startTime = (await getCurrentTime()).sub(batchDuration);
@@ -232,7 +232,7 @@ describe('Vesting', () => {
       expect(await vesting.currentlyClaimable(alice.address)).to.eq(batchSize);
     });
 
-    it.only('calculates correct amount if startDate is in the past', async () => {
+    it('calculates correct amount if startDate is in the past', async () => {
       const amount = batchSize * 2;
 
       startTime = (await getCurrentTime()).sub(batchDuration);

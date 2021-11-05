@@ -10,7 +10,7 @@ const config = {
   mumbai: {
     start: new Date('2021-11-05T15:30:00.000Z').getTime() / 1000,
     startAmount: ethers.utils.parseUnits('100', 18),
-    batchDuration: 60 * 10, // 24 hours
+    batchDuration: 60 * 10, // 10 minutes
     batchSize: ethers.utils.parseUnits('100', 18),
   },
 };

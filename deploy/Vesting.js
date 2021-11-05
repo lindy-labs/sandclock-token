@@ -16,7 +16,7 @@ module.exports = async function deployQuartz({
   const quartzAddress = (await deployments.get('QuartzToken')).address;
 
   const start = Math.floor(
-    new Date('2021-11-04T12:00:00.000Z').getTime() / 1000,
+    new Date('2021-11-06T12:00:00.000Z').getTime() / 1000,
   );
   const startAmount = ethers.utils.parseUnits('100', 18);
   const batchDuration = 60 * 60 * 24; // 24 hours

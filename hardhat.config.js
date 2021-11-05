@@ -38,6 +38,7 @@ module.exports = {
       url: `https://rinkeby.infura.io/v3/${process.env.INFURA_KEY}`,
       chainId: 4,
       accounts: [process.env.TESTNET_PRIVATE_KEY],
+      gas: 10000000,
     },
     mumbai: {
       url: 'https://rpc-mumbai.matic.today',

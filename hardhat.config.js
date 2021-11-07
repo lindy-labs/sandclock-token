@@ -41,7 +41,7 @@ module.exports = {
       gas: 10000000,
     },
     mumbai: {
-      url: 'https://rpc-mumbai.matic.today',
+      url: 'https://rpc-mumbai.maticvigil.com/',
       chainId: 80001,
       accounts: [process.env.TESTNET_PRIVATE_KEY],
     },
@@ -66,7 +66,7 @@ module.exports = {
     },
     childChainProxy: {
       137: '0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa',
-      4: '0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa',
+      80001: 0,
     },
   },
   gasReporter: {

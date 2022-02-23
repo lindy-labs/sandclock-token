@@ -30,7 +30,7 @@ module.exports = {
       accounts: [process.env.MAINNET_PRIVATE_KEY],
     },
     polygon: {
-      url: 'https://polygon-rpc.com',
+      url: 'https://polygon-mainnet.g.alchemy.com/v2/GuyiRadC4DOQjEPb9HvpdDrkv11PRRXa',
       chainId: 137,
       accounts: [process.env.MAINNET_PRIVATE_KEY],
     },

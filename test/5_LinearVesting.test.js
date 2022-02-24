@@ -58,15 +58,10 @@ describe('LinearVesting', () => {
       ).to.be.revertedWith('period is 0');
     });
 
-    it('revert if startTime is lower than block.timestamp', async () => {
+    it('revert if startTime is zero', async () => {
       await expect(
-        vesting.addVesting(
-          alice.address,
-          startTime.sub(BigNumber.from('200')),
-          period,
-          amount,
-        ),
-      ).to.be.revertedWith('start time must be later than now');
+        vesting.addVesting(alice.address, 0, period, amount),
+      ).to.be.revertedWith('startTime is 0');
     });
 
     it('revert if beneficiary is address(0)', async () => {

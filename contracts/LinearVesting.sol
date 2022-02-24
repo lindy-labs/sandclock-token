@@ -60,10 +60,7 @@ contract LinearVesting {
     ) external {
         require(amount != 0, "amount is 0");
         require(period != 0, "period is 0");
-        require(
-            startTime >= block.timestamp,
-            "start time must be later than now"
-        );
+        require(startTime != 0, "startTime is 0");
         require(beneficiary != address(0), "beneficiary is 0x");
 
         VestingInfo storage vestingInfo = vestings[beneficiary];

@@ -12,7 +12,7 @@ describe('LinearVesting', () => {
   let bob;
 
   beforeEach(async () => {
-    [deployer, alice, bob] = await ethers.getSigners();
+    [deployer, alice, bob, carol] = await ethers.getSigners();
 
     const Quartz = await ethers.getContractFactory('QuartzToken');
     quartz = await Quartz.deploy();
@@ -293,6 +293,109 @@ describe('LinearVesting', () => {
       expect(vestingInfo.period).to.be.equal(period);
       expect(vestingInfo.amount).to.be.equal(amount);
       expect(vestingInfo.claimed).to.be.equal(amount);
+    });
+  });
+
+  describe.only('subvisual vesting scenario', () => {
+    let startTime = BigNumber.from('1635199200'); // October 26, 2021
+    let period = 86400 * 365 * 2; // 2 years
+    let amounts = [utils.parseEther('50000'), utils.parseEther('20000')];
+
+    beforeEach(async () => {
+      await quartz.transfer(alice.address, amounts[0].add(amounts[1]));
+
+      await quartz
+        .connect(alice)
+        .approve(vesting.address, amounts[0].add(amounts[1]));
+
+      await vesting
+        .connect(alice)
+        .addVesting(bob.address, startTime, period, amounts[0]);
+
+      await vesting
+        .connect(alice)
+        .addVesting(carol.address, startTime, period, amounts[1]);
+    });
+
+    it('claim pending amount after 1 year', async () => {
+      const year = BigNumber.from('86400').mul(BigNumber.from('365'));
+
+      const now = BigNumber.from((await ethers.provider.getBlock()).timestamp);
+
+      const timeElapsed = (now.sub(startTime)).add(year);
+      await time.increaseTo(startTime.add(timeElapsed).toString());
+
+      const tx = await vesting.connect(bob).claim();
+      const tx1 = await vesting.connect(carol).claim();
+
+      const claimedAmounts = [
+        amounts[0].mul(timeElapsed.add(BigNumber.from('1'))).div(period),
+        amounts[1].mul(timeElapsed.add(BigNumber.from('1'))).div(period),
+      ];
+
+      await expect(tx)
+        .to.emit(vesting, 'Claimed')
+        .withArgs(bob.address, claimedAmounts[0]);
+
+      await expect(tx1)
+        .to.emit(vesting, 'Claimed')
+        .withArgs(carol.address, claimedAmounts[1]);
+
+      expect(await quartz.balanceOf(bob.address)).to.be.equal(
+        claimedAmounts[0],
+      );
+
+      expect(await quartz.balanceOf(carol.address)).to.be.equal(
+        claimedAmounts[1],
+      );
+    });
+
+    it('claim full balance after vesting ends', async () => {
+      // advance 2 years
+      const timeElapsed = BigNumber.from('86400')
+        .mul(BigNumber.from('365'))
+        .mul(BigNumber.from('2'));
+      await time.increaseTo(startTime.add(timeElapsed).toString());
+
+      const tx = await vesting.connect(bob).claim();
+
+      const tx1 = await vesting.connect(carol).claim();
+
+      await expect(tx)
+        .to.emit(vesting, 'Claimed')
+        .withArgs(bob.address, amounts[0]);
+
+      await expect(tx1)
+        .to.emit(vesting, 'Claimed')
+        .withArgs(carol.address, amounts[1]);
+
+      expect(await quartz.balanceOf(bob.address)).to.be.equal(amounts[0]);
+
+      expect(await quartz.balanceOf(carol.address)).to.be.equal(amounts[1]);
+    });
+
+    it('claim full balance after vesting ends', async () => {
+      // advance 2 years
+      const timeElapsed = BigNumber.from('86400')
+        .mul(BigNumber.from('365'))
+        .mul(BigNumber.from('2'));
+      await time.increaseTo(startTime.add(timeElapsed).toString());
+
+      const tx = await vesting.connect(bob).claim();
+
+      const tx1 = await vesting.connect(carol).claim();
+
+      await expect(tx)
+        .to.emit(vesting, 'Claimed')
+        .withArgs(bob.address, amounts[0]);
+
+      await expect(tx1)
+        .to.emit(vesting, 'Claimed')
+        .withArgs(carol.address, amounts[1]);
+
+      expect(await quartz.balanceOf(bob.address)).to.be.equal(amounts[0]);
+
+      expect(await quartz.balanceOf(carol.address)).to.be.equal(amounts[1]);
     });
   });
 });

@@ -319,18 +319,21 @@ describe('LinearVesting', () => {
 
     it('claim pending amount after 1 year', async () => {
       const year = BigNumber.from('86400').mul(BigNumber.from('365'));
-      const now = BigNumber.from((await ethers.provider.getBlock()).timestamp);
+      let now = BigNumber.from((await ethers.provider.getBlock()).timestamp);
       const timeElapsed = (now.sub(startTime)).add(year);
 
       await time.increaseTo(startTime.add(timeElapsed).toString());
 
       await vesting.connect(bob).claim();
 
+      now = BigNumber.from((await ethers.provider.getBlock()).timestamp).sub(year);
+      const timeElapsed1 = (now.sub(startTime)).add(year);
+
       await vesting.connect(carol).claim();
 
       let claimedAmounts = [
         amounts[0].mul(timeElapsed.add(BigNumber.from('1'))).div(period),
-        amounts[1].mul(timeElapsed.add(BigNumber.from('1'))).div(period),
+        amounts[1].mul(timeElapsed1.add(BigNumber.from('1'))).div(period),
       ];
 
       expect(await quartz.balanceOf(bob.address)).to.be.equal(
@@ -343,7 +346,7 @@ describe('LinearVesting', () => {
     });
 
     it('cannot claim full amount after 1.5 years', async () => {
-      const year = BigNumber.from('86400').mul(BigNumber.from('365'));
+      // Advance .5 years. Total of .5 years from startTime.
       const now = BigNumber.from((await ethers.provider.getBlock()).timestamp);
       const timeElapsed = (now.sub(startTime)).add(BigNumber.from('182'));
       await time.increaseTo(startTime.add(timeElapsed).toString());
@@ -357,7 +360,7 @@ describe('LinearVesting', () => {
     });
 
     it('claim full balance after vesting ends', async () => {
-      // advance 2 years
+      // Advance 0.5 years. Total of 2 years from startTime.
       const timeElapsed = BigNumber.from('86400')
         .mul(BigNumber.from('365'))
         .mul(BigNumber.from('2'));

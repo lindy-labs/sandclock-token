@@ -319,27 +319,19 @@ describe('LinearVesting', () => {
 
     it('claim pending amount after 1 year', async () => {
       const year = BigNumber.from('86400').mul(BigNumber.from('365'));
-
       const now = BigNumber.from((await ethers.provider.getBlock()).timestamp);
-
       const timeElapsed = (now.sub(startTime)).add(year);
+
       await time.increaseTo(startTime.add(timeElapsed).toString());
 
-      const tx = await vesting.connect(bob).claim();
-      const tx1 = await vesting.connect(carol).claim();
+      await vesting.connect(bob).claim();
 
-      const claimedAmounts = [
+      await vesting.connect(carol).claim();
+
+      let claimedAmounts = [
         amounts[0].mul(timeElapsed.add(BigNumber.from('1'))).div(period),
         amounts[1].mul(timeElapsed.add(BigNumber.from('1'))).div(period),
       ];
-
-      await expect(tx)
-        .to.emit(vesting, 'Claimed')
-        .withArgs(bob.address, claimedAmounts[0]);
-
-      await expect(tx1)
-        .to.emit(vesting, 'Claimed')
-        .withArgs(carol.address, claimedAmounts[1]);
 
       expect(await quartz.balanceOf(bob.address)).to.be.equal(
         claimedAmounts[0],
@@ -350,28 +342,18 @@ describe('LinearVesting', () => {
       );
     });
 
-    it('claim full balance after vesting ends', async () => {
-      // advance 2 years
-      const timeElapsed = BigNumber.from('86400')
-        .mul(BigNumber.from('365'))
-        .mul(BigNumber.from('2'));
+    it('cannot claim full amount after 1.5 years', async () => {
+      const year = BigNumber.from('86400').mul(BigNumber.from('365'));
+      const now = BigNumber.from((await ethers.provider.getBlock()).timestamp);
+      const timeElapsed = (now.sub(startTime)).add(BigNumber.from('182'));
       await time.increaseTo(startTime.add(timeElapsed).toString());
 
-      const tx = await vesting.connect(bob).claim();
+      await vesting.connect(bob).claim();
+      await vesting.connect(carol).claim();
 
-      const tx1 = await vesting.connect(carol).claim();
+      expect(await quartz.balanceOf(bob.address)).to.be.lt(amounts[0]);
 
-      await expect(tx)
-        .to.emit(vesting, 'Claimed')
-        .withArgs(bob.address, amounts[0]);
-
-      await expect(tx1)
-        .to.emit(vesting, 'Claimed')
-        .withArgs(carol.address, amounts[1]);
-
-      expect(await quartz.balanceOf(bob.address)).to.be.equal(amounts[0]);
-
-      expect(await quartz.balanceOf(carol.address)).to.be.equal(amounts[1]);
+      expect(await quartz.balanceOf(carol.address)).to.be.lt(amounts[1]);
     });
 
     it('claim full balance after vesting ends', async () => {
